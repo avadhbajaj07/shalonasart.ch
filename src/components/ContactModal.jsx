@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { X, CheckCircle, Mail, MapPin, Send } from 'lucide-react';
+import { X, CheckCircle, Mail, MapPin, Send, Loader2 } from 'lucide-react';
 import { InstagramIcon, FacebookIcon } from './Icons';
 import { artistData } from '../data/artist';
+import { sendInquiry } from '../utils/sendInquiry';
 
 export default function ContactModal({ isOpen, onClose, selectedArtwork, allArtworks }) {
   const [formData, setFormData] = useState({
@@ -15,16 +16,20 @@ export default function ContactModal({ isOpen, onClose, selectedArtwork, allArtw
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   if (!isOpen) return null;
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Simulate luxury studio dispatch
+    setIsSubmitting(true);
+    await sendInquiry({
+      ...formData,
+      artworkTitle: selectedArtwork ? selectedArtwork.title : 'General Portfolio Inquiry',
+      inquiryType: selectedArtwork ? 'Artwork Acquisition' : 'Studio Visit & Viewing',
+    });
+    setIsSubmitting(false);
     setSubmitted(true);
-    setTimeout(() => {
-      // Keep submitted message for review
-    }, 400);
   };
 
   const handleReset = () => {
@@ -184,10 +189,20 @@ export default function ContactModal({ isOpen, onClose, selectedArtwork, allArtw
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] transition-all shadow-md"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] disabled:opacity-50 transition-all shadow-md cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Studio Inquiry</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending to Shalona...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Studio Inquiry</span>
+                    </>
+                  )}
                 </button>
               </div>
             </form>

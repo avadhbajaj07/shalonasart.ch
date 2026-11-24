@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { artistData } from '../data/artist';
 import { InstagramIcon, FacebookIcon } from '../components/Icons';
-import { Mail, MapPin, Phone, Send, CheckCircle, ShieldCheck, Truck, Sparkles } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, CheckCircle, ShieldCheck, Truck, Sparkles, Loader2 } from 'lucide-react';
+import { sendInquiry } from '../utils/sendInquiry';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -14,9 +15,16 @@ export default function ContactPage() {
     message: ''
   });
   const [submitted, setSubmitted] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    await sendInquiry({
+      ...formData,
+      artworkTitle: formData.inquiryType,
+    });
+    setIsSubmitting(false);
     setSubmitted(true);
   };
 
@@ -220,10 +228,20 @@ export default function ContactPage() {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] transition-all shadow-md"
+                  disabled={isSubmitting}
+                  className="w-full sm:w-auto px-8 py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] disabled:opacity-50 transition-all shadow-md cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Studio Inquiry</span>
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending to Shalona...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5" />
+                      <span>Send Studio Inquiry</span>
+                    </>
+                  )}
                 </button>
               </form>
             )}

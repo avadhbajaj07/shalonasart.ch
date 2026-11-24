@@ -4,9 +4,10 @@ import SEO from '../components/SEO';
 import ArtworkCard from '../components/ArtworkCard';
 import { 
   ArrowLeft, ArrowRight, ArrowUpRight, Home, Eye, 
-  MapPin, ShieldCheck, Truck, Sparkles, CheckCircle, Send
+  MapPin, ShieldCheck, Truck, Sparkles, CheckCircle, Send, Loader2
 } from 'lucide-react';
 import { artistData } from '../data/artist';
+import { sendInquiry } from '../utils/sendInquiry';
 
 export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire }) {
   const { slug } = useParams();
@@ -31,9 +32,17 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
     message: `I am interested in acquiring or viewing "${artwork.title}" (${artwork.dimensions}, ${artwork.year}).`
   });
   const [inquirySent, setInquirySent] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleInquirySubmit = (e) => {
+  const handleInquirySubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
+    await sendInquiry({
+      ...formData,
+      artworkTitle: artwork.title,
+      inquiryType: 'Artwork Acquisition',
+    });
+    setIsSubmitting(false);
     setInquirySent(true);
   };
 
@@ -288,10 +297,20 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
 
                   <button
                     type="submit"
-                    className="w-full py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] transition-colors shadow-sm"
+                    disabled={isSubmitting}
+                    className="w-full py-3 rounded-full bg-[#1A1817] text-[#FBF9F5] text-xs font-sans tracking-[0.16em] uppercase flex items-center justify-center gap-2 hover:bg-[#A88B57] disabled:opacity-50 transition-colors shadow-sm cursor-pointer"
                   >
-                    <Send className="w-3.5 h-3.5" />
-                    <span>Send Atelier Inquiry</span>
+                    {isSubmitting ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Sending to Shalona...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Send className="w-3.5 h-3.5" />
+                        <span>Send Atelier Inquiry</span>
+                      </>
+                    )}
                   </button>
                 </form>
               )}

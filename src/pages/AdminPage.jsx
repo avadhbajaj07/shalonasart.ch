@@ -46,7 +46,17 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-const ADMIN_PASSWORD = 'shalona';
+// Cryptographic SHA-256 hash for studio portal security.
+// Plaintext password is never exposed in client bundles or UI.
+const ADMIN_PASSWORD_HASH = '7ab1ab279bd7b73915a7819c5cd3dca1f15ad37905ce69615b5f663e57213753';
+
+async function hashPassword(plainText) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(plainText);
+  const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+}
 
 export default function AdminPage() {
   const [isAuthenticated, setIsAuthenticated] = useState(() => {
@@ -152,14 +162,19 @@ export default function AdminPage() {
   }, [isAuthenticated]);
 
   // Auth Submit
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    if (passwordInput.trim().toLowerCase() === ADMIN_PASSWORD) {
+    if (!passwordInput.trim()) {
+      setAuthError('Please enter the studio password.');
+      return;
+    }
+    const computedHash = await hashPassword(passwordInput.trim());
+    if (computedHash === ADMIN_PASSWORD_HASH) {
       setIsAuthenticated(true);
       localStorage.setItem('shalona_admin_auth', 'true');
       setAuthError('');
     } else {
-      setAuthError('Incorrect studio password. Please try again.');
+      setAuthError('Incorrect studio password. Access denied.');
     }
   };
 
@@ -555,7 +570,7 @@ export default function AdminPage() {
                   type="password"
                   value={passwordInput}
                   onChange={(e) => setPasswordInput(e.target.value)}
-                  placeholder="Enter password (shalona)"
+                  placeholder="Enter studio password"
                   autoFocus
                   className="w-full px-4 py-3.5 rounded-xl border border-[#DCD9D0] bg-[#FAF8F3] text-base focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all text-[#2A2A2A]"
                 />
