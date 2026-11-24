@@ -4,7 +4,7 @@
  */
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
-const GTM_ID = import.meta.env.VITE_GTM_CONTAINER_ID || '';
+const GTM_ID = import.meta.env.VITE_GTM_CONTAINER_ID || 'GTM-NBD5S9MW';
 const CLARITY_ID = import.meta.env.VITE_CLARITY_PROJECT_ID || '';
 
 let isInitialized = false;
@@ -20,7 +20,7 @@ export function initAnalytics() {
   const isPreview = window.location.hostname.includes('vercel.app');
 
   // GTM initialization
-  if (GTM_ID && !isLocal && !isPreview) {
+  if (GTM_ID && !isLocal && !isPreview && !window['google_tag_manager']) {
     (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
     new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
     j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
