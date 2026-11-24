@@ -1,0 +1,7 @@
+# Exclude heavy local folders
+node_modules
+public_html
+data_dump
+.git
+.DS_Store
+dist
