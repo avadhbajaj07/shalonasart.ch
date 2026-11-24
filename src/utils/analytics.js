@@ -3,7 +3,7 @@
  * Supports Google Analytics 4 (GA4), Google Tag Manager (GTM), Microsoft Clarity, and custom events.
  */
 
-const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || '';
+const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-NJGL7SQQVL';
 const GTM_ID = import.meta.env.VITE_GTM_CONTAINER_ID || 'GTM-NBD5S9MW';
 const CLARITY_ID = import.meta.env.VITE_CLARITY_PROJECT_ID || '';
 
@@ -29,7 +29,7 @@ export function initAnalytics() {
   }
 
   // GA4 initialization
-  if (GA_ID && !isLocal && !isPreview) {
+  if (GA_ID && !isLocal && !isPreview && !window.gtag) {
     const script = document.createElement('script');
     script.async = true;
     script.src = `https://www.googletagmanager.com/gtag/js?id=${GA_ID}`;
