@@ -4,7 +4,7 @@
  */
 
 const GA_ID = import.meta.env.VITE_GA_MEASUREMENT_ID || 'G-NJGL7SQQVL';
-const GTM_ID = import.meta.env.VITE_GTM_CONTAINER_ID || 'GTM-NBD5S9MW';
+const GTM_ID = import.meta.env.VITE_GTM_CONTAINER_ID || 'GTM-KPMQWX9C';
 const CLARITY_ID = import.meta.env.VITE_CLARITY_PROJECT_ID || '';
 
 let isInitialized = false;
