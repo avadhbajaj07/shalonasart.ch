@@ -7,11 +7,6 @@ import { Link } from 'react-router-dom';
 export default function UnfinishedPage({ artworks = [], onSelectArtwork }) {
   const { unfinishedStatement } = artistData;
 
-  // Filter all in-progress or untitled studies from database
-  const inProgressArtworks = artworks.filter(
-    (a) => a.category === 'Unfinished Works' || a.title?.toLowerCase().includes('untitled') || a.status === 'In Progress'
-  );
-
   const unfinishedSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",

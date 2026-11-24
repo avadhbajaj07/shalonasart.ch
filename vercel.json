@@ -42,6 +42,36 @@
       "source": "/about",
       "destination": "/biography",
       "permanent": true
+    },
+    {
+      "source": "/arts/free-as-a-bird-2",
+      "destination": "/arts/free-as-a-bird",
+      "permanent": true
+    },
+    {
+      "source": "/arts/untitled-2",
+      "destination": "/arts/untitled",
+      "permanent": true
+    },
+    {
+      "source": "/arts/soft-and-sweet",
+      "destination": "/unfinished-works",
+      "permanent": true
+    },
+    {
+      "source": "/arts/silent-strength",
+      "destination": "/unfinished-works",
+      "permanent": true
+    },
+    {
+      "source": "/arts/relaxed-confidence",
+      "destination": "/unfinished-works",
+      "permanent": true
+    },
+    {
+      "source": "/arts/vulnerability",
+      "destination": "/unfinished-works",
+      "permanent": true
     }
   ],
   "rewrites": [

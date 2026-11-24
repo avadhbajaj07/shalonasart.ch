@@ -132,13 +132,32 @@ export function getLiveArtworks() {
     if (saved) {
       let parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
+        // Prune legacy duplicate / dummy WordPress items
+        const prunedIds = new Set([1784, 1782, 1780, 1773, 1736, 1763]);
+        const beforeCount = parsed.length;
+        parsed = parsed.filter(item => !prunedIds.has(item.id));
+        let hasChanges = parsed.length !== beforeCount;
+
         // Hydrate authentic philosophies and normalized data from initialArtworks
         const initialMap = new Map(initialArtworks.map(a => [a.id, a]));
-        let hasChanges = false;
         parsed = parsed.map(item => {
           const init = initialMap.get(item.id);
           if (init) {
             let updatedItem = { ...item };
+            if (init.category === 'Unfinished Works') {
+              updatedItem.category = init.category;
+              updatedItem.status = init.status;
+              updatedItem.image = init.image;
+              updatedItem.thumbnail = init.thumbnail;
+              updatedItem.localImage = init.localImage;
+              updatedItem.caption = init.caption;
+              updatedItem.philosophy = init.philosophy;
+              updatedItem.year = init.year;
+              updatedItem.title = init.title;
+              updatedItem.dimensions = init.dimensions;
+              updatedItem.medium = init.medium;
+              hasChanges = true;
+            }
             if (!item.philosophy || item.philosophy.includes('Original artwork by Shalona') || !item.caption || item.caption.includes('Original artwork by Shalona')) {
               updatedItem.philosophy = init.philosophy;
               updatedItem.caption = init.caption;

@@ -19,6 +19,12 @@
 | `/my-arts` | `/arts` | 301 Permanent | Deprecated WordPress menu slug |
 | `/my-arts/:path*` | `/arts/:path*` | 301 Permanent | Deep legacy artwork links |
 | `/about` | `/biography` | 301 Permanent | Canonical artist biography route |
+| `/arts/free-as-a-bird-2` | `/arts/free-as-a-bird` | 301 Permanent | Consolidate duplicate Free as a Bird entry |
+| `/arts/untitled-2` | `/arts/untitled` | 301 Permanent | Consolidate duplicate Untitled entry |
+| `/arts/soft-and-sweet` | `/unfinished-works` | 301 Permanent | Pruned WordPress test upload redirect |
+| `/arts/silent-strength` | `/unfinished-works` | 301 Permanent | Pruned WordPress duplicate image upload redirect |
+| `/arts/relaxed-confidence` | `/unfinished-works` | 301 Permanent | Pruned WordPress test upload redirect |
+| `/arts/vulnerability` | `/unfinished-works` | 301 Permanent | Pruned WordPress duplicate image upload redirect |
 | `/unfinished-works-tab` | `/arts` | 301 Permanent | Legacy unfinished works tab migration |
 | `/gallery` | `/arts` | 301 Permanent | External incoming link normalization |
 | `/wp-login.php` | `/admin` | 404 / 301 | Secures former WordPress login requests |
