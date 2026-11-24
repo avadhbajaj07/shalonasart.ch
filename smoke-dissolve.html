@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Archaeology of Stillness — Smoke Dissolve Typography</title>
+  <meta name="description" content="A smooth, reversible scroll-linked smoke dissolve typography effect on an archival warm off-white canvas background.">
+
+  <!-- Google Fonts: Playfair Display (Serif) & Inter (Sans-Serif) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+
+  <style>
+    /* ==========================================================================
+       1. Design Tokens & Root Variables
+       ========================================================================== */
+    :root {
+      --bg-canvas: #F5F1E8;
+      --ink-primary: #1C1B18;       /* Deep charcoal ink for headings */
+      --ink-body: #4A463F;          /* Warm slate charcoal for body copy */
+      --ink-muted: #8A8477;         /* Secondary muted metadata text */
+      --hairline: rgba(28, 27, 24, 0.12);
+      --hairline-dark: rgba(28, 27, 24, 0.28);
+      
+      --font-serif: 'Playfair Display', Georgia, serif;
+      --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    /* ==========================================================================
+       2. Base & Canvas Layout
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      background-color: var(--bg-canvas);
+      color: var(--ink-body);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.75;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      background-color: var(--bg-canvas);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Organic Linen / Paper Grain Texture Overlay */
+    .canvas-grain-overlay {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.04;
+      mix-blend-mode: multiply;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Subtle Gallery Vignette */
+    .canvas-vignette {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 1;
+      background: radial-gradient(circle at 50% 30%, rgba(255, 255, 255, 0.4) 0%, rgba(245, 241, 232, 0) 70%);
+    }
+
+    /* ==========================================================================
+       3. Smoke Dissolve Typography Styles
+       ========================================================================== */
+    .smoke-text {
+      /* Multiply blending ensures dissolving tendrils absorb naturally into canvas */
+      mix-blend-mode: multiply;
+      display: block;
+      will-change: transform, filter, opacity, letter-spacing;
+      transform-origin: 50% 50%;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+
+    /* Headings */
+    h1.smoke-text, h2.smoke-text, h3.smoke-text {
+      font-family: var(--font-serif);
+      color: var(--ink-primary);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.015em;
+    }
+
+    /* Paragraphs and Body Smoke Text */
+    p.smoke-text, blockquote.smoke-text {
+      font-weight: 300;
+      color: var(--ink-body);
+    }
+
+    blockquote.smoke-text {
+      font-family: var(--font-serif);
+      font-style: italic;
+      color: var(--ink-primary);
+      line-height: 1.45;
+    }
+
+    /* ==========================================================================
+       4. Editorial Layout Structure & Whitespace
+       ========================================================================== */
+    .container {
+      width: 100%;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      position: relative;
+      z-index: 10;
+    }
+
+    /* Masthead Navigation */
+    header.masthead {
+      padding: 3rem 0 2rem;
+      border-bottom: 1px solid var(--hairline);
+      margin-bottom: 6rem;
+    }
+
+    .masthead-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.22em;
+      color: var(--ink-muted);
+    }
+
+    .masthead-brand {
+      font-family: var(--font-serif);
+      font-size: 1.4rem;
+      color: var(--ink-primary);
+      text-transform: none;
+      letter-spacing: 0.02em;
+      font-weight: 600;
+    }
+
+    /* Editorial Chapters (Generous Vertical Rhythm) */
+    .chapter {
+      margin-bottom: 14rem; /* Generous breathing room between editorial sections */
+      position: relative;
+    }
+
+    .chapter:last-of-type {
+      margin-bottom: 10rem;
+    }
+
+    .chapter-number {
+      font-size: 0.75rem;
+      font-family: var(--font-sans);
+      text-transform: uppercase;
+      letter-spacing: 0.25em;
+      color: var(--ink-muted);
+      margin-bottom: 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .chapter-number::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--hairline);
+      max-width: 4rem;
+    }
+
+    /* Typography Scales */
+    .display-title {
+      font-size: clamp(2.75rem, 7vw, 5.5rem);
+      margin-bottom: 2rem;
+      max-width: 20ch;
+    }
+
+    .section-title {
+      font-size: clamp(2.2rem, 5vw, 3.8rem);
+      margin-bottom: 1.75rem;
+      max-width: 22ch;
+    }
+
+    .lead-text {
+      font-size: clamp(1.2rem, 2.2vw, 1.6rem);
+      line-height: 1.6;
+      color: var(--ink-primary);
+      margin-bottom: 2rem;
+      font-weight: 300;
+    }
+
+    .body-copy {
+      font-size: 1.05rem;
+      line-height: 1.85;
+      margin-bottom: 1.75rem;
+      max-width: 42rem;
+    }
+
+    .pull-quote {
+      font-size: clamp(1.5rem, 3.5vw, 2.4rem);
+      padding: 2.5rem 0 2.5rem 2rem;
+      border-left: 2px solid var(--hairline-dark);
+      margin: 3.5rem 0;
+    }
+
+    .quote-author {
+      display: block;
+      margin-top: 1rem;
+      font-family: var(--font-sans);
+      font-size: 0.8rem;
+      font-style: normal;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ink-muted);
+    }
+
+    /* Status Indicator Box */
+    .reading-status {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      z-index: 50;
+      background: rgba(245, 241, 232, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border: 1px solid var(--hairline);
+      padding: 0.6rem 1rem;
+      border-radius: 999px;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
+      color: var(--ink-muted);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      pointer-events: none;
+    }
+
+    .reading-status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--ink-primary);
+      animation: pulse 2.5s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    /* Colophon Footer */
+    footer.colophon {
+      padding: 6rem 0 5rem;
+      border-top: 1px solid var(--hairline);
+      font-size: 0.8rem;
+      color: var(--ink-muted);
+    }
+
+    .colophon-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 3rem;
+      margin-bottom: 4rem;
+    }
+
+    .colophon-col h4 {
+      font-family: var(--font-sans);
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.2em;
+      color: var(--ink-primary);
+      margin-bottom: 1rem;
+    }
+
+    .colophon-col p {
+      font-size: 0.85rem;
+      line-height: 1.6;
+    }
+
+    .colophon-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 2rem;
+      border-top: 1px solid var(--hairline);
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+    }
+
+    /* ==========================================================================
+       5. Accessibility: Reduced Motion Fallback
+       ========================================================================== */
+    @media (prefers-reduced-motion: reduce) {
+      .smoke-text {
+        filter: none !important;
+        transform: none !important;
+        letter-spacing: normal !important;
+        transition: opacity 0.4s ease-out;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Organic Canvas Paper Grain & Ambient Vignette -->
+  <div class="canvas-grain-overlay" aria-hidden="true"></div>
+  <div class="canvas-vignette" aria-hidden="true"></div>
+
+  <!-- Dynamic SVG Smoke Filter Bank (Injected & Managed via JavaScript) -->
+  <svg id="smoke-filters-svg" class="smoke-filter-defs" aria-hidden="true" style="position: absolute; width: 0; height: 0; overflow: hidden; pointer-events: none;">
+    <defs id="smoke-defs-container">
+      <!-- Individual element filters will be generated here dynamically -->
+    </defs>
+  </svg>
+
+  <!-- Interactive Scroll Reading HUD -->
+  <aside class="reading-status" aria-hidden="true">
+    <span class="reading-status-dot"></span>
+    <span>Reading Zone Active</span>
+  </aside>
+
+  <!-- Main Editorial Container -->
+  <div class="container">
+
+    <!-- Masthead -->
+    <header class="masthead">
+      <div class="masthead-row">
+        <span class="masthead-brand">Shalona</span>
+        <span>Richterswil · Switzerland</span>
+        <span>Folio 2026</span>
+      </div>
+    </header>
+
+    <!-- Main Editorial Content -->
+    <main>
+
+      <!-- Prologue -->
+      <section class="chapter">
+        <div class="chapter-number">Prologue</div>
+        <h1 class="smoke-text display-title">
+          The Archaeology<br>of Stillness
+        </h1>
+        <p class="smoke-text lead-text">
+          Text is not an inert imprint upon paper. When unburdened by haste, words breathe with the porous grain of linen, hovering in the fragile interval between matter and vapor.
+        </p>
+        <p class="smoke-text body-copy">
+          As you move through these pages, allow your glance to slow. Each line gathers density only while resting within your direct focus; as your gaze drifts onward, the charcoal ink yields to the canvas, unraveling into wisps of quiet air.
+        </p>
+      </section>
+
+      <!-- Chapter I -->
+      <section class="chapter">
+        <div class="chapter-number">Chapter I</div>
+        <h2 class="smoke-text section-title">
+          Where Words Fall Silent
+        </h2>
+        <p class="smoke-text body-copy">
+          Some mornings in the studio on Lake Zurich, I do not pick up a brush for hours. I sit in the unhurried grey light as it moves across raw gesso. I listen to whatever is underneath the silence.
+        </p>
+        <p class="smoke-text body-copy">
+          Starting is not a rational decree—it is a surrender. The mineral pigment arrives before the intention; the feeling precedes the contour. And then the hand responds, setting into motion an encounter that was never planned.
+        </p>
+        <blockquote class="smoke-text pull-quote">
+          “Stillness is never empty—it is full of unseen movement.”
+          <span class="quote-author">— Shalona</span>
+        </blockquote>
+        <p class="smoke-text body-copy">
+          We mistake quietude for absence, yet it is the precise density from which all genuine form condenses. When a candle is snuffed out, the flame does not vanish; it transforms into a curling ribbon of smoke that inscribes the air with its memory.
+        </p>
+      </section>
+
+      <!-- Chapter II -->
+      <section class="chapter">
+        <div class="chapter-number">Chapter II</div>
+        <h2 class="smoke-text section-title">
+          Colour as Memory and Geology
+        </h2>
+        <p class="smoke-text body-copy">
+          I have always felt pigment in the body before comprehending it with the intellect. Raw ochre announces itself when something ancient wishes to speak. Deep Prussian blue is not sorrow—it is oceanic depth, the courage to descend past the reach of surface reflections.
+        </p>
+        <p class="smoke-text body-copy">
+          When I work with lake water washes and photographic transfers, the image begins to break down. The chemical certainty of the photograph dissolves, leaving only a ghost of texture that mingles with raw mineral stone.
+        </p>
+        <p class="smoke-text lead-text">
+          To paint is to witness a material lose its boundaries until it begins to speak as atmosphere.
+        </p>
+      </section>
+
+      <!-- Chapter III -->
+      <section class="chapter">
+        <div class="chapter-number">Chapter III</div>
+        <h2 class="smoke-text section-title">
+          The Honest Grace of the Unfinished
+        </h2>
+        <p class="smoke-text body-copy">
+          For many seasons I concealed the unfinished works—the canvases turned face-to-wall, the compositions abandoned mid-breath. I believed incomplete meant defective.
+        </p>
+        <p class="smoke-text body-copy">
+          Now I recognize that certain pieces are not abandoned; they are simply waiting. They hold a question I have not yet earned the right to answer, or an emotion I have not yet lived all the way through.
+        </p>
+        <blockquote class="smoke-text pull-quote">
+          “In the unfinished, there is no artifice. You see the exact boundary where the artist chose humility over force.”
+          <span class="quote-author">— Studio Notes, 2026</span>
+        </blockquote>
+        <p class="smoke-text body-copy">
+          An open question speaks with far greater intimacy than a closed conclusion. The space left unpainted is the very space in which the viewer is invited to reside.
+        </p>
+      </section>
+
+      <!-- Chapter IV -->
+      <section class="chapter">
+        <div class="chapter-number">Chapter IV</div>
+        <h2 class="smoke-text section-title">
+          On You, Standing There
+        </h2>
+        <p class="smoke-text body-copy">
+          I perpetually hold in mind the person who will one day pause before these layered canvases. I do not know your name. I do not know what grief you carry, or what quiet hope guides your steps.
+        </p>
+        <p class="smoke-text body-copy">
+          Yet I trust that if work is born of genuine stillness, something inside the paint will find you. Not my narrative, but yours. A painting becomes whole only when someone stands before it and brings their own silence into communion with the mark.
+        </p>
+        <p class="smoke-text lead-text">
+          Float through the mystical. In the dispersing smoke, discover your own empowerment.
+        </p>
+      </section>
+
+    </main>
+
+    <!-- Colophon / Technical & Editorial Footer -->
+    <footer class="colophon">
+      <div class="colophon-grid">
+        <div class="colophon-col">
+          <h4>Typography & Ink</h4>
+          <p>Primary Serif: Playfair Display (#1C1B18)<br>Body: Inter (#4A463F)<br>Background: Unbleached Linen (#F5F1E8)</p>
+        </div>
+        <div class="colophon-col">
+          <h4>Smoke Physics</h4>
+          <p>Dynamic SVG feTurbulence & feDisplacementMap scaling (0–42), Gaussian diffusion (0–13px), and upward convective drift.</p>
+        </div>
+        <div class="colophon-col">
+          <h4>Atelier</h4>
+          <p>Richterswil, Canton of Zürich<br>Lake Zurich, Switzerland<br>47.2084° N, 8.7042° E</p>
+        </div>
+      </div>
+
+      <div class="colophon-bottom">
+        <span>© 2026 Shalona · All Rights Reserved</span>
+        <span>Scroll-Linked Typography Engine · 60fps</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <!-- ==========================================================================
+       6. High-Performance Scroll-Linked Smoke Dissolve Engine (Vanilla JS)
+       ========================================================================== -->
+  <script>
+    (function () {
+      'use strict';
+
+      // Feature detection & Reduced Motion check
+      const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      // Select all smoke text elements
+      const smokeElements = Array.from(document.querySelectorAll('.smoke-text'));
+      const defsContainer = document.getElementById('smoke-defs-container');
+      const hudStatusText = document.querySelector('.reading-status span:last-child');
+
+      // Internal registry storing elements with their individual SVG filter nodes
+      const elementRegistry = [];
+
+      /**
+       * Initialize unique SVG filters for each .smoke-text element.
+       * Decoupled filters allow every paragraph and heading to have independent
+       * turbulence scale and physics without cross-element interference.
+       */
+      smokeElements.forEach((el, index) => {
+        const filterId = `smoke-filter-${index}`;
+
+        // Create SVG Filter element
+        const filter = document.createElementNS('http://www.w3.org/2000/svg', 'filter');
+        filter.setAttribute('id', filterId);
+        filter.setAttribute('x', '-25%');
+        filter.setAttribute('y', '-25%');
+        filter.setAttribute('width', '150%');
+        filter.setAttribute('height', '150%');
+        filter.setAttribute('color-interpolation-filters', 'sRGB');
+
+        // feTurbulence node (generates organic smoke curls)
+        const turbulence = document.createElementNS('http://www.w3.org/2000/svg', 'feTurbulence');
+        turbulence.setAttribute('type', 'fractalNoise');
+        // Distinct frequency and seed per element prevents visual tiling repetition
+        const freqX = (0.035 + (index % 4) * 0.005).toFixed(3);
+        const freqY = (0.040 + (index % 3) * 0.006).toFixed(3);
+        turbulence.setAttribute('baseFrequency', `${freqX} ${freqY}`);
+        turbulence.setAttribute('numOctaves', '3');
+        turbulence.setAttribute('seed', String(10 + index * 7));
+        turbulence.setAttribute('result', 'smokeNoise');
+
+        // feDisplacementMap node (distorts letter strokes into wisps)
+        const displacement = document.createElementNS('http://www.w3.org/2000/svg', 'feDisplacementMap');
+        displacement.setAttribute('in', 'SourceGraphic');
+        displacement.setAttribute('in2', 'smokeNoise');
+        displacement.setAttribute('scale', '0');
+        displacement.setAttribute('xChannelSelector', 'R');
+        displacement.setAttribute('yChannelSelector', 'G');
+        displacement.setAttribute('result', 'displaced');
+
+        filter.appendChild(turbulence);
+        filter.appendChild(displacement);
+        defsContainer.appendChild(filter);
+
+        // Store reference in registry
+        elementRegistry.push({
+          el: el,
+          filterId: filterId,
+          displacementNode: displacement,
+          lastProgress: -1 // Cache to skip redundant DOM writes
+        });
+      });
+
+      // Animation & Scroll State
+      let isTicking = false;
+      let windowHeight = window.innerHeight;
+
+      /**
+       * Calculate each element's scroll progress (0 to 1) based on viewport position.
+       * 
+       * Reading Zone:
+       * - Center of viewport (25% to 75% height) => progress = 0 (100% crisp & legible).
+       * - Scrolling above 25% or below 75% => progress linearly increases from 0 to 1.
+       */
+      function updateSmokePhysics() {
+        const vh = windowHeight;
+        const zoneTop = vh * 0.25;    // Top boundary of crisp reading zone
+        const zoneBottom = vh * 0.75; // Bottom boundary of crisp reading zone
+
+        let activeInReadingZoneCount = 0;
+
+        for (let i = 0; i < elementRegistry.length; i++) {
+          const item = elementRegistry[i];
+          const el = item.el;
+          const rect = el.getBoundingClientRect();
+
+          // Performance optimization: Cull calculations for elements far outside viewport
+          if (rect.bottom < -200 || rect.top > vh + 200) {
+            // If already fully dissolved and out of view, no need to touch styles
+            if (item.lastProgress !== 1) {
+              applyDissolve(item, 1, 0);
+              item.lastProgress = 1;
+            }
+            continue;
+          }
+
+          const elCenter = rect.top + rect.height * 0.5;
+          let progress = 0;
+          let isTopExit = false;
+
+          if (elCenter < zoneTop) {
+            // Exiting toward top edge of viewport
+            isTopExit = true;
+            const distance = zoneTop - elCenter;
+            const maxDistance = zoneTop + rect.height * 0.6;
+            progress = Math.min(1, Math.max(0, distance / maxDistance));
+          } else if (elCenter > zoneBottom) {
+            // Exiting toward bottom edge of viewport
+            isTopExit = false;
+            const distance = elCenter - zoneBottom;
+            const maxDistance = (vh - zoneBottom) + rect.height * 0.6;
+            progress = Math.min(1, Math.max(0, distance / maxDistance));
+          } else {
+            // Inside the reading zone: completely sharp
+            progress = 0;
+            activeInReadingZoneCount++;
+          }
+
+          // Smooth easing curve: easeInCubic for natural smoke acceleration
+          const easedProgress = Math.pow(progress, 1.35);
+
+          // Only write to DOM if progress has meaningfully changed (> 0.002)
+          if (Math.abs(easedProgress - item.lastProgress) > 0.002) {
+            applyDissolve(item, easedProgress, isTopExit ? -1 : 1);
+            item.lastProgress = easedProgress;
+          }
+        }
+
+        // Update HUD status label
+        if (hudStatusText) {
+          hudStatusText.textContent = activeInReadingZoneCount > 0 
+            ? 'Reading Zone Active' 
+            : 'In Transition';
+        }
+
+        isTicking = false;
+      }
+
+      /**
+       * Apply organic smoke physical transformations to an individual element.
+       */
+      function applyDissolve(item, progress, directionSign) {
+        const el = item.el;
+
+        // Accessibility fallback for reduced motion: gentle opacity fade only
+        if (prefersReducedMotion) {
+          el.style.opacity = (1 - progress * 0.9).toFixed(3);
+          return;
+        }
+
+        if (progress <= 0.001) {
+          // Perfectly crisp state inside reading zone
+          el.style.filter = 'none';
+          el.style.opacity = '1';
+          el.style.transform = 'none';
+          el.style.letterSpacing = 'normal';
+          item.displacementNode.setAttribute('scale', '0');
+          return;
+        }
+
+        // 1. Organic Turbulence Scale: 0 -> 42
+        // High displacement pulls letter contours into fraying wisp tendrils
+        const displacementScale = (progress * 42).toFixed(1);
+        item.displacementNode.setAttribute('scale', displacementScale);
+
+        // 2. Gaussian Diffusion Blur: 0px -> 13px
+        const blurPx = (progress * 13).toFixed(2);
+        el.style.filter = `url(#${item.filterId}) blur(${blurPx}px)`;
+
+        // 3. Upward Buoyant Drift: translateY(-40px)
+        // Smoke naturally lifts upward as it disperses
+        const driftY = (-40 * progress).toFixed(1);
+        el.style.transform = `translate3d(0, ${driftY}px, 0)`;
+
+        // 4. Diffusion Expansion: Letter-spacing expands as particles spread
+        const letterSpacingEm = (progress * 0.07).toFixed(3);
+        el.style.letterSpacing = `${letterSpacingEm}em`;
+
+        // 5. Opacity Fade: Fades cleanly into the canvas without halos
+        const opacity = Math.max(0, 1 - Math.pow(progress, 1.1) * 1.15).toFixed(3);
+        el.style.opacity = opacity;
+      }
+
+      /**
+       * RequestAnimationFrame scroll handler for buttery-smooth 60fps responsiveness.
+       */
+      function onScroll() {
+        if (!isTicking) {
+          requestAnimationFrame(updateSmokePhysics);
+          isTicking = true;
+        }
+      }
+
+      function onResize() {
+        windowHeight = window.innerHeight;
+        onScroll();
+      }
+
+      // Event Listeners
+      window.addEventListener('scroll', onScroll, { passive: true });
+      window.addEventListener('resize', onResize, { passive: true });
+
+      // Initial execution on page load
+      updateSmokePhysics();
+    })();
+  </script>
+
+</body>
+</html>

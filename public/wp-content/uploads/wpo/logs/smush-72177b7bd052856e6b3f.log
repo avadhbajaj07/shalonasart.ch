@@ -1,0 +1,360 @@
+[2026-02-22 17:17:42 : INFO] - Re_Smush_It_Task server status: Online 
+[2026-02-22 17:17:43 : INFO] - A total of 8 tasks of type smush found and will be processed in this iteration 
+[2026-02-22 17:17:43 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-02-22 17:17:43 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-02-22 17:17:43 : INFO] - Processing task with ID : 8, and type 'smush' 
+[2026-02-22 17:17:43 : INFO] - Re_Smush_It_Task - Attachment ID : 1470, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:17:43 : INFO] - File: shalonasart0s3.jpeg, Compression quality: 60 
+[2026-02-22 17:17:46 : INFO] - Backing up the original image - 2026/02/shalonasart0s3-updraft-pre-smush-original.jpeg 
+[2026-02-22 17:17:53 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/shalonasart0s3.jpeg.The file was compressed from 208.89 KB to 201.13 KB, saving 3.72 percent, using WP-Optimize 
+[2026-02-22 17:17:53 : INFO] - Completed processing task with ID : 8, and type 'smush' 
+[2026-02-22 17:17:53 : INFO] - Processing task with ID : 9, and type 'smush' 
+[2026-02-22 17:17:53 : INFO] - Re_Smush_It_Task - Attachment ID : 1475, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:17:53 : INFO] - File: shalonasartist1.jpeg, Compression quality: 60 
+[2026-02-22 17:17:59 : INFO] - Backing up the original image - 2026/02/shalonasartist1-updraft-pre-smush-original.jpeg 
+[2026-02-22 17:18:06 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/shalonasartist1.jpeg.The file was compressed from 455.62 KB to 442.28 KB, saving 2.93 percent, using WP-Optimize 
+[2026-02-22 17:18:06 : INFO] - Completed processing task with ID : 9, and type 'smush' 
+[2026-02-22 17:18:06 : INFO] - Processing task with ID : 10, and type 'smush' 
+[2026-02-22 17:18:06 : INFO] - Re_Smush_It_Task - Attachment ID : 1476, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:18:06 : INFO] - File: shalonasartist2.jpeg, Compression quality: 60 
+[2026-02-22 17:18:10 : INFO] - Backing up the original image - 2026/02/shalonasartist2-updraft-pre-smush-original.jpeg 
+[2026-02-22 17:18:18 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/shalonasartist2.jpeg.The file was compressed from 297.44 KB to 289.92 KB, saving 2.53 percent, using WP-Optimize 
+[2026-02-22 17:18:18 : INFO] - Completed processing task with ID : 10, and type 'smush' 
+[2026-02-22 17:18:18 : INFO] - Processing task with ID : 11, and type 'smush' 
+[2026-02-22 17:18:18 : INFO] - Re_Smush_It_Task - Attachment ID : 1550, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:18:18 : INFO] - File: anytime.jpg, Compression quality: 60 
+[2026-02-22 17:18:21 : INFO] - Backing up the original image - 2026/02/anytime-updraft-pre-smush-original.jpg 
+[2026-02-22 17:18:26 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/anytime.jpg.The file was compressed from 77.89 KB to 77.89 KB, saving 0 percent, using WP-Optimize 
+[2026-02-22 17:18:26 : INFO] - Completed processing task with ID : 11, and type 'smush' 
+[2026-02-22 17:18:26 : INFO] - Processing task with ID : 12, and type 'smush' 
+[2026-02-22 17:18:26 : INFO] - Re_Smush_It_Task - Attachment ID : 1647, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:18:26 : INFO] - File: img-20260221-wa00703249739477377347948.jpg, Compression quality: 60 
+[2026-02-22 17:18:29 : INFO] - Backing up the original image - 2026/02/img-20260221-wa00703249739477377347948-updraft-pre-smush-original.jpg 
+[2026-02-22 17:18:37 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img-20260221-wa00703249739477377347948.jpg.The file was compressed from 328.24 KB to 240.76 KB, saving 26.65 percent, using WP-Optimize 
+[2026-02-22 17:18:37 : INFO] - Completed processing task with ID : 12, and type 'smush' 
+[2026-02-22 17:18:37 : INFO] - Processing task with ID : 13, and type 'smush' 
+[2026-02-22 17:18:37 : INFO] - Re_Smush_It_Task - Attachment ID : 1649, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:18:37 : INFO] - File: img_4070.jpg, Compression quality: 60 
+[2026-02-22 17:18:43 : INFO] - Backing up the original image - 2026/02/img_4070-updraft-pre-smush-original.jpg 
+[2026-02-22 17:18:43 : INFO] - A total of 3 tasks of type smush found and will be processed in this iteration 
+[2026-02-22 17:18:43 : DEBUG] - Lock option (updraft_lock_smush, wp_options) already existed in the database 
+[2026-02-22 17:18:43 : INFO] - Lock (updraft_lock_smush, wp_options) could not be acquired (it is locked) 
+[2026-02-22 17:18:43 : INFO] - Failed to gain semaphore lock (smush) - another process is already processing the queue - aborting (if this is wrong - i.e. if the other process crashed without removing the lock, then another can be started after 1 minute 
+[2026-02-22 17:18:43 : INFO] - Cleaning up tasks of type (smush). A total of 5 tasks will be deleted. 
+[2026-02-22 17:18:51 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4070.jpg.The file was compressed from 998.36 KB to 345.45 KB, saving 65.4 percent, using WP-Optimize 
+[2026-02-22 17:18:51 : INFO] - Completed processing task with ID : 13, and type 'smush' 
+[2026-02-22 17:18:51 : INFO] - Processing task with ID : 14, and type 'smush' 
+[2026-02-22 17:18:51 : INFO] - Re_Smush_It_Task - Attachment ID : 1663, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:18:51 : INFO] - File: img_4067-1.jpg, Compression quality: 60 
+[2026-02-22 17:18:57 : INFO] - Backing up the original image - 2026/02/img_4067-1-updraft-pre-smush-original.jpg 
+[2026-02-22 17:19:05 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4067-1.jpg.The file was compressed from 841.16 KB to 225.85 KB, saving 73.15 percent, using WP-Optimize 
+[2026-02-22 17:19:05 : INFO] - Completed processing task with ID : 14, and type 'smush' 
+[2026-02-22 17:19:05 : INFO] - Processing task with ID : 15, and type 'smush' 
+[2026-02-22 17:19:05 : INFO] - Re_Smush_It_Task - Attachment ID : 1665, Started on : February 22, 2026 05:17:43 
+[2026-02-22 17:19:05 : INFO] - File: img_4073.jpg, Compression quality: 60 
+[2026-02-22 17:19:11 : INFO] - Backing up the original image - 2026/02/img_4073-updraft-pre-smush-original.jpg 
+[2026-02-22 17:19:19 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4073.jpg.The file was compressed from 773.02 KB to 208.37 KB, saving 73.04 percent, using WP-Optimize 
+[2026-02-22 17:19:19 : INFO] - Completed processing task with ID : 15, and type 'smush' 
+[2026-02-22 17:19:19 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-02-22 17:19:19 : INFO] - Successfully processed the queue (smush). 8 tasks were processed out of 8. 
+[2026-02-22 17:19:19 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-02-22 17:19:19 : INFO] - Cleaning up tasks of type (smush). A total of 3 tasks will be deleted. 
+[2026-02-22 20:00:15 : INFO] - Pruning the smush log file 
+[2026-02-23 08:33:03 : INFO] - Re_Smush_It_Task with attachment ID : 1707, auto created on : February 23, 2026 08:33:03 
+[2026-02-23 08:33:03 : INFO] - Re_Smush_It_Task with attachment ID : 1708, auto created on : February 23, 2026 08:33:03 
+[2026-02-23 08:33:04 : INFO] - Re_Smush_It_Task with attachment ID : 1709, auto created on : February 23, 2026 08:33:04 
+[2026-02-23 08:33:06 : INFO] - Re_Smush_It_Task with attachment ID : 1710, auto created on : February 23, 2026 08:33:06 
+[2026-02-23 08:38:09 : INFO] - A total of 4 tasks of type smush found and will be processed in this iteration 
+[2026-02-23 08:38:09 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-02-23 08:38:09 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-02-23 08:38:09 : INFO] - Processing task with ID : 226, and type 'smush' 
+[2026-02-23 08:38:09 : INFO] - Re_Smush_It_Task with attachment ID : 1707, auto created on : February 23, 2026 08:33:03 
+[2026-02-23 08:38:09 : INFO] - File: img_0957.jpg, Compression quality: 60 
+[2026-02-23 08:38:14 : INFO] - Backing up the original image - 2026/02/img_0957-updraft-pre-smush-original.jpg 
+[2026-02-23 08:38:22 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_0957.jpg.The file was compressed from 908.93 KB to 303.46 KB, saving 66.61 percent, using WP-Optimize 
+[2026-02-23 08:38:22 : INFO] - Completed processing task with ID : 226, and type 'smush' 
+[2026-02-23 08:38:22 : INFO] - Processing task with ID : 227, and type 'smush' 
+[2026-02-23 08:38:22 : INFO] - Re_Smush_It_Task with attachment ID : 1708, auto created on : February 23, 2026 08:33:03 
+[2026-02-23 08:38:22 : INFO] - File: img_1017.jpg, Compression quality: 60 
+[2026-02-23 08:38:27 : INFO] - Backing up the original image - 2026/02/img_1017-updraft-pre-smush-original.jpg 
+[2026-02-23 08:38:35 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_1017.jpg.The file was compressed from 932.68 KB to 338.56 KB, saving 63.7 percent, using WP-Optimize 
+[2026-02-23 08:38:35 : INFO] - Completed processing task with ID : 227, and type 'smush' 
+[2026-02-23 08:38:35 : INFO] - Processing task with ID : 228, and type 'smush' 
+[2026-02-23 08:38:35 : INFO] - Re_Smush_It_Task with attachment ID : 1709, auto created on : February 23, 2026 08:33:04 
+[2026-02-23 08:38:35 : INFO] - File: img_2049.jpg, Compression quality: 60 
+[2026-02-23 08:38:41 : INFO] - Backing up the original image - 2026/02/img_2049-updraft-pre-smush-original.jpg 
+[2026-02-23 08:38:48 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_2049.jpg.The file was compressed from 1.05 MB to 399.34 KB, saving 63.01 percent, using WP-Optimize 
+[2026-02-23 08:38:48 : INFO] - Completed processing task with ID : 228, and type 'smush' 
+[2026-02-23 08:38:48 : INFO] - Processing task with ID : 229, and type 'smush' 
+[2026-02-23 08:38:48 : INFO] - Re_Smush_It_Task with attachment ID : 1710, auto created on : February 23, 2026 08:33:06 
+[2026-02-23 08:38:48 : INFO] - File: 389b4755-c48e-4a3a-ae0f-9069f5d3e46d.jpg, Compression quality: 60 
+[2026-02-23 08:38:55 : INFO] - Backing up the original image - 2026/02/389b4755-c48e-4a3a-ae0f-9069f5d3e46d-updraft-pre-smush-original.jpg 
+[2026-02-23 08:39:03 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/389b4755-c48e-4a3a-ae0f-9069f5d3e46d.jpg.The file was compressed from 1.15 MB to 414.89 KB, saving 64.67 percent, using WP-Optimize 
+[2026-02-23 08:39:03 : INFO] - Completed processing task with ID : 229, and type 'smush' 
+[2026-02-23 08:39:03 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-02-23 08:39:03 : INFO] - Successfully processed the queue (smush). 4 tasks were processed out of 4. 
+[2026-02-23 08:39:03 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-02-23 08:39:03 : INFO] - Cleaning up tasks of type (smush). A total of 4 tasks will be deleted. 
+[2026-02-23 10:03:01 : INFO] - Re_Smush_It_Task with attachment ID : 1726, auto created on : February 23, 2026 10:03:01 
+[2026-02-23 10:09:19 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-02-23 10:09:19 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-02-23 10:09:19 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-02-23 10:09:19 : INFO] - Processing task with ID : 354, and type 'smush' 
+[2026-02-23 10:09:19 : INFO] - Re_Smush_It_Task with attachment ID : 1726, auto created on : February 23, 2026 10:03:01 
+[2026-02-23 10:09:19 : INFO] - File: shalona-main-pic.jpeg, Compression quality: 60 
+[2026-02-23 10:09:22 : INFO] - Backing up the original image - 2026/02/shalona-main-pic-updraft-pre-smush-original.jpeg 
+[2026-02-23 10:09:28 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/shalona-main-pic.jpeg.The file was compressed from 141.99 KB to 137.63 KB, saving 3.07 percent, using WP-Optimize 
+[2026-02-23 10:09:28 : INFO] - Completed processing task with ID : 354, and type 'smush' 
+[2026-02-23 10:09:28 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-02-23 10:09:28 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-02-23 10:09:28 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-02-23 10:09:28 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-02-24 08:33:07 : INFO] - Re_Smush_It_Task with attachment ID : 1731, auto created on : February 24, 2026 08:33:07 
+[2026-02-24 08:33:07 : INFO] - Re_Smush_It_Task with attachment ID : 1732, auto created on : February 24, 2026 08:33:07 
+[2026-02-24 08:33:08 : INFO] - Re_Smush_It_Task with attachment ID : 1733, auto created on : February 24, 2026 08:33:08 
+[2026-02-24 08:38:07 : INFO] - A total of 3 tasks of type smush found and will be processed in this iteration 
+[2026-02-24 08:38:07 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-02-24 08:38:07 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-02-24 08:38:07 : INFO] - Processing task with ID : 358, and type 'smush' 
+[2026-02-24 08:38:07 : INFO] - Re_Smush_It_Task with attachment ID : 1731, auto created on : February 24, 2026 08:33:07 
+[2026-02-24 08:38:07 : INFO] - File: img_4109.jpg, Compression quality: 60 
+[2026-02-24 08:38:12 : INFO] - Backing up the original image - 2026/02/img_4109-updraft-pre-smush-original.jpg 
+[2026-02-24 08:38:18 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4109.jpg.The file was compressed from 586.76 KB to 209.27 KB, saving 64.34 percent, using WP-Optimize 
+[2026-02-24 08:38:18 : INFO] - Completed processing task with ID : 358, and type 'smush' 
+[2026-02-24 08:38:18 : INFO] - Processing task with ID : 359, and type 'smush' 
+[2026-02-24 08:38:18 : INFO] - Re_Smush_It_Task with attachment ID : 1732, auto created on : February 24, 2026 08:33:07 
+[2026-02-24 08:38:18 : INFO] - File: img_4110.jpg, Compression quality: 60 
+[2026-02-24 08:38:23 : INFO] - Backing up the original image - 2026/02/img_4110-updraft-pre-smush-original.jpg 
+[2026-02-24 08:38:31 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4110.jpg.The file was compressed from 1.04 MB to 403.71 KB, saving 62.17 percent, using WP-Optimize 
+[2026-02-24 08:38:31 : INFO] - Completed processing task with ID : 359, and type 'smush' 
+[2026-02-24 08:38:31 : INFO] - Processing task with ID : 360, and type 'smush' 
+[2026-02-24 08:38:31 : INFO] - Re_Smush_It_Task with attachment ID : 1733, auto created on : February 24, 2026 08:33:08 
+[2026-02-24 08:38:31 : INFO] - File: img_4111.jpg, Compression quality: 60 
+[2026-02-24 08:38:37 : INFO] - Backing up the original image - 2026/02/img_4111-updraft-pre-smush-original.jpg 
+[2026-02-24 08:38:45 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/02/img_4111.jpg.The file was compressed from 941.02 KB to 318.37 KB, saving 66.17 percent, using WP-Optimize 
+[2026-02-24 08:38:45 : INFO] - Completed processing task with ID : 360, and type 'smush' 
+[2026-02-24 08:38:45 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-02-24 08:38:45 : INFO] - Successfully processed the queue (smush). 3 tasks were processed out of 3. 
+[2026-02-24 08:38:45 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-02-24 08:38:45 : INFO] - Cleaning up tasks of type (smush). A total of 3 tasks will be deleted. 
+[2026-03-02 08:14:14 : INFO] - Re_Smush_It_Task with attachment ID : 1756, auto created on : March 02, 2026 08:14:14 
+[2026-03-02 08:14:15 : INFO] - Re_Smush_It_Task with attachment ID : 1757, auto created on : March 02, 2026 08:14:14 
+[2026-03-02 08:19:15 : INFO] - A total of 2 tasks of type smush found and will be processed in this iteration 
+[2026-03-02 08:19:15 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-02 08:19:15 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-02 08:19:15 : INFO] - Processing task with ID : 407, and type 'smush' 
+[2026-03-02 08:19:15 : INFO] - Re_Smush_It_Task with attachment ID : 1756, auto created on : March 02, 2026 08:14:14 
+[2026-03-02 08:19:15 : INFO] - File: img_4155.jpg, Compression quality: 60 
+[2026-03-02 08:19:20 : INFO] - Backing up the original image - 2026/03/img_4155-updraft-pre-smush-original.jpg 
+[2026-03-02 08:19:28 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4155.jpg.The file was compressed from 937.17 KB to 347.32 KB, saving 62.94 percent, using WP-Optimize 
+[2026-03-02 08:19:28 : INFO] - Completed processing task with ID : 407, and type 'smush' 
+[2026-03-02 08:19:28 : INFO] - Processing task with ID : 408, and type 'smush' 
+[2026-03-02 08:19:28 : INFO] - Re_Smush_It_Task with attachment ID : 1757, auto created on : March 02, 2026 08:14:14 
+[2026-03-02 08:19:28 : INFO] - File: img_4156.jpg, Compression quality: 60 
+[2026-03-02 08:19:34 : INFO] - Backing up the original image - 2026/03/img_4156-updraft-pre-smush-original.jpg 
+[2026-03-02 08:19:43 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4156.jpg.The file was compressed from 772.00 KB to 230.87 KB, saving 70.09 percent, using WP-Optimize 
+[2026-03-02 08:19:43 : INFO] - Completed processing task with ID : 408, and type 'smush' 
+[2026-03-02 08:19:43 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-02 08:19:43 : INFO] - Successfully processed the queue (smush). 2 tasks were processed out of 2. 
+[2026-03-02 08:19:43 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-02 08:19:43 : INFO] - Cleaning up tasks of type (smush). A total of 2 tasks will be deleted. 
+[2026-03-02 10:32:40 : INFO] - Re_Smush_It_Task with attachment ID : 1762, auto created on : March 02, 2026 10:32:40 
+[2026-03-02 10:37:41 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-02 10:37:41 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-02 10:37:41 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-02 10:37:41 : INFO] - Processing task with ID : 421, and type 'smush' 
+[2026-03-02 10:37:41 : INFO] - Re_Smush_It_Task with attachment ID : 1762, auto created on : March 02, 2026 10:32:40 
+[2026-03-02 10:37:41 : INFO] - File: img_4145.jpg, Compression quality: 60 
+[2026-03-02 10:37:48 : INFO] - Backing up the original image - 2026/03/img_4145-updraft-pre-smush-original.jpg 
+[2026-03-02 10:37:57 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4145.jpg.The file was compressed from 955.21 KB to 334.52 KB, saving 64.98 percent, using WP-Optimize 
+[2026-03-02 10:37:57 : INFO] - Completed processing task with ID : 421, and type 'smush' 
+[2026-03-02 10:37:57 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-02 10:37:57 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-02 10:37:57 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-02 10:37:57 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-03-02 13:21:06 : INFO] - Re_Smush_It_Task with attachment ID : 1764, auto created on : March 02, 2026 01:21:06 
+[2026-03-02 13:26:35 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-02 13:26:35 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-02 13:26:35 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-02 13:26:35 : INFO] - Processing task with ID : 428, and type 'smush' 
+[2026-03-02 13:26:35 : INFO] - Re_Smush_It_Task with attachment ID : 1764, auto created on : March 02, 2026 01:21:06 
+[2026-03-02 13:26:35 : INFO] - File: img_4160.jpg, Compression quality: 60 
+[2026-03-02 13:26:40 : INFO] - Backing up the original image - 2026/03/img_4160-updraft-pre-smush-original.jpg 
+[2026-03-02 13:26:48 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4160.jpg.The file was compressed from 736.88 KB to 248.02 KB, saving 66.34 percent, using WP-Optimize 
+[2026-03-02 13:26:48 : INFO] - Completed processing task with ID : 428, and type 'smush' 
+[2026-03-02 13:26:48 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-02 13:26:48 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-02 13:26:48 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-02 13:26:48 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-03-08 10:41:34 : INFO] - Re_Smush_It_Task with attachment ID : 1770, auto created on : March 08, 2026 10:41:34 
+[2026-03-08 10:47:33 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-08 10:47:33 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-08 10:47:33 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-08 10:47:33 : INFO] - Processing task with ID : 450, and type 'smush' 
+[2026-03-08 10:47:33 : INFO] - Re_Smush_It_Task with attachment ID : 1770, auto created on : March 08, 2026 10:41:34 
+[2026-03-08 10:47:33 : INFO] - File: img_4179.jpg, Compression quality: 60 
+[2026-03-08 10:47:38 : INFO] - Backing up the original image - 2026/03/img_4179-updraft-pre-smush-original.jpg 
+[2026-03-08 10:47:46 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4179.jpg.The file was compressed from 888.28 KB to 333.23 KB, saving 62.49 percent, using WP-Optimize 
+[2026-03-08 10:47:46 : INFO] - Completed processing task with ID : 450, and type 'smush' 
+[2026-03-08 10:47:46 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-08 10:47:46 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-08 10:47:46 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-08 10:47:46 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-03-11 15:12:28 : INFO] - Re_Smush_It_Task with attachment ID : 1774, auto created on : March 11, 2026 03:12:28 
+[2026-03-11 15:12:29 : INFO] - Re_Smush_It_Task with attachment ID : 1775, auto created on : March 11, 2026 03:12:29 
+[2026-03-11 15:17:31 : INFO] - A total of 2 tasks of type smush found and will be processed in this iteration 
+[2026-03-11 15:17:31 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-11 15:17:31 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-11 15:17:31 : INFO] - Processing task with ID : 457, and type 'smush' 
+[2026-03-11 15:17:31 : INFO] - Re_Smush_It_Task with attachment ID : 1774, auto created on : March 11, 2026 03:12:28 
+[2026-03-11 15:17:31 : INFO] - File: img_4470.jpg, Compression quality: 60 
+[2026-03-11 15:17:36 : INFO] - Backing up the original image - 2026/03/img_4470-updraft-pre-smush-original.jpg 
+[2026-03-11 15:17:40 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4470.jpg.The file was compressed from 398.68 KB to 113.23 KB, saving 71.6 percent, using WP-Optimize 
+[2026-03-11 15:17:40 : INFO] - Completed processing task with ID : 457, and type 'smush' 
+[2026-03-11 15:17:40 : INFO] - Processing task with ID : 458, and type 'smush' 
+[2026-03-11 15:17:40 : INFO] - Re_Smush_It_Task with attachment ID : 1775, auto created on : March 11, 2026 03:12:29 
+[2026-03-11 15:17:40 : INFO] - File: img_4458.jpg, Compression quality: 60 
+[2026-03-11 15:17:45 : INFO] - Backing up the original image - 2026/03/img_4458-updraft-pre-smush-original.jpg 
+[2026-03-11 15:17:53 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4458.jpg.The file was compressed from 828.56 KB to 300.42 KB, saving 63.74 percent, using WP-Optimize 
+[2026-03-11 15:17:53 : INFO] - Completed processing task with ID : 458, and type 'smush' 
+[2026-03-11 15:17:53 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-11 15:17:53 : INFO] - Successfully processed the queue (smush). 2 tasks were processed out of 2. 
+[2026-03-11 15:17:53 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-11 15:17:53 : INFO] - Cleaning up tasks of type (smush). A total of 2 tasks will be deleted. 
+[2026-03-11 16:31:19 : INFO] - Re_Smush_It_Task with attachment ID : 1779, auto created on : March 11, 2026 04:31:19 
+[2026-03-11 16:36:20 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-11 16:36:20 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-11 16:36:20 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-11 16:36:20 : INFO] - Processing task with ID : 477, and type 'smush' 
+[2026-03-11 16:36:20 : INFO] - Re_Smush_It_Task with attachment ID : 1779, auto created on : March 11, 2026 04:31:19 
+[2026-03-11 16:36:20 : INFO] - File: img_4470.jpg, Compression quality: 60 
+[2026-03-11 16:36:25 : INFO] - Backing up the original image - 2026/03/img_4470-updraft-pre-smush-original.jpg 
+[2026-03-11 16:36:31 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4470.jpg.The file was compressed from 315.28 KB to 80.52 KB, saving 74.46 percent, using WP-Optimize 
+[2026-03-11 16:36:31 : INFO] - Completed processing task with ID : 477, and type 'smush' 
+[2026-03-11 16:36:31 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-11 16:36:31 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-11 16:36:31 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-11 16:36:31 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-03-24 20:56:20 : INFO] - Re_Smush_It_Task with attachment ID : 1797, auto created on : March 24, 2026 08:56:20 
+[2026-03-24 21:01:37 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-24 21:01:37 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-24 21:01:37 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-24 21:01:37 : INFO] - Processing task with ID : 529, and type 'smush' 
+[2026-03-24 21:01:37 : INFO] - Re_Smush_It_Task with attachment ID : 1797, auto created on : March 24, 2026 08:56:20 
+[2026-03-24 21:01:37 : INFO] - File: Elementor-post-screenshot_1149_2026-03-24-20-56-20_590cec91.png, Compression quality: 60 
+[2026-03-24 21:01:37 : INFO] - Backing up the original image - elementor/screenshots/Elementor-post-screenshot_1149_2026-03-24-20-56-20_590cec91-updraft-pre-smush-original.png 
+[2026-03-24 21:01:37 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/elementor/screenshots/Elementor-post-screenshot_1149_2026-03-24-20-56-20_590cec91.png.The file was compressed from 89.85 KB to 32.50 KB, saving 63.83 percent, using WP-Optimize 
+[2026-03-24 21:01:37 : INFO] - Completed processing task with ID : 529, and type 'smush' 
+[2026-03-24 21:01:37 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-24 21:01:37 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-24 21:01:37 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-24 21:01:37 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-03-28 11:53:30 : INFO] - Re_Smush_It_Task with attachment ID : 1842, auto created on : March 28, 2026 11:53:30 
+[2026-03-28 12:00:11 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-03-28 12:00:11 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-03-28 12:00:11 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-03-28 12:00:11 : INFO] - Processing task with ID : 590, and type 'smush' 
+[2026-03-28 12:00:11 : INFO] - Re_Smush_It_Task with attachment ID : 1842, auto created on : March 28, 2026 11:53:30 
+[2026-03-28 12:00:11 : INFO] - File: img_4551.jpg, Compression quality: 60 
+[2026-03-28 12:00:17 : INFO] - Backing up the original image - 2026/03/img_4551-updraft-pre-smush-original.jpg 
+[2026-03-28 12:00:27 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/03/img_4551.jpg.The file was compressed from 943.58 KB to 318.93 KB, saving 66.2 percent, using WP-Optimize 
+[2026-03-28 12:00:27 : INFO] - Completed processing task with ID : 590, and type 'smush' 
+[2026-03-28 12:00:27 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-03-28 12:00:27 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-03-28 12:00:27 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-03-28 12:00:27 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-04-06 10:46:11 : INFO] - Re_Smush_It_Task with attachment ID : 1845, auto created on : April 06, 2026 10:46:11 
+[2026-04-06 10:51:14 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-04-06 10:51:14 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-04-06 10:51:14 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-04-06 10:51:14 : INFO] - Processing task with ID : 597, and type 'smush' 
+[2026-04-06 10:51:14 : INFO] - Re_Smush_It_Task with attachment ID : 1845, auto created on : April 06, 2026 10:46:11 
+[2026-04-06 10:51:14 : INFO] - File: img_4601.jpg, Compression quality: 60 
+[2026-04-06 10:51:19 : INFO] - Backing up the original image - 2026/04/img_4601-updraft-pre-smush-original.jpg 
+[2026-04-06 10:51:26 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/04/img_4601.jpg.The file was compressed from 877.92 KB to 308.97 KB, saving 64.81 percent, using WP-Optimize 
+[2026-04-06 10:51:26 : INFO] - Completed processing task with ID : 597, and type 'smush' 
+[2026-04-06 10:51:26 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-04-06 10:51:26 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-04-06 10:51:26 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-04-06 10:51:26 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-04-06 13:27:53 : INFO] - Re_Smush_It_Task with attachment ID : 1846, auto created on : April 06, 2026 01:27:53 
+[2026-04-06 13:32:58 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-04-06 13:32:58 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-04-06 13:32:58 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-04-06 13:32:58 : INFO] - Processing task with ID : 604, and type 'smush' 
+[2026-04-06 13:32:58 : INFO] - Re_Smush_It_Task with attachment ID : 1846, auto created on : April 06, 2026 01:27:53 
+[2026-04-06 13:32:58 : INFO] - File: img_4609.jpg, Compression quality: 60 
+[2026-04-06 13:33:03 : INFO] - Backing up the original image - 2026/04/img_4609-updraft-pre-smush-original.jpg 
+[2026-04-06 13:33:10 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/04/img_4609.jpg.The file was compressed from 857.98 KB to 315.47 KB, saving 63.23 percent, using WP-Optimize 
+[2026-04-06 13:33:10 : INFO] - Completed processing task with ID : 604, and type 'smush' 
+[2026-04-06 13:33:10 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-04-06 13:33:10 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-04-06 13:33:10 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-04-06 13:33:10 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-04-24 17:38:48 : INFO] - Re_Smush_It_Task with attachment ID : 1849, auto created on : April 24, 2026 05:38:48 
+[2026-04-24 17:43:55 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-04-24 17:43:55 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-04-24 17:43:55 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-04-24 17:43:55 : INFO] - Processing task with ID : 617, and type 'smush' 
+[2026-04-24 17:43:55 : INFO] - Re_Smush_It_Task with attachment ID : 1849, auto created on : April 24, 2026 05:38:48 
+[2026-04-24 17:43:55 : INFO] - File: img_4649.jpg, Compression quality: 60 
+[2026-04-24 17:44:00 : INFO] - Backing up the original image - 2026/04/img_4649-updraft-pre-smush-original.jpg 
+[2026-04-24 17:44:08 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/04/img_4649.jpg.The file was compressed from 1.08 MB to 435.46 KB, saving 60.58 percent, using WP-Optimize 
+[2026-04-24 17:44:08 : INFO] - Completed processing task with ID : 617, and type 'smush' 
+[2026-04-24 17:44:08 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-04-24 17:44:08 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-04-24 17:44:08 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-04-24 17:44:08 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-09-23 11:02:48 : INFO] - Re_Smush_It_Task with attachment ID : 1864, auto created on : September 23, 2026 11:02:47 
+[2026-09-23 11:03:28 : INFO] - Re_Smush_It_Task with attachment ID : 1865, auto created on : September 23, 2026 11:03:28 
+[2026-09-23 11:20:00 : INFO] - A total of 2 tasks of type smush found and will be processed in this iteration 
+[2026-09-23 11:20:00 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-09-23 11:20:00 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-09-23 11:20:00 : INFO] - Processing task with ID : 633, and type 'smush' 
+[2026-09-23 11:20:00 : INFO] - Re_Smush_It_Task with attachment ID : 1864, auto created on : September 23, 2026 11:02:47 
+[2026-09-23 11:20:00 : INFO] - File: IMG_0224-scaled.jpeg, Compression quality: 60 
+[2026-09-23 11:20:01 : INFO] - Backing up the original image - 2026/09/IMG_0224-scaled-updraft-pre-smush-original.jpeg 
+[2026-09-23 11:20:04 : INFO] - There were no WebP conversion tools found on your server. 
+[2026-09-23 11:20:04 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/09/IMG_0224-scaled.jpeg.The file was compressed from 964.27 KB to 553.23 KB, saving 42.63 percent, using WP-Optimize 
+[2026-09-23 11:20:04 : INFO] - Completed processing task with ID : 633, and type 'smush' 
+[2026-09-23 11:20:04 : INFO] - Processing task with ID : 634, and type 'smush' 
+[2026-09-23 11:20:04 : INFO] - Re_Smush_It_Task with attachment ID : 1865, auto created on : September 23, 2026 11:03:28 
+[2026-09-23 11:20:04 : INFO] - File: IMG_0228-scaled.jpeg, Compression quality: 60 
+[2026-09-23 11:20:05 : INFO] - Backing up the original image - 2026/09/IMG_0228-scaled-updraft-pre-smush-original.jpeg 
+[2026-09-23 11:20:08 : INFO] - There were no WebP conversion tools found on your server. 
+[2026-09-23 11:20:08 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/09/IMG_0228-scaled.jpeg.The file was compressed from 865.37 KB to 492.42 KB, saving 43.1 percent, using WP-Optimize 
+[2026-09-23 11:20:08 : INFO] - Completed processing task with ID : 634, and type 'smush' 
+[2026-09-23 11:20:08 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-09-23 11:20:08 : INFO] - Successfully processed the queue (smush). 2 tasks were processed out of 2. 
+[2026-09-23 11:20:08 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-09-23 11:20:08 : INFO] - Cleaning up tasks of type (smush). A total of 2 tasks will be deleted. 
+[2026-09-30 08:24:43 : INFO] - Re_Smush_It_Task with attachment ID : 1870, auto created on : September 30, 2026 08:24:43 
+[2026-09-30 08:30:13 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-09-30 08:30:13 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-09-30 08:30:13 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-09-30 08:30:13 : INFO] - Processing task with ID : 635, and type 'smush' 
+[2026-09-30 08:30:13 : INFO] - Re_Smush_It_Task with attachment ID : 1870, auto created on : September 30, 2026 08:24:43 
+[2026-09-30 08:30:13 : INFO] - File: IMG_0700-scaled.jpeg, Compression quality: 60 
+[2026-09-30 08:30:14 : INFO] - Backing up the original image - 2026/09/IMG_0700-scaled-updraft-pre-smush-original.jpeg 
+[2026-09-30 08:30:18 : INFO] - There were no WebP conversion tools found on your server. 
+[2026-09-30 08:30:18 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/09/IMG_0700-scaled.jpeg.The file was compressed from 1.59 MB to 957.37 KB, saving 41.32 percent, using WP-Optimize 
+[2026-09-30 08:30:18 : INFO] - Completed processing task with ID : 635, and type 'smush' 
+[2026-09-30 08:30:18 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-09-30 08:30:18 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-09-30 08:30:18 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-09-30 08:30:18 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 
+[2026-09-30 08:40:27 : INFO] - Re_Smush_It_Task with attachment ID : 1872, auto created on : September 30, 2026 08:40:27 
+[2026-09-30 08:45:28 : INFO] - A total of 1 tasks of type smush found and will be processed in this iteration 
+[2026-09-30 08:45:28 : DEBUG] - Lock option (updraft_lock_smush, wp_options) was created in the database 
+[2026-09-30 08:45:28 : INFO] - Lock (updraft_lock_smush, wp_options) acquired after initialising the database 
+[2026-09-30 08:45:28 : INFO] - Processing task with ID : 650, and type 'smush' 
+[2026-09-30 08:45:28 : INFO] - Re_Smush_It_Task with attachment ID : 1872, auto created on : September 30, 2026 08:40:27 
+[2026-09-30 08:45:28 : INFO] - File: IMG_0704-scaled.jpeg, Compression quality: 60 
+[2026-09-30 08:45:29 : INFO] - Backing up the original image - 2026/09/IMG_0704-scaled-updraft-pre-smush-original.jpeg 
+[2026-09-30 08:45:31 : INFO] - There were no WebP conversion tools found on your server. 
+[2026-09-30 08:45:32 : INFO] - Successfully optimized the image - /home/u958593291/domains/shalonasart.ch/public_html/wp-content/uploads/2026/09/IMG_0704-scaled.jpeg.The file was compressed from 715.79 KB to 389.40 KB, saving 45.6 percent, using WP-Optimize 
+[2026-09-30 08:45:32 : INFO] - Completed processing task with ID : 650, and type 'smush' 
+[2026-09-30 08:45:32 : INFO] - Lock option (updraft_lock_smush, wp_options) released 
+[2026-09-30 08:45:32 : INFO] - Successfully processed the queue (smush). 1 tasks were processed out of 1. 
+[2026-09-30 08:45:32 : INFO] - Lock option (updraft_lock_smush, wp_options) was deleted from the database 
+[2026-09-30 08:45:32 : INFO] - Cleaning up tasks of type (smush). A total of 1 tasks will be deleted. 

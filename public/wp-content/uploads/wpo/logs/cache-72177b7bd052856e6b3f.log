@@ -1,0 +1,135 @@
+[2026-11-17 23:00:17 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:35:10 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:36:39 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:36:49 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:36:56 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:37:00 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-18 07:39:09 : INFO] - Full Cache Purge triggered by: plugin activation/deactivation 
+[2026-11-18 07:56:11 : INFO] - Cache for associated TranslatePress translation posts for Title: "Default Kit" have been purged 
+[2026-11-18 07:56:11 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Default Kit" have been purged 
+[2026-11-18 07:56:11 : INFO] - Cache for URL: https://shalonasart.ch/?elementor_library=default-kit-2 has been purged, triggered by action: save_post 
+[2026-11-18 07:56:11 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: elementor_library and Title: "Default Kit" has been purged, triggered by action: save_post 
+[2026-11-18 09:03:36 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:03:36 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:03:36 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:03:36 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:03:44 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:03:44 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:03:44 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:03:44 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:07:55 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:07:55 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:07:55 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 09:07:55 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:08:06 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:08:06 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:08:06 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:08:06 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:09:25 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:09:25 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:10:44 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:10:44 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:10:44 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:10:44 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:10:51 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:10:51 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:10:51 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:10:51 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:11:55 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:11:55 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:11:55 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:11:55 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:03 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:03 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:03 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:03 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:23 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:23 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:41 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:41 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:41 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:41 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:12:48 : INFO] - Cache for associated TranslatePress translation posts for Title: "Biography" have been purged 
+[2026-11-18 09:12:48 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Biography" have been purged 
+[2026-11-18 09:12:48 : INFO] - Cache for URL: https://shalonasart.ch/shalona-artist-biography-shalonas-art/ has been purged, triggered by action: save_post 
+[2026-11-18 09:12:48 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Biography" has been purged, triggered by action: save_post 
+[2026-11-18 09:13:21 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:13:21 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:13:21 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:13:21 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 09:13:29 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:13:29 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:13:29 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:13:29 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 09:15:49 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:15:49 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:15:49 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:15:49 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:16:00 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:16:00 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:16:00 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:16:00 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:33:48 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:33:48 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:33:48 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:33:48 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:33:58 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:33:58 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:33:58 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:33:58 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:37:14 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:37:14 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:37:14 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:37:14 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:37:15 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:37:15 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:37:15 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:37:15 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:37:16 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:37:16 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:37:16 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:37:16 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:37:18 : INFO] - Cache for associated TranslatePress translation posts for Title: "Home" have been purged 
+[2026-11-18 09:37:18 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Home" have been purged 
+[2026-11-18 09:37:18 : INFO] - Cache for URL: https://shalonasart.ch/ has been purged, triggered by action: save_post 
+[2026-11-18 09:37:18 : INFO] - Cache for author page URL: https://shalonasart.ch/author/avadhshikhagmail-com/ associated with post_type: page and Title: "Home" has been purged, triggered by action: save_post 
+[2026-11-18 09:46:24 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:46:24 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:46:24 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:46:24 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 09:46:35 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-18 09:46:35 : INFO] - Cache for associated TranslatePress translation posts for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:46:35 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Breaking Waves" have been purged 
+[2026-11-18 09:46:35 : INFO] - Cache for URL: https://shalonasart.ch/arts/breaking-waves/ has been purged, triggered by action: save_post 
+[2026-11-18 23:05:10 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-19 09:50:55 : INFO] - Cache for associated TranslatePress translation posts for Title: "Spinning in Space" have been purged 
+[2026-11-19 09:50:55 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Spinning in Space" have been purged 
+[2026-11-19 09:50:55 : INFO] - Cache for URL: https://shalonasart.ch/arts/spinning-in-space/ has been purged, triggered by action: wp_trash_post 
+[2026-11-19 09:50:55 : INFO] - Cache for multiple term taxonomy have been purged due to post terms update, triggered by action: set_object_terms 
+[2026-11-19 23:07:52 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-20 09:55:23 : INFO] - Cache for associated TranslatePress translation posts for Title: "Dance for Joy" have been purged 
+[2026-11-20 09:55:23 : INFO] - Cache for associated TranslatePress translation posts' feeds for Title: "Dance for Joy" have been purged 
+[2026-11-20 09:55:23 : INFO] - Cache for URL: https://shalonasart.ch/arts/dance-for-joy/ has been purged, triggered by action: wp_trash_post 
+[2026-11-20 22:59:52 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-21 22:44:52 : INFO] - Full Cache Purge triggered by action: wpo_active_plugin_or_theme_updated 
+[2026-11-22 17:23:53 : INFO] - Pruning the Cache log file 

@@ -1,0 +1,15 @@
+[2026-07-22 00:26:50 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-23 00:07:41 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-24 00:54:17 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-25 01:13:12 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-26 00:49:35 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-26 16:53:32 : INFO] - Pruning the WebP log file 
+[2026-07-27 00:13:22 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-28 00:52:02 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-29 01:38:35 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-30 00:51:01 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-07-31 00:38:33 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-08-01 02:56:42 : INFO] - The queue for tasks of type "webp-convert-compressed-images-task" is empty. Aborting! 
+[2026-08-01 19:18:43 : INFO] - Disabling the webp conversion. 
+[2026-08-01 19:18:43 : INFO] - No working WebP converter was found on the server when running self-test, disabling WebP conversion 
+[2026-08-01 19:18:43 : INFO] - Purging cache because redirection_possible value changed from: false to null 
