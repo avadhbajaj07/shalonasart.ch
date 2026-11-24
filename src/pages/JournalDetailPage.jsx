@@ -22,9 +22,7 @@ export default function JournalDetailPage() {
     "articleBody": entry.paragraphs.join("\n\n"),
     "datePublished": entry.date,
     "author": {
-      "@type": "Person",
-      "name": "Shalona",
-      "url": "https://shalonasart.ch/biography"
+      "@id": "https://shalonasart.ch/#artist"
     },
     "publisher": {
       "@type": "Organization",
@@ -43,6 +41,11 @@ export default function JournalDetailPage() {
         title={`${entry.title} — Journal Entry 0${entry.entryNumber} | SHALONA`}
         description={entry.excerpt}
         path={`/journal/${entry.slug}`}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Studio Journal', path: '/journal' },
+          { name: entry.title, path: `/journal/${entry.slug}` }
+        ]}
         schema={articleSchema}
         type="article"
       />

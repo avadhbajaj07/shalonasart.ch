@@ -47,8 +47,8 @@ export default function Home({
   return (
     <>
       <SEO
-        title="SHALONA — Intuitive Mixed Media Artist · Richterswil, Switzerland"
-        description="Official portfolio of Shalona. Intuitive mixed media artworks exploring mysticism, resilience and empowerment. Upcoming exhibition at Ortsmuseum Bärenkeller (Free admission, no vernissage). Original artworks available for private acquisition."
+        title="Shalona | Contemporary Mixed Media Artist in Switzerland"
+        description="Discover Shalona's contemporary mixed-media art in Richterswil, Switzerland. Explore abstract paintings, expressive artworks and upcoming exhibitions."
         path="/"
         schema={homeSchema}
       />

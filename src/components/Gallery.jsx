@@ -148,7 +148,7 @@ export default function Gallery({ artworks, onSelectArtwork, onOpenRoom, isStand
               <div className="w-16 h-20 sm:w-20 sm:h-24 bg-[#EAE6DE] rounded-md overflow-hidden shrink-0 fine-art-shadow">
                 <img
                   src={artwork.thumbnail || artwork.image}
-                  alt={artwork.title}
+                  alt={`${artwork.title} – Original ${artwork.category} painting by Shalona`}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   loading="lazy"
                 />

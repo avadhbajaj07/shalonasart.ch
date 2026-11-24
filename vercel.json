@@ -1,7 +1,52 @@
 {
-  "rewrites": [
+  "headers": [
     {
       "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        }
+      ]
+    },
+    {
+      "source": "/(assets|images|exhibitions|hero|wp-content)/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=31536000, immutable"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "source": "/my-arts",
+      "destination": "/arts",
+      "permanent": true
+    },
+    {
+      "source": "/my-arts/:path*",
+      "destination": "/arts/:path*",
+      "permanent": true
+    },
+    {
+      "source": "/about",
+      "destination": "/biography",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/((?!api/|robots\\.txt|sitemap.*\\.xml|llms\\.txt).*)",
       "destination": "/index.html"
     }
   ]

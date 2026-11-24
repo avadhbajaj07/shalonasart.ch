@@ -4,7 +4,7 @@ import SEO from '../components/SEO';
 import ArtworkCard from '../components/ArtworkCard';
 import { 
   ArrowLeft, ArrowRight, ArrowUpRight, Home, Eye, 
-  MapPin, ShieldCheck, Truck, Sparkles, CheckCircle, Send, Loader2
+  MapPin, ShieldCheck, Sparkles, CheckCircle, Send, Loader2
 } from 'lucide-react';
 import { artistData } from '../data/artist';
 import { sendInquiry } from '../utils/sendInquiry';
@@ -46,35 +46,48 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
     setInquirySent(true);
   };
 
+  const artworkSeoTitle = `${artwork.title} – ${artwork.category} by Shalona`;
+  const artworkSeoDesc = `Discover ${artwork.title}, an original ${artwork.category} artwork by Shalona, a contemporary mixed-media artist based in Richterswil, Switzerland. ${artwork.philosophy || artwork.caption || ''}`.trim();
+
   const artworkSchema = {
     "@context": "https://schema.org",
     "@type": "VisualArtwork",
     "name": artwork.title,
-    "image": artwork.image,
-    "description": artwork.caption || `Original artwork by Shalona. ${artwork.medium}.`,
-    "artform": "Mixed Media Painting",
+    "alternateName": `${artwork.title} by Shalona`,
+    "image": `https://shalonasart.ch${artwork.image}`,
+    "description": artwork.caption || artwork.philosophy || `Original ${artwork.category} artwork by Shalona.`,
+    "artform": artwork.category,
     "artMedium": artwork.medium,
     "creator": {
-      "@type": "Person",
-      "name": "Shalona",
-      "sameAs": "https://shalonasart.ch/biography"
+      "@id": "https://shalonasart.ch/#artist"
     },
-    "width": artwork.dimensions.split('×')[0]?.trim() || "120 cm",
-    "height": artwork.dimensions.split('×')[1]?.replace('cm','').trim() || "90 cm",
+    "width": artwork.dimensions,
     "dateCreated": artwork.year,
     "locationCreated": {
       "@type": "Place",
-      "name": "Richterswil, Lake Zurich, Switzerland"
+      "name": "Richterswil, Canton of Zürich, Switzerland"
+    },
+    "offers": {
+      "@type": "Offer",
+      "availability": artwork.status === 'Available' ? "https://schema.org/InStock" : "https://schema.org/SoldOut",
+      "price": "0",
+      "priceCurrency": "CHF",
+      "url": `https://shalonasart.ch/arts/${artwork.slug}`
     }
   };
 
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title={`${artwork.title} — Original Painting by Shalona | Richterswil, Switzerland`}
-        description={`"${artwork.title}" by Shalona. ${artwork.medium}, ${artwork.dimensions}. ${artwork.caption}`}
+        title={artworkSeoTitle}
+        description={artworkSeoDesc}
         image={artwork.image}
         path={`/arts/${artwork.slug}`}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Artworks', path: '/arts' },
+          { name: artwork.title, path: `/arts/${artwork.slug}` }
+        ]}
         schema={artworkSchema}
       />
 
@@ -127,11 +140,12 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
               >
                 <img
                   src={artwork.localImage || artwork.image}
-                  alt={artwork.title}
+                  alt={`${artwork.title} – Original ${artwork.category} artwork by Shalona, Richterswil, Switzerland`}
                   width={artwork.width}
                   height={artwork.height}
                   className="w-full h-full object-contain"
                   loading="eager"
+                  fetchPriority="high"
                 />
               </div>
             </div>
@@ -228,16 +242,10 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
               </div>
             )}
 
-            {/* Studio Guarantee & Shipping Notes */}
-            <div className="grid grid-cols-2 gap-4 text-[11px] font-sans text-[#1A1817]/65">
-              <div className="flex items-start gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#A88B57] shrink-0 mt-0.5" />
-                <span>Certificate of Authenticity signed by Shalona</span>
-              </div>
-              <div className="flex items-start gap-2">
-                <Truck className="w-4 h-4 text-[#A88B57] shrink-0 mt-0.5" />
-                <span>Museum crate & insured global courier dispatch</span>
-              </div>
+            {/* Studio Provenance & Guarantee */}
+            <div className="flex items-center gap-2 text-[11px] font-sans text-[#1A1817]/65">
+              <ShieldCheck className="w-4 h-4 text-[#A88B57] shrink-0" />
+              <span>Original artwork cataloged with signed Certificate of Authenticity</span>
             </div>
 
             {/* Direct Acquisition Inquiry Form */}

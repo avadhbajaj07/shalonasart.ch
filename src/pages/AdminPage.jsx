@@ -43,8 +43,10 @@ import {
   X,
   Maximize2,
   RefreshCw,
-  AlertTriangle
+  AlertTriangle,
+  Globe
 } from 'lucide-react';
+import AdminSEODashboard from '../components/AdminSEODashboard';
 
 // Cryptographic SHA-256 hash for studio portal security.
 // Plaintext password is never exposed in client bundles or UI.
@@ -809,6 +811,18 @@ export default function AdminPage() {
           >
             <Tag className="w-3.5 h-3.5 text-[#A88B57]" />
             <span>Categories ({categories.length})</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('seo'); setSuccessMessage(null); }}
+            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+              activeTab === 'seo'
+                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
+                : 'text-[#7A7770] hover:text-[#2A2A2A]'
+            }`}
+          >
+            <Globe className="w-3.5 h-3.5 text-[#A88B57]" />
+            <span>SEO & Discovery</span>
           </button>
         </div>
 
@@ -1626,6 +1640,13 @@ export default function AdminPage() {
               })}
             </div>
           </div>
+        )}
+
+        {/* =====================================================================
+            TAB 5: SEO & SEARCH DISCOVERABILITY (AEO / GEO / SITEMAPS)
+            ===================================================================== */}
+        {activeTab === 'seo' && (
+          <AdminSEODashboard artworks={allArtworks} journals={allJournals} />
         )}
 
       </div>

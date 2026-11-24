@@ -47,9 +47,13 @@ export default function TimelinePage() {
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title="Artistic Timeline & Milestones | SHALONA — Switzerland"
-        description="Chronological journey and milestone exhibitions of mixed media artist Shalona in Richterswil, Switzerland."
+        title="Artistic Journey & Creative Timeline | SHALONA"
+        description="Chronological journey and milestone creative periods of mixed media artist Shalona in Richterswil, Switzerland."
         path="/timeline"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Artistic Timeline', path: '/timeline' }
+        ]}
         schema={timelineSchema}
       />
 

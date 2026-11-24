@@ -1,8 +1,13 @@
+import { trackLeadGenerated } from './analytics';
+
 /**
  * Dispatches an inquiry payload to /api/send-inquiry (backed by Resend Serverless Function on Vercel)
  * Automatically delivers to shalonalei@gmail.com
  */
 export async function sendInquiry(payload) {
+  // Track high-intent lead conversion without personal data
+  trackLeadGenerated(payload?.artworkTitle, payload?.inquiryType);
+
   try {
     const response = await fetch('/api/send-inquiry', {
       method: 'POST',

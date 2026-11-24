@@ -26,8 +26,7 @@ export default function JournalPage() {
       "url": `https://shalonasart.ch/journal/${j.slug}`,
       "datePublished": j.date,
       "author": {
-        "@type": "Person",
-        "name": "Shalona"
+        "@id": "https://shalonasart.ch/#artist"
       }
     }))
   };
@@ -35,9 +34,13 @@ export default function JournalPage() {
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title="Studio Journal & Essays | SHALONA — Richterswil, Switzerland"
-        description="Essays, philosophical reflections, and studio notes by Shalona. Explore writings on beginning, colour as language, and the beauty of the unfinished."
+        title="Art Journal & Studio Reflections | SHALONA"
+        description="Essays, philosophical reflections, and studio notes by contemporary artist Shalona in Richterswil, Switzerland. Writings on stillness, memory, and pigment."
         path="/journal"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Studio Journal', path: '/journal' }
+        ]}
         schema={journalSchema}
       />
 

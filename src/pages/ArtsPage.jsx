@@ -24,9 +24,13 @@ export default function ArtsPage({ artworks, onSelectArtwork, onOpenRoom }) {
   return (
     <div className="pt-28 sm:pt-36 min-h-screen">
       <SEO
-        title="Original Artworks & Paintings Collection | SHALONA"
-        description="Browse all original mixed media paintings by Swiss artist Shalona. Natural aspect ratio exhibition wall spanning Figurative Abstracts, Expressions, and Abstract works."
+        title="Contemporary & Mixed Media Art by Shalona"
+        description="Explore original contemporary mixed-media paintings, abstract works, and figurative studies by Shalona in Richterswil, Switzerland."
         path="/arts"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Contemporary Artworks', path: '/arts' }
+        ]}
         schema={artsSchema}
       />
 

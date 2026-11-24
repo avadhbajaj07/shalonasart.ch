@@ -18,10 +18,10 @@ export default function ArtworkCard({ artwork, onSelect, onOpenRoom }) {
           aspectRatio: artwork.aspectRatio ? `${artwork.aspectRatio}` : 'auto'
         }}
       >
-        {/* Artwork Image with Exact Proportions */}
+        {/* Artwork Image with Exact Proportions & Rich Alt SEO */}
         <img
           src={artwork.localImage || artwork.thumbnail || artwork.image}
-          alt={artwork.title}
+          alt={`${artwork.title} – Original ${artwork.category} painting by Shalona`}
           width={artwork.width}
           height={artwork.height}
           className="w-full h-full object-cover transition-transform duration-1000 ease-out group-hover:scale-[1.035]"

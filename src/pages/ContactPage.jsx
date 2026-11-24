@@ -2,8 +2,9 @@ import React, { useState } from 'react';
 import SEO from '../components/SEO';
 import { artistData } from '../data/artist';
 import { InstagramIcon, FacebookIcon } from '../components/Icons';
-import { Mail, MapPin, Phone, Send, CheckCircle, ShieldCheck, Truck, Sparkles, Loader2 } from 'lucide-react';
+import { Mail, MapPin, Phone, Send, CheckCircle, ShieldCheck, Sparkles, Loader2 } from 'lucide-react';
 import { sendInquiry } from '../utils/sendInquiry';
+import FAQSection, { FAQ_SCHEMA } from '../components/FAQSection';
 
 export default function ContactPage() {
   const [formData, setFormData] = useState({
@@ -39,10 +40,14 @@ export default function ContactPage() {
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title="Contact & Private Studio Viewings | SHALONA — Richterswil, Switzerland"
-        description="Arrange a private studio viewing or inquire about original artwork acquisitions with Shalona in Richterswil, Lake Zurich, Switzerland."
+        title="Contact Shalona | Art Enquiries & Collaborations"
+        description="Contact Shalona for artwork acquisitions, private studio viewings in Richterswil, Lake Zurich, and curatorial collaborations."
         path="/contact"
-        schema={contactSchema}
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Contact & Inquiries', path: '/contact' }
+        ]}
+        schema={[contactSchema, FAQ_SCHEMA]}
       />
 
       <div className="max-w-7xl mx-auto px-6 sm:px-10">
@@ -128,13 +133,6 @@ export default function ContactPage() {
               </div>
               <p className="font-light leading-relaxed">
                 All original works arrive with a signed Certificate of Authenticity cataloged in the artist's studio archive.
-              </p>
-              <div className="flex items-center gap-2 font-medium text-[#1A1817] pt-2">
-                <Truck className="w-4 h-4 text-[#A88B57]" />
-                <span>Worldwide Insured Transport</span>
-              </div>
-              <p className="font-light leading-relaxed">
-                Hand-built wooden crates with climate padding for secure insured international courier dispatch.
               </p>
             </div>
           </div>
@@ -250,6 +248,9 @@ export default function ContactPage() {
         </div>
 
       </div>
+
+      {/* Collector & Atelier Questions & Answers (AEO / GEO Engine) */}
+      <FAQSection />
     </div>
   );
 }

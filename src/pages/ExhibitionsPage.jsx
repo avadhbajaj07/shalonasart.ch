@@ -41,10 +41,7 @@ export default function ExhibitionsPage() {
       "https://shalonasart.ch/exhibitions/poster-empowerment.jpg"
     ],
     "performer": {
-      "@type": "Person",
-      "name": "Shalona",
-      "jobTitle": "Intuitive Mixed Media Artist",
-      "sameAs": "https://shalonasart.ch/biography"
+      "@id": "https://shalonasart.ch/#artist"
     },
     "organizer": {
       "@type": "Organization",
@@ -66,9 +63,13 @@ export default function ExhibitionsPage() {
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title="Exhibitions — Mysticism, Resilience and Empowerment | SHALONA · Richterswil"
-        description="Upcoming exhibition by Swiss artist Shalona at Ortsmuseum Bärenkeller, Richterswil (3.–6. Dez 2026). Free admission, open walk-in. Map, schedule & atelier directions."
+        title="Shalona Art Exhibitions | Zürich, Switzerland"
+        description="Discover upcoming fine art exhibitions by Shalona in Zürich, including Mysticism, Resilience and Empowerment at Ortsmuseum Bärenkeller, Richterswil (3.–6. Dez 2026)."
         path="/exhibitions"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Exhibitions', path: '/exhibitions' }
+        ]}
         schema={exhibitionSchema}
       />
 

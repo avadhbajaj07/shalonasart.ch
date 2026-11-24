@@ -1,0 +1,33 @@
+# Production robots.txt for Shalona's Art (https://shalonasart.ch)
+# Enables search discovery for Google, Bing, Apple, Perplexity and search answer engines while protecting admin routes
+
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Disallow: /api/
+
+# Search engine bots - full access to public art and media
+User-agent: Googlebot
+User-agent: Googlebot-Image
+User-agent: Bingbot
+User-agent: Applebot
+User-agent: PerplexityBot
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin/
+Disallow: /api/
+
+# AI Training crawlers - restricted from bulk training scraping
+User-agent: GPTBot
+Disallow: /
+
+User-agent: Google-Extended
+Disallow: /
+
+User-agent: CCBot
+Disallow: /
+
+# Canonical Sitemaps
+Sitemap: https://shalonasart.ch/sitemap.xml
+Sitemap: https://shalonasart.ch/sitemap-images.xml

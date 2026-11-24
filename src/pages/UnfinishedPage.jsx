@@ -26,6 +26,10 @@ export default function UnfinishedPage({ artworks = [], onSelectArtwork }) {
         title="Unfinished, Yet Alive — Studies & Works in Progress | SHALONA"
         description="Explore the unfinished works of Shalona. Pieces in waiting that hold a question not yet answered, guided by patience and honesty."
         path="/unfinished-works"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'Unfinished Works', path: '/unfinished-works' }
+        ]}
         schema={unfinishedSchema}
       />
 

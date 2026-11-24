@@ -34,10 +34,14 @@ export default function BiographyPage({ onOpenInquire }) {
   return (
     <div className="pt-28 sm:pt-36 pb-24 min-h-screen">
       <SEO
-        title="Biography & Philosophy — Shalona | Mixed Media Artist, Switzerland"
-        description="Biography of Shalona, mixed media artist based in Richterswil, Lake Zurich, Switzerland. Learn about her intuitive creative process blending photography, pigments, and silence."
+        title="About Shalona – Mixed Media Artist in Switzerland"
+        description="Discover the life, artistic journey, and intuitive philosophy of Shalona, a contemporary mixed-media artist based in Richterswil on Lake Zurich, Switzerland."
         image={media.portraits[0]}
         path="/biography"
+        breadcrumbs={[
+          { name: 'Home', path: '/' },
+          { name: 'About Shalona', path: '/biography' }
+        ]}
         schema={bioSchema}
       />
 

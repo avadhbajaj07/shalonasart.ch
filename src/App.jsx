@@ -24,6 +24,7 @@ import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
 
 import { getLiveArtworks } from './utils/studioStore';
+import { trackPageView } from './utils/analytics';
 
 export default function App() {
   return (
@@ -38,6 +39,12 @@ export default function App() {
 function AppContent() {
   const location = useLocation();
   const isAdmin = location.pathname.startsWith('/admin');
+
+  // Track page views on route changes and reset scroll
+  useEffect(() => {
+    trackPageView(location.pathname);
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   const [artworkList, setArtworkList] = useState(() => getLiveArtworks());
 
