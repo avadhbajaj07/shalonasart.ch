@@ -44,13 +44,10 @@ import {
   Maximize2,
   RefreshCw,
   AlertTriangle,
-  Globe,
-  ShieldCheck,
   Mail
 } from 'lucide-react';
-import AdminSEODashboard from '../components/AdminSEODashboard';
-import AdminContentVerification from '../components/AdminContentVerification';
 import AdminEmailSystem from '../components/AdminEmailSystem';
+import { getStudioEmails } from '../utils/sourceOfTruthStore';
 
 // Cryptographic SHA-256 hash for studio portal security.
 // Plaintext password is never exposed in client bundles or UI.
@@ -71,8 +68,17 @@ export default function AdminPage() {
   const [passwordInput, setPasswordInput] = useState('');
   const [authError, setAuthError] = useState('');
 
-  // Active Tab: 'artwork' | 'inventory' | 'journal' | 'categories'
-  const [activeTab, setActiveTab] = useState('artwork');
+  // Active Tab: 'emails' | 'inventory' | 'artwork' | 'journal' | 'categories'
+  const [activeTab, setActiveTab] = useState('emails');
+
+  const unreadEmailsCount = useMemo(() => {
+    try {
+      const emails = getStudioEmails();
+      return emails.filter(e => e.direction === 'incoming' && e.status === 'unread').length;
+    } catch (e) {
+      return 0;
+    }
+  }, [activeTab]);
 
   // Categories State
   const [categories, setCategories] = useState(getCategories());
@@ -765,13 +771,74 @@ export default function AdminPage() {
           </div>
         )}
 
+        {/* MOBILE QUICK EMAIL BAR (Prominent on Phone) */}
+        <div className="sm:hidden bg-[#1A1817] text-[#FAF8F3] p-4 rounded-2xl flex items-center justify-between shadow-md border border-[#A88B57]/30">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-[#A88B57]/20 text-[#A88B57] relative">
+              <Mail className="w-5 h-5" />
+              {unreadEmailsCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-amber-400 rounded-full animate-ping" />
+              )}
+            </div>
+            <div>
+              <div className="text-xs font-semibold tracking-wide">Studio Mailroom</div>
+              <div className="text-[11px] text-[#A88B57] font-mono">info@shalonasart.ch</div>
+            </div>
+          </div>
+          <button
+            onClick={() => { setActiveTab('emails'); setSuccessMessage(null); }}
+            className={`px-4 py-2 rounded-xl text-xs font-sans font-medium uppercase tracking-wider transition-all flex items-center gap-1.5 shadow-sm ${
+              activeTab === 'emails'
+                ? 'bg-[#A88B57] text-white font-semibold'
+                : 'bg-white/10 hover:bg-white/20 text-white'
+            }`}
+          >
+            <span>{activeTab === 'emails' ? 'Viewing' : 'Open Email'}</span>
+            {unreadEmailsCount > 0 && (
+              <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-[#1A1817] text-[10px] font-bold">
+                {unreadEmailsCount}
+              </span>
+            )}
+          </button>
+        </div>
+
         {/* =====================================================================
             3. LUXURY TAB NAVIGATION BAR ("NICE TABS")
             ===================================================================== */}
         <div className="bg-[#FAF8F3] p-1.5 rounded-2xl border border-[#DCD9D0] flex overflow-x-auto no-scrollbar gap-1.5 shadow-sm">
+          {/* TAB 1: STUDIO EMAIL (info@shalonasart.ch) */}
+          <button
+            onClick={() => { setActiveTab('emails'); setSuccessMessage(null); }}
+            className={`flex-1 min-w-[170px] py-3.5 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+              activeTab === 'emails'
+                ? 'bg-white text-[#1A1817] shadow-sm font-semibold border border-[#DCD9D0] ring-1 ring-[#A88B57]/30'
+                : 'text-[#7A7770] hover:text-[#1A1817]'
+            }`}
+          >
+            <Mail className="w-4 h-4 text-[#A88B57]" />
+            <span>Studio Email (info@)</span>
+            {unreadEmailsCount > 0 && (
+              <span className="px-1.5 py-0.5 rounded-full bg-[#A88B57] text-white text-[10px] font-bold">
+                {unreadEmailsCount}
+              </span>
+            )}
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('inventory'); setSuccessMessage(null); }}
+            className={`flex-1 min-w-[160px] py-3.5 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+              activeTab === 'inventory'
+                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
+                : 'text-[#7A7770] hover:text-[#2A2A2A]'
+            }`}
+          >
+            <Palette className="w-3.5 h-3.5 text-[#A88B57]" />
+            <span>Inventory ({allArtworks.length})</span>
+          </button>
+
           <button
             onClick={() => { setActiveTab('artwork'); setSuccessMessage(null); }}
-            className={`flex-1 min-w-[140px] py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+            className={`flex-1 min-w-[140px] py-3.5 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
               activeTab === 'artwork'
                 ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
                 : 'text-[#7A7770] hover:text-[#2A2A2A]'
@@ -782,32 +849,20 @@ export default function AdminPage() {
           </button>
 
           <button
-            onClick={() => { setActiveTab('inventory'); setSuccessMessage(null); }}
-            className={`flex-1 min-w-[160px] py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-              activeTab === 'inventory'
-                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
-                : 'text-[#7A7770] hover:text-[#2A2A2A]'
-            }`}
-          >
-            <Palette className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Inventory Table ({allArtworks.length})</span>
-          </button>
-
-          <button
             onClick={() => { setActiveTab('journal'); setSuccessMessage(null); }}
-            className={`flex-1 min-w-[140px] py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+            className={`flex-1 min-w-[140px] py-3.5 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
               activeTab === 'journal'
                 ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
                 : 'text-[#7A7770] hover:text-[#2A2A2A]'
             }`}
           >
             <BookOpen className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Studio Journal ({allJournals.length})</span>
+            <span>Journal ({allJournals.length})</span>
           </button>
 
           <button
             onClick={() => { setActiveTab('categories'); setSuccessMessage(null); }}
-            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+            className={`py-3.5 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
               activeTab === 'categories'
                 ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
                 : 'text-[#7A7770] hover:text-[#2A2A2A]'
@@ -815,42 +870,6 @@ export default function AdminPage() {
           >
             <Tag className="w-3.5 h-3.5 text-[#A88B57]" />
             <span>Categories ({categories.length})</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('seo'); setSuccessMessage(null); }}
-            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-              activeTab === 'seo'
-                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
-                : 'text-[#7A7770] hover:text-[#2A2A2A]'
-            }`}
-          >
-            <Globe className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>SEO & Discovery</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('verification'); setSuccessMessage(null); }}
-            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-              activeTab === 'verification'
-                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
-                : 'text-[#7A7770] hover:text-[#2A2A2A]'
-            }`}
-          >
-            <ShieldCheck className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Content Verification</span>
-          </button>
-
-          <button
-            onClick={() => { setActiveTab('emails'); setSuccessMessage(null); }}
-            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
-              activeTab === 'emails'
-                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
-                : 'text-[#7A7770] hover:text-[#2A2A2A]'
-            }`}
-          >
-            <Mail className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Studio Email (info@)</span>
           </button>
         </div>
 
@@ -1671,21 +1690,7 @@ export default function AdminPage() {
         )}
 
         {/* =====================================================================
-            TAB 5: SEO & SEARCH DISCOVERABILITY (AEO / GEO / SITEMAPS)
-            ===================================================================== */}
-        {activeTab === 'seo' && (
-          <AdminSEODashboard artworks={allArtworks} journals={allJournals} />
-        )}
-
-        {/* =====================================================================
-            TAB 6: CONTENT SOURCE-OF-TRUTH & VERIFICATION
-            ===================================================================== */}
-        {activeTab === 'verification' && (
-          <AdminContentVerification />
-        )}
-
-        {/* =====================================================================
-            TAB 7: STUDIO EMAIL & CORRESPONDENCE (info@shalonasart.ch)
+            STUDIO EMAIL & CORRESPONDENCE (info@shalonasart.ch)
             ===================================================================== */}
         {activeTab === 'emails' && (
           <AdminEmailSystem />

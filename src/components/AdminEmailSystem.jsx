@@ -5,6 +5,7 @@ import {
   Inbox,
   ArrowUpRight,
   ArrowDownLeft,
+  ArrowLeft,
   CheckCircle2,
   Clock,
   Search,
@@ -173,10 +174,10 @@ export default function AdminEmailSystem() {
             </p>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               onClick={openComposeNew}
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
             >
               <Send className="w-4 h-4 text-[#A88B57]" />
               <span>Compose Email</span>
@@ -282,7 +283,7 @@ export default function AdminEmailSystem() {
       {/* MESSAGES LIST & DETAIL PANE */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Messages List Column */}
-        <div className={`${selectedEmail ? 'lg:col-span-5' : 'lg:col-span-12'} space-y-3`}>
+        <div className={`${selectedEmail ? 'hidden lg:block lg:col-span-5' : 'col-span-12'} space-y-3`}>
           {filteredEmails.length === 0 ? (
             <div className="p-12 text-center bg-white rounded-2xl border border-[#E5E2D9] text-[#7A7770]">
               <Inbox className="w-8 h-8 text-[#A88B57] mx-auto mb-2 opacity-60" />
@@ -298,12 +299,20 @@ export default function AdminEmailSystem() {
             filteredEmails.map(email => (
               <div
                 key={email.id}
-                onClick={() => setSelectedEmail(email)}
-                className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 ${
+                onClick={() => {
+                  setSelectedEmail(email);
+                  // Auto mark as read when opened
+                  if (email.status === 'unread') {
+                    updateStudioEmailStatus(email.id, 'read');
+                    email.status = 'read';
+                    setStoreVersion(v => v + 1);
+                  }
+                }}
+                className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 active:scale-[0.99] ${
                   selectedEmail?.id === email.id
                     ? 'bg-white border-[#A88B57] shadow-md ring-1 ring-[#A88B57]/30'
                     : email.status === 'unread'
-                    ? 'bg-white border-[#DCD9D0] shadow-sm'
+                    ? 'bg-white border-[#DCD9D0] shadow-sm ring-1 ring-amber-200'
                     : 'bg-[#FAF8F3]/60 border-[#E5E2D9] hover:bg-white'
                 }`}
               >
@@ -325,7 +334,9 @@ export default function AdminEmailSystem() {
 
                   <div className="flex items-center gap-2">
                     {email.status === 'unread' && (
-                      <span className="w-2 h-2 rounded-full bg-[#A88B57]" />
+                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
+                        New
+                      </span>
                     )}
                     <span className="text-[10px] font-mono text-[#7A7770]">
                       {email.created_at ? new Date(email.created_at).toLocaleDateString('de-CH', { month: 'short', day: 'numeric' }) : ''}
@@ -343,7 +354,7 @@ export default function AdminEmailSystem() {
 
                 <div className="mt-3 pt-2.5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
                   {email.artworkTitle ? (
-                    <span className="text-[11px] font-sans text-[#A88B57] flex items-center gap-1">
+                    <span className="text-[11px] font-sans text-[#A88B57] flex items-center gap-1 font-medium">
                       <Palette className="w-3 h-3" />
                       <span>{email.artworkTitle}</span>
                     </span>
@@ -353,7 +364,7 @@ export default function AdminEmailSystem() {
                     email.status === 'unread'
                       ? 'bg-amber-100 text-amber-900 font-semibold'
                       : email.status === 'replied'
-                      ? 'bg-emerald-100 text-emerald-900'
+                      ? 'bg-emerald-100 text-emerald-900 font-medium'
                       : 'bg-gray-100 text-[#7A7770]'
                   }`}>
                     {email.status}
@@ -366,7 +377,18 @@ export default function AdminEmailSystem() {
 
         {/* Detail Reader Column */}
         {selectedEmail && (
-          <div className="lg:col-span-7 bg-white rounded-2xl border border-[#E5E2D9] p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl border border-[#E5E2D9] p-5 sm:p-8 shadow-sm space-y-6 animate-fadeIn">
+            {/* Mobile Back Button */}
+            <div className="lg:hidden pb-1">
+              <button
+                onClick={() => setSelectedEmail(null)}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#FAF8F3] active:bg-[#EAE6DE] rounded-xl border border-[#DCD9D0] text-[#1A1817] text-xs font-sans font-semibold uppercase tracking-wider transition-all shadow-sm"
+              >
+                <ArrowLeft className="w-4 h-4 text-[#A88B57]" />
+                <span>← Back to All Messages</span>
+              </button>
+            </div>
+
             {/* Header */}
             <div className="border-b border-[#E5E2D9] pb-5 space-y-4">
               <div className="flex items-start justify-between gap-4">
@@ -374,14 +396,15 @@ export default function AdminEmailSystem() {
                   <div className="text-xs font-mono uppercase tracking-wider text-[#A88B57]">
                     {selectedEmail.direction === 'incoming' ? 'Incoming Inquiry to info@shalonasart.ch' : 'Outgoing Studio Message'}
                   </div>
-                  <h3 className="font-serif text-2xl font-light text-[#1A1817]">
+                  <h3 className="font-serif text-xl sm:text-2xl font-light text-[#1A1817]">
                     {selectedEmail.subject}
                   </h3>
                 </div>
 
                 <button
                   onClick={() => setSelectedEmail(null)}
-                  className="p-1 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3]"
+                  className="hidden lg:block p-1.5 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3]"
+                  title="Close reader"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -421,57 +444,60 @@ export default function AdminEmailSystem() {
                 {selectedEmail.artworkTitle && (
                   <div className="flex items-center gap-1.5 text-[#A88B57] font-medium pt-1">
                     <Palette className="w-3.5 h-3.5" />
-                    <span>Inquiry Reference: "{selectedEmail.artworkTitle}"</span>
+                    <span>Artwork: "{selectedEmail.artworkTitle}"</span>
                   </div>
                 )}
               </div>
             </div>
 
             {/* Message Body */}
-            <div className="text-sm font-sans text-[#1A1817] leading-relaxed whitespace-pre-wrap font-normal">
+            <div className="text-sm font-sans text-[#1A1817] leading-relaxed whitespace-pre-wrap font-normal p-1">
               {selectedEmail.body}
             </div>
 
             {/* Actions Toolbar */}
-            <div className="pt-6 border-t border-[#E5E2D9] flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
+            <div className="pt-6 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
                 {selectedEmail.direction === 'incoming' && (
                   <button
                     onClick={() => openReplyModal(selectedEmail)}
-                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
                   >
-                    <Reply className="w-3.5 h-3.5 text-[#A88B57]" />
+                    <Reply className="w-4 h-4 text-[#A88B57]" />
                     <span>Reply from info@shalonasart.ch</span>
                   </button>
                 )}
 
-                <button
-                  onClick={() => {
-                    const next = selectedEmail.status === 'unread' ? 'read' : 'unread';
-                    updateStudioEmailStatus(selectedEmail.id, next);
-                    selectedEmail.status = next;
-                    setStoreVersion(v => v + 1);
-                  }}
-                  className="px-3 py-2 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all"
-                >
-                  Mark as {selectedEmail.status === 'unread' ? 'Read' : 'Unread'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => {
+                      const next = selectedEmail.status === 'unread' ? 'read' : 'unread';
+                      updateStudioEmailStatus(selectedEmail.id, next);
+                      selectedEmail.status = next;
+                      setStoreVersion(v => v + 1);
+                    }}
+                    className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all text-center"
+                  >
+                    Mark as {selectedEmail.status === 'unread' ? 'Read' : 'Unread'}
+                  </button>
 
-                <button
-                  onClick={() => {
-                    const next = selectedEmail.status === 'archived' ? 'read' : 'archived';
-                    updateStudioEmailStatus(selectedEmail.id, next);
-                    selectedEmail.status = next;
-                    setStoreVersion(v => v + 1);
-                    showToast(`Message marked as ${next}.`);
-                  }}
-                  className="px-3 py-2 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all"
-                >
-                  <Archive className="w-3.5 h-3.5" />
-                </button>
+                  <button
+                    onClick={() => {
+                      const next = selectedEmail.status === 'archived' ? 'read' : 'archived';
+                      updateStudioEmailStatus(selectedEmail.id, next);
+                      selectedEmail.status = next;
+                      setStoreVersion(v => v + 1);
+                      showToast(`Message marked as ${next}.`);
+                    }}
+                    className="px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all"
+                    title="Archive"
+                  >
+                    <Archive className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
 
-              <div className="text-xs text-[#7A7770] font-sans">
+              <div className="text-xs text-[#7A7770] font-sans text-center sm:text-right pt-2 sm:pt-0">
                 Status: <strong className="capitalize text-[#1A1817]">{selectedEmail.status}</strong>
               </div>
             </div>
@@ -479,22 +505,31 @@ export default function AdminEmailSystem() {
         )}
       </div>
 
+      {/* FLOATING ACTION BUTTON ON MOBILE */}
+      <button
+        onClick={openComposeNew}
+        className="sm:hidden fixed bottom-6 right-6 z-40 p-4 rounded-full bg-[#1A1817] text-white shadow-2xl border border-[#A88B57]/50 flex items-center justify-center active:scale-90 transition-all"
+        title="Compose Email from info@shalonasart.ch"
+      >
+        <Send className="w-5 h-5 text-[#A88B57]" />
+      </button>
+
       {/* COMPOSE / REPLY MODAL */}
       {(isComposeOpen || replyModalEmail) && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl border border-[#E5E2D9] max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 animate-scaleUp">
+        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white rounded-t-3xl sm:rounded-2xl border-0 sm:border border-[#E5E2D9] max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl space-y-5 animate-scaleUp flex flex-col justify-between">
             <div className="flex items-center justify-between border-b border-[#E5E2D9] pb-4">
               <div className="space-y-1">
                 <div className="text-[11px] font-mono text-[#A88B57] uppercase tracking-wider">
                   From: info@shalonasart.ch (Shalona Fine Art Atelier)
                 </div>
-                <h3 className="font-serif text-2xl font-light text-[#1A1817]">
+                <h3 className="font-serif text-xl sm:text-2xl font-light text-[#1A1817]">
                   {replyModalEmail ? `Reply to ${replyModalEmail.senderName || 'Collector'}` : 'Compose Studio Message'}
                 </h3>
               </div>
               <button
                 onClick={() => { setIsComposeOpen(false); setReplyModalEmail(null); }}
-                className="p-1 rounded-lg text-[#7A7770] hover:text-[#1A1817]"
+                className="p-2 rounded-lg text-[#7A7770] hover:text-[#1A1817] active:bg-gray-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -511,7 +546,7 @@ export default function AdminEmailSystem() {
                   value={composeTo}
                   onChange={(e) => setComposeTo(e.target.value)}
                   placeholder="collector@example.com"
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-xs font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57]"
+                  className="w-full px-4 py-3 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all"
                 />
               </div>
 
@@ -525,7 +560,7 @@ export default function AdminEmailSystem() {
                   value={composeSubject}
                   onChange={(e) => setComposeSubject(e.target.value)}
                   placeholder="Regarding your artwork inquiry..."
-                  className="w-full px-3.5 py-2.5 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-xs font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57]"
+                  className="w-full px-4 py-3 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all"
                 />
               </div>
 
@@ -534,24 +569,24 @@ export default function AdminEmailSystem() {
                   Message Body
                 </label>
                 <textarea
-                  rows={8}
+                  rows={7}
                   required
                   value={composeBody}
                   onChange={(e) => setComposeBody(e.target.value)}
-                  className="w-full p-3.5 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-xs font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] leading-relaxed resize-none"
+                  className="w-full p-4 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all leading-relaxed resize-none"
                 />
               </div>
 
-              <div className="pt-4 border-t border-[#E5E2D9] flex items-center justify-between">
-                <span className="text-[11px] font-sans text-[#7A7770]">
-                  Official Sender: <strong className="text-[#1A1817]">info@shalonasart.ch</strong>
+              <div className="pt-4 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <span className="text-[11px] font-sans text-[#7A7770] text-center sm:text-left">
+                  Sender: <strong className="text-[#1A1817]">info@shalonasart.ch</strong>
                 </span>
 
                 <div className="flex items-center gap-3">
                   <button
                     type="button"
                     onClick={() => { setIsComposeOpen(false); setReplyModalEmail(null); }}
-                    className="px-4 py-2 rounded-xl text-xs font-sans text-[#7A7770] hover:text-[#1A1817]"
+                    className="flex-1 sm:flex-initial px-4 py-3 rounded-xl text-xs font-sans text-[#7A7770] hover:text-[#1A1817] text-center"
                   >
                     Cancel
                   </button>
@@ -559,16 +594,16 @@ export default function AdminEmailSystem() {
                   <button
                     type="submit"
                     disabled={isSending}
-                    className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] text-white text-xs font-sans font-medium uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm"
+                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm"
                   >
                     {isSending ? (
                       <>
-                        <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                        <RefreshCw className="w-4 h-4 animate-spin" />
                         <span>Sending...</span>
                       </>
                     ) : (
                       <>
-                        <Send className="w-3.5 h-3.5 text-[#A88B57]" />
+                        <Send className="w-4 h-4 text-[#A88B57]" />
                         <span>Send Message</span>
                       </>
                     )}
