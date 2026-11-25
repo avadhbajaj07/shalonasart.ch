@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -7,6 +7,7 @@ import {
   Unlock,
   RotateCcw,
   Download,
+  Upload,
   Search,
   Filter,
   FileSpreadsheet,
@@ -40,6 +41,116 @@ export default function AdminContentVerification() {
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'unverified' | 'needs_review' | 'verified' | 'locked'
   const [searchQuery, setSearchQuery] = useState('');
   const [toastMessage, setToastMessage] = useState(null);
+  const fileInputRef = useRef(null);
+
+  // Handle WordPress XML WXR or JSON ACF Import
+  const handleFileUpload = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const text = event.target.result;
+        if (file.name.endsWith('.xml') || text.trim().startsWith('<?xml') || text.includes('<rss')) {
+          // Parse WordPress WXR XML Export
+          const parser = new DOMParser();
+          const xmlDoc = parser.parseFromString(text, 'text/xml');
+          const items = xmlDoc.getElementsByTagName('item');
+          let updatedCount = 0;
+
+          for (let i = 0; i < items.length; i++) {
+            const item = items[i];
+            const postTypeElem = item.getElementsByTagName('wp:post_type')[0];
+            const postType = postTypeElem ? postTypeElem.textContent : '';
+
+            if (postType === 'arts' || postType === 'post' || !postType) {
+              const postIdElem = item.getElementsByTagName('wp:post_id')[0];
+              const titleElem = item.getElementsByTagName('title')[0];
+              const id = postIdElem ? postIdElem.textContent.trim() : null;
+              const title = titleElem ? titleElem.textContent.trim() : '';
+
+              const postmetas = item.getElementsByTagName('wp:postmeta');
+              let size = '';
+              let yearCreated = '';
+              let artworkDesc = '';
+              let medium = '';
+
+              for (let j = 0; j < postmetas.length; j++) {
+                const keyElem = postmetas[j].getElementsByTagName('wp:meta_key')[0];
+                const valElem = postmetas[j].getElementsByTagName('wp:meta_value')[0];
+                const key = keyElem ? keyElem.textContent.trim() : '';
+                const val = valElem ? valElem.textContent.trim() : '';
+
+                if (key === 'size') size = val;
+                if (key === 'year_created') yearCreated = val;
+                if (key === 'artwork_description') artworkDesc = val;
+                if (key === 'medium') medium = val;
+              }
+
+              if (id) {
+                try {
+                  const updates = {};
+                  if (size) updates.dimensions = size;
+                  if (yearCreated) updates.year = yearCreated;
+                  if (artworkDesc) updates.description_en = artworkDesc;
+                  if (medium) updates.medium = medium;
+
+                  if (Object.keys(updates).length > 0) {
+                    updates.verification_status = 'verified';
+                    updates.verified_by = 'WordPress XML ACF Import';
+                    updates.source = 'WordPress WXR Export (Postmeta)';
+                    updateArtwork(id, updates, 'xml_import');
+                    updatedCount++;
+                  }
+                } catch (err) {
+                  console.warn(`Could not update artwork ID ${id}:`, err);
+                }
+              }
+            }
+          }
+          showToast(`Successfully imported authentic ACF metadata for ${updatedCount} artworks!`);
+        } else if (file.name.endsWith('.json')) {
+          const parsed = JSON.parse(text);
+          // If Source of Truth format
+          if (parsed.artworks && Array.isArray(parsed.artworks)) {
+            let count = 0;
+            parsed.artworks.forEach(art => {
+              try {
+                updateArtwork(art.id, art, 'json_backup_import');
+                count++;
+              } catch (err) {}
+            });
+            showToast(`Restored ${count} artworks from JSON backup.`);
+          } else if (Array.isArray(parsed)) {
+            // Check if array of posts with acf object
+            let count = 0;
+            parsed.forEach(p => {
+              if (p.id && p.acf) {
+                try {
+                  const updates = {};
+                  if (p.acf.size) updates.dimensions = p.acf.size;
+                  if (p.acf.year_created) updates.year = p.acf.year_created;
+                  if (p.acf.artwork_description) updates.description_en = p.acf.artwork_description;
+                  if (p.acf.medium) updates.medium = p.acf.medium;
+                  updates.verification_status = 'verified';
+                  updates.verified_by = 'WordPress ACF JSON Import';
+                  updateArtwork(p.id, updates, 'acf_json_import');
+                  count++;
+                } catch (err) {}
+              }
+            });
+            showToast(`Imported ACF fields for ${count} artworks.`);
+          }
+        }
+      } catch (err) {
+        alert('Failed to parse file: ' + err.message);
+      } finally {
+        if (e.target) e.target.value = '';
+      }
+    };
+    reader.readAsText(file);
+  };
 
   // Re-read store whenever updated
   useEffect(() => {
@@ -126,8 +237,25 @@ export default function AdminContentVerification() {
             </p>
           </div>
 
-          {/* Quick Export Actions */}
+          {/* Quick Import & Export Actions */}
           <div className="flex flex-wrap sm:flex-nowrap items-center gap-3">
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".xml,.json"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-white border border-[#DCD9D0] text-xs font-sans font-medium uppercase tracking-wider text-[#2A2A2A] hover:border-[#A88B57] hover:text-[#A88B57] transition-all shadow-sm"
+              title="Import authentic WordPress WXR export XML or ACF JSON file to restore custom fields"
+            >
+              <Upload className="w-4 h-4 text-[#A88B57]" />
+              <span>Import WP (XML/JSON)</span>
+            </button>
+
             <button
               onClick={() => {
                 exportArtworksCSV();

@@ -39,7 +39,34 @@ To ensure this can **never happen silently again**, we implemented a strict zero
 2. You will see:
    - **Progress Counter:** "X of 57 Items Verified (Y%)" with a live progress bar.
    - **Filter Buttons:** `All`, `Needs Review`, `Unverified`, `Verified`, `Locked`.
-   - **Export Buttons:** `Export CSV` and `Export JSON Backup`.
+   - **Action Buttons:** `Import WP (XML/JSON)`, `Export CSV`, and `Export JSON Backup`.
+
+---
+
+## 4. Advanced Custom Fields (ACF) Integration & WordPress Importer
+
+### Root Discovery from `acf-export-2026-11-25.json`:
+The original WordPress installation had an Advanced Custom Fields (ACF) field group named `arts` (`group_698f84ea9a32b`) attached to the `arts` post type:
+1. `size` — Artwork Dimensions (e.g., `16 x 32`)
+2. `year_created` — Creation Year / Month (e.g., `February 2023`)
+3. `artwork_description` — Artwork Statement / Description
+4. `medium` — Medium (e.g., `Oil Piant and Canvas`)
+
+> [!NOTE]
+> **Why `data_dump/arts.json` had empty ACF values:**
+> In the ACF configuration, `"show_in_rest": 0` was set to false. By default, the WordPress REST API excludes custom fields unless `show_in_rest: 1` is explicitly enabled. Therefore, `arts.json` did not contain the postmeta.
+
+### How to Hydrate All 57 Artworks from WordPress (One-Click):
+1. **In WordPress Admin:**
+   - Go to **Tools → Export** (`/wp-admin/export.php`).
+   - Select the radio button for **"Arts"**.
+   - Click **"Download Export File"** (saves a `.xml` file with all `<wp:postmeta>` values).
+2. **In Shalona Admin (`/admin` → "Content Verification"):**
+   - Click **Import WP (XML/JSON)**.
+   - Select the exported `.xml` file.
+   - The importer will automatically extract `size`, `year_created`, `artwork_description`, and `medium` for every piece and mark them as verified against authentic WordPress postmeta.
+
+---
 
 ### Step 3: Review Each Artwork Side-by-Side
 For each piece in the list:
