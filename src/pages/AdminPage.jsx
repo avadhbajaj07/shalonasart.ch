@@ -44,9 +44,13 @@ import {
   Maximize2,
   RefreshCw,
   AlertTriangle,
-  Globe
+  Globe,
+  ShieldCheck,
+  Mail
 } from 'lucide-react';
 import AdminSEODashboard from '../components/AdminSEODashboard';
+import AdminContentVerification from '../components/AdminContentVerification';
+import AdminEmailSystem from '../components/AdminEmailSystem';
 
 // Cryptographic SHA-256 hash for studio portal security.
 // Plaintext password is never exposed in client bundles or UI.
@@ -823,6 +827,30 @@ export default function AdminPage() {
           >
             <Globe className="w-3.5 h-3.5 text-[#A88B57]" />
             <span>SEO & Discovery</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('verification'); setSuccessMessage(null); }}
+            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+              activeTab === 'verification'
+                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
+                : 'text-[#7A7770] hover:text-[#2A2A2A]'
+            }`}
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[#A88B57]" />
+            <span>Content Verification</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('emails'); setSuccessMessage(null); }}
+            className={`py-3 px-4 rounded-xl font-sans text-xs font-medium uppercase tracking-wider transition-all flex items-center justify-center gap-2 whitespace-nowrap ${
+              activeTab === 'emails'
+                ? 'bg-white text-[#2A2A2A] shadow-sm font-semibold border border-[#DCD9D0]'
+                : 'text-[#7A7770] hover:text-[#2A2A2A]'
+            }`}
+          >
+            <Mail className="w-3.5 h-3.5 text-[#A88B57]" />
+            <span>Studio Email (info@)</span>
           </button>
         </div>
 
@@ -1647,6 +1675,20 @@ export default function AdminPage() {
             ===================================================================== */}
         {activeTab === 'seo' && (
           <AdminSEODashboard artworks={allArtworks} journals={allJournals} />
+        )}
+
+        {/* =====================================================================
+            TAB 6: CONTENT SOURCE-OF-TRUTH & VERIFICATION
+            ===================================================================== */}
+        {activeTab === 'verification' && (
+          <AdminContentVerification />
+        )}
+
+        {/* =====================================================================
+            TAB 7: STUDIO EMAIL & CORRESPONDENCE (info@shalonasart.ch)
+            ===================================================================== */}
+        {activeTab === 'emails' && (
+          <AdminEmailSystem />
         )}
 
       </div>

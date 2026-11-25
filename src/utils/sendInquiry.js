@@ -1,12 +1,16 @@
 import { trackLeadGenerated } from './analytics';
+import { recordIncomingInquiry } from './sourceOfTruthStore';
 
 /**
  * Dispatches an inquiry payload to /api/send-inquiry (backed by Resend Serverless Function on Vercel)
- * Automatically delivers to shalonalei@gmail.com
+ * Automatically delivers to shalonalei@gmail.com and logs to info@shalonasart.ch inbox
  */
 export async function sendInquiry(payload) {
   // Track high-intent lead conversion without personal data
   trackLeadGenerated(payload?.artworkTitle, payload?.inquiryType);
+
+  // Record into admin studio email inbox (info@shalonasart.ch)
+  recordIncomingInquiry(payload);
 
   try {
     const response = await fetch('/api/send-inquiry', {

@@ -33,21 +33,21 @@ export const artistData = {
   statementFollow: "I work intuitively, guided by feeling and the teachings of a few trusted mentors who shaped my relationship with material and silence. Each painting develops naturally without a rigid blueprint, inviting viewers to discover their own story across the stillness.",
   
   biography: {
-    lead: "I am Shalona, an intuitive mixed media artist based in Richterswil on Lake Zurich, Switzerland.",
-    journey: "I am an intuitive artist who worked with a few mentors — that's about it. My journey begins where words fall silent. Rather than following a fixed plan, I let materials interact naturally: photography, pigments, ink, and textured gesso. Every artwork develops its own character, inviting viewers to connect with their personal truths.",
+    lead: "I am Shalona, a mixed media artist based in Richterswil, Switzerland. My art combines original photography, unconventional materials, and expressive layers of color. Through this creative process, I explore the space between what we see and what we feel.",
+    journey: "I create from the quiet space between what is visible and what is felt. My creative journey begins where words fall silent. Here, memories, emotions, and unseen energy find expression through color, texture, and imagery. Rather than following a fixed plan, I allow each artwork to develop naturally. For me, art represents more than a visual image—it creates a connection between the mystical and the human.",
     mysticalConnection: "Float through the mystical — discover empowerment.",
     pillars: [
       {
-        title: "Intuitive Vision & Empowerment",
-        description: "Centered on resilience, transformation, and inner strength. Symbolic figures and circular zen forms reveal emotions that shape our inner worlds."
+        title: "Artistic Vision & Inspiration",
+        description: "My artistic vision centers on resilience, transformation, fragility, and hidden strength. Through symbolic figures and dreamlike atmospheres, I explore the emotions that shape our inner worlds. In particular, I find inspiration in the subtle relationship between color, memory, and energy. Gentle tones can suggest stillness, while expressive contrasts communicate emotional movement."
       },
       {
-        title: "Materials & Mentorship",
-        description: "Shaped by guidance from a few valued mentors, combining original photographic emulsion, raw earth pigments, acrylics, and oil glazes on canvas and Belgian linen."
+        title: "My Creative Process",
+        description: "My creative process combines intuition, experimentation, and thoughtful observation. I begin by exploring my own photography, mixed media, and unconventional materials. Then, I introduce expressive layers of color and texture to develop the composition, remaining open to unexpected discoveries as the artwork guides my next decision."
       },
       {
         title: "Art as a Space for Reflection",
-        description: "I do not seek to provide answers. Each piece creates space for reflection, silence, and emotional discovery."
+        description: "I do not seek to give answers. Instead, I create opportunities for reflection. Through my art, I invite viewers to connect with their imagination, memories, and personal truths. Ultimately, an artwork becomes alive again when someone stands before it, bringing new meaning through their own experiences, feelings, and interpretations."
       }
     ]
   },
