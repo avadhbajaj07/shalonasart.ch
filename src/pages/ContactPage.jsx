@@ -93,8 +93,8 @@ export default function ContactPage() {
                   <Mail className="w-4 h-4 text-[#A88B57] shrink-0 mt-0.5" />
                   <div>
                     <p className="font-semibold text-[#1A1817]">Direct Studio Email</p>
-                    <a href="mailto:contact@shalonasart.ch" className="text-[#1A1817]/70 hover:text-[#A88B57] transition-colors">
-                      contact@shalonasart.ch
+                    <a href="mailto:info@shalonasart.ch" className="text-[#1A1817]/70 hover:text-[#A88B57] transition-colors">
+                      info@shalonasart.ch
                     </a>
                   </div>
                 </div>

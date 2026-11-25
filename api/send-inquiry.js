@@ -36,9 +36,9 @@ export default async function handler(req, res) {
 
     const resendApiKey = process.env.RESEND_API_KEY;
 
-    // Target recipient requested by Shalona
-    const recipientEmail = 'shalonalei@gmail.com';
-    const fromSender = process.env.RESEND_FROM_EMAIL || 'Shalona Studio <onboarding@resend.dev>';
+    // Target recipient for studio inquiries
+    const recipientEmail = process.env.STUDIO_INBOX_EMAIL || 'info@shalonasart.ch';
+    const fromSender = process.env.RESEND_FROM_EMAIL || 'Shalona Studio <info@shalonasart.ch>';
     const subjectTitle = artworkTitle || inquiryType || 'Artwork Acquisition';
 
     // If RESEND_API_KEY is not configured yet (e.g. during local dev or before adding in Vercel)

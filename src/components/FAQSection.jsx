@@ -20,7 +20,7 @@ export const FAQ_DATA = [
   },
   {
     q: "How can art collectors inquire about acquiring an original artwork?",
-    a: "Collectors may inquire through the private acquisition form on any artwork page or via contact@shalonasart.ch. Every original painting is archived and accompanied by a signed Certificate of Authenticity cataloged in the studio archive."
+    a: "Collectors may inquire through the private acquisition form on any artwork page or via info@shalonasart.ch. Every original painting is archived and accompanied by a signed Certificate of Authenticity cataloged in the studio archive."
   },
   {
     q: "Does Shalona accept bespoke art commissions or gallery collaborations?",
