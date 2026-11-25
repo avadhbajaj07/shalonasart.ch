@@ -19,16 +19,56 @@ import {
   Palette,
   ExternalLink,
   Check,
-  AlertCircle
+  AlertCircle,
+  Trash2,
+  Loader2
 } from 'lucide-react';
+import { supabase } from '../lib/supabase';
 import {
   getStudioEmails,
   updateStudioEmailStatus,
   sendOutgoingStudioEmail
 } from '../utils/sourceOfTruthStore';
 
+function mapDbEmail(row) {
+  const isIncoming = row.direction === 'inbound';
+  const meta = row.metadata || {};
+  let senderName = meta.name;
+  let senderEmail = meta.email;
+
+  if (!senderName && row.from_email) {
+    if (row.from_email.includes('<')) {
+      senderName = row.from_email.split('<')[0].trim();
+      senderEmail = row.from_email.match(/<([^>]+)>/)?.[1];
+    } else {
+      senderName = row.from_email.split('@')[0];
+      senderEmail = row.from_email;
+    }
+  }
+
+  return {
+    id: row.id,
+    direction: isIncoming ? 'incoming' : 'outgoing',
+    sender: row.from_email,
+    senderName: senderName || 'Collector',
+    senderEmail: senderEmail || row.from_email,
+    recipient: row.to_email,
+    subject: row.subject || 'No Subject',
+    body: row.body_text || '',
+    bodyHtml: row.body_html || null,
+    status: row.status === 'sent' ? 'replied' : row.status,
+    artworkTitle: meta.artworkTitle || null,
+    phone: meta.phone || null,
+    location: meta.location || null,
+    created_at: row.created_at || row.received_at || row.sent_at,
+  };
+}
+
 export default function AdminEmailSystem() {
   const [storeVersion, setStoreVersion] = useState(0);
+  const [dbEmails, setDbEmails] = useState([]);
+  const [isLoadingEmails, setIsLoadingEmails] = useState(false);
+
   const [directionFilter, setDirectionFilter] = useState('all'); // 'all' | 'incoming' | 'outgoing'
   const [statusFilter, setStatusFilter] = useState('all'); // 'all' | 'unread' | 'replied' | 'archived'
   const [searchQuery, setSearchQuery] = useState('');
@@ -43,22 +83,60 @@ export default function AdminEmailSystem() {
   const [isSending, setIsSending] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
-  useEffect(() => {
-    const handleUpdate = () => setStoreVersion(v => v + 1);
-    window.addEventListener('shalona_emails_updated', handleUpdate);
-    window.addEventListener('shalona_new_inquiry_received', handleUpdate);
-    return () => {
-      window.removeEventListener('shalona_emails_updated', handleUpdate);
-      window.removeEventListener('shalona_new_inquiry_received', handleUpdate);
-    };
-  }, []);
-
-  const allEmails = useMemo(() => getStudioEmails(), [storeVersion]);
-
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
+
+  const fetchEmailsFromSupabase = async () => {
+    try {
+      setIsLoadingEmails(true);
+      const { data, error } = await supabase
+        .from('emails')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (!error && Array.isArray(data) && data.length > 0) {
+        const mapped = data.map(mapDbEmail);
+        setDbEmails(mapped);
+      }
+    } catch (err) {
+      console.warn('Supabase emails fetch fallback:', err.message);
+    } finally {
+      setIsLoadingEmails(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchEmailsFromSupabase();
+
+    // Listen to local broadcast events
+    const handleUpdate = () => {
+      setStoreVersion(v => v + 1);
+      fetchEmailsFromSupabase();
+    };
+    window.addEventListener('shalona_emails_updated', handleUpdate);
+    window.addEventListener('shalona_new_inquiry_received', handleUpdate);
+
+    // Supabase Real-Time Channel for instant email notifications
+    const channel = supabase
+      .channel('public:emails')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'emails' }, () => {
+        fetchEmailsFromSupabase();
+      })
+      .subscribe();
+
+    return () => {
+      window.removeEventListener('shalona_emails_updated', handleUpdate);
+      window.removeEventListener('shalona_new_inquiry_received', handleUpdate);
+      supabase.removeChannel(channel);
+    };
+  }, []);
+
+  const allEmails = useMemo(() => {
+    if (dbEmails.length > 0) return dbEmails;
+    return getStudioEmails();
+  }, [dbEmails, storeVersion]);
 
   // Filtered emails
   const filteredEmails = useMemo(() => {
@@ -141,10 +219,39 @@ export default function AdminEmailSystem() {
       setComposeTo('');
       setComposeSubject('');
       setComposeBody('');
+      await fetchEmailsFromSupabase();
     } catch (err) {
       alert(`Failed to send email: ${err.message}`);
     } finally {
       setIsSending(false);
+    }
+  };
+
+  const handleUpdateStatus = async (id, nextStatus) => {
+    try {
+      await supabase.from('emails').update({ status: nextStatus }).eq('id', id);
+    } catch (err) {
+      console.warn('Supabase status update error:', err);
+    }
+    updateStudioEmailStatus(id, nextStatus);
+    setDbEmails(prev => prev.map(e => e.id === id ? { ...e, status: nextStatus } : e));
+    if (selectedEmail && selectedEmail.id === id) {
+      setSelectedEmail(prev => ({ ...prev, status: nextStatus }));
+    }
+    setStoreVersion(v => v + 1);
+  };
+
+  const handleDeleteEmail = async (id) => {
+    if (window.confirm('Permanently delete this email from the database?')) {
+      try {
+        await supabase.from('emails').delete().eq('id', id);
+      } catch (err) {
+        console.warn('Supabase delete error:', err);
+      }
+      setDbEmails(prev => prev.filter(e => e.id !== id));
+      setSelectedEmail(null);
+      setStoreVersion(v => v + 1);
+      showToast('Message deleted.');
     }
   };
 
@@ -170,219 +277,187 @@ export default function AdminEmailSystem() {
               Studio Inquiries & Correspondence
             </h2>
             <p className="text-sm font-sans text-[#7A7770] leading-relaxed">
-              Official communications hub for <span className="font-semibold text-[#1A1817]">info@shalonasart.ch</span>. Collector acquisition inquiries submitted through the website appear here instantly and can be replied to directly.
+              Official communications hub for <span className="font-semibold text-[#1A1817]">info@shalonasart.ch</span> backed by Supabase & Resend. Collector acquisition inquiries submitted through the website appear here instantly and can be replied to directly.
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             <button
               onClick={openComposeNew}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
+              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 sm:py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm cursor-pointer"
             >
-              <Send className="w-4 h-4 text-[#A88B57]" />
+              <Send className="w-3.5 h-3.5 text-[#A88B57]" />
               <span>Compose Email</span>
+            </button>
+
+            <button
+              onClick={fetchEmailsFromSupabase}
+              className="p-3 rounded-xl border border-[#DCD9D0] bg-white hover:bg-[#FAF8F3] text-[#7A7770] hover:text-[#1A1817] transition-all cursor-pointer"
+              title="Refresh Mailbox"
+            >
+              <RefreshCw className={`w-4 h-4 ${isLoadingEmails ? 'animate-spin' : ''}`} />
             </button>
           </div>
         </div>
 
-        {/* Status Counters */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6 pt-6 border-t border-[#E5E2D9]">
-          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9] text-center">
-            <div className="text-xl font-serif text-[#1A1817] font-normal">{allEmails.length}</div>
-            <div className="text-[11px] font-sans text-[#7A7770] uppercase tracking-wider mt-0.5">Total Messages</div>
-          </div>
-          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9] text-center">
-            <div className="text-xl font-serif text-[#A88B57] font-normal">{unreadCount}</div>
-            <div className="text-[11px] font-sans text-[#7A7770] uppercase tracking-wider mt-0.5">Unread Inquiries</div>
-          </div>
-          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9] text-center">
-            <div className="text-xl font-serif text-[#1A1817] font-normal">{incomingCount}</div>
-            <div className="text-[11px] font-sans text-[#7A7770] uppercase tracking-wider mt-0.5">Collector Inbound</div>
-          </div>
-          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9] text-center">
-            <div className="text-xl font-serif text-[#1A1817] font-normal">{outgoingCount}</div>
-            <div className="text-[11px] font-sans text-[#7A7770] uppercase tracking-wider mt-0.5">Studio Sent</div>
-          </div>
-        </div>
-      </div>
-
-      {/* FILTER CONTROLS */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        {/* Direction Tabs */}
-        <div className="flex bg-[#FAF8F3] p-1 rounded-xl border border-[#DCD9D0] shadow-sm">
-          <button
-            onClick={() => setDirectionFilter('all')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium uppercase tracking-wider transition-all ${
-              directionFilter === 'all'
-                ? 'bg-white text-[#1A1817] shadow-sm font-semibold'
-                : 'text-[#7A7770] hover:text-[#1A1817]'
-            }`}
-          >
-            All ({allEmails.length})
-          </button>
-          <button
-            onClick={() => setDirectionFilter('incoming')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-              directionFilter === 'incoming'
-                ? 'bg-white text-[#1A1817] shadow-sm font-semibold'
-                : 'text-[#7A7770] hover:text-[#1A1817]'
-            }`}
-          >
-            <ArrowDownLeft className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Inbox ({incomingCount})</span>
-          </button>
-          <button
-            onClick={() => setDirectionFilter('outgoing')}
-            className={`px-3 py-1.5 rounded-lg text-xs font-sans font-medium uppercase tracking-wider transition-all flex items-center gap-1.5 ${
-              directionFilter === 'outgoing'
-                ? 'bg-white text-[#1A1817] shadow-sm font-semibold'
-                : 'text-[#7A7770] hover:text-[#1A1817]'
-            }`}
-          >
-            <ArrowUpRight className="w-3.5 h-3.5 text-[#A88B57]" />
-            <span>Sent ({outgoingCount})</span>
-          </button>
-        </div>
-
-        {/* Status Filter & Search */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          <div className="relative flex-1 sm:w-60">
-            <Search className="w-4 h-4 text-[#7A7770] absolute left-3 top-1/2 -translate-y-1/2" />
-            <input
-              type="text"
-              placeholder="Search sender, subject, artwork..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-3 py-2 bg-white border border-[#DCD9D0] rounded-xl text-xs font-sans focus:outline-none focus:border-[#A88B57]"
-            />
-          </div>
-
-          <div className="flex items-center gap-1 bg-[#FAF8F3] p-1 rounded-xl border border-[#DCD9D0]">
-            {[
-              { id: 'all', label: 'All Status' },
-              { id: 'unread', label: 'Unread' },
-              { id: 'replied', label: 'Replied' },
-              { id: 'archived', label: 'Archived' }
-            ].map(f => (
-              <button
-                key={f.id}
-                onClick={() => setStatusFilter(f.id)}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-sans font-medium uppercase tracking-wider transition-all ${
-                  statusFilter === f.id
-                    ? 'bg-white text-[#1A1817] shadow-sm font-semibold'
-                    : 'text-[#7A7770] hover:text-[#1A1817]'
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* MESSAGES LIST & DETAIL PANE */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-        {/* Messages List Column */}
-        <div className={`${selectedEmail ? 'hidden lg:block lg:col-span-5' : 'col-span-12'} space-y-3`}>
-          {filteredEmails.length === 0 ? (
-            <div className="p-12 text-center bg-white rounded-2xl border border-[#E5E2D9] text-[#7A7770]">
-              <Inbox className="w-8 h-8 text-[#A88B57] mx-auto mb-2 opacity-60" />
-              <p className="font-serif text-lg text-[#2A2A2A]">No messages found in this view.</p>
-              <button
-                onClick={() => { setDirectionFilter('all'); setStatusFilter('all'); setSearchQuery(''); }}
-                className="mt-3 text-xs uppercase tracking-wider text-[#A88B57] underline font-sans"
-              >
-                Reset filters
-              </button>
+        {/* METRICS ROW */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6 mt-6 border-t border-[#E5E2D9]">
+          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9]">
+            <div className="text-[10px] font-mono uppercase text-[#7A7770]">Unread Inquiries</div>
+            <div className="font-serif text-2xl text-[#1A1817] font-medium mt-1">
+              {unreadCount}
             </div>
-          ) : (
-            filteredEmails.map(email => (
-              <div
-                key={email.id}
-                onClick={() => {
-                  setSelectedEmail(email);
-                  // Auto mark as read when opened
-                  if (email.status === 'unread') {
-                    updateStudioEmailStatus(email.id, 'read');
-                    email.status = 'read';
-                    setStoreVersion(v => v + 1);
-                  }
-                }}
-                className={`p-4 sm:p-5 rounded-2xl border cursor-pointer transition-all duration-200 active:scale-[0.99] ${
-                  selectedEmail?.id === email.id
-                    ? 'bg-white border-[#A88B57] shadow-md ring-1 ring-[#A88B57]/30'
-                    : email.status === 'unread'
-                    ? 'bg-white border-[#DCD9D0] shadow-sm ring-1 ring-amber-200'
-                    : 'bg-[#FAF8F3]/60 border-[#E5E2D9] hover:bg-white'
-                }`}
-              >
-                <div className="flex items-center justify-between gap-2 mb-2">
-                  <div className="flex items-center gap-2">
-                    {email.direction === 'incoming' ? (
-                      <span className="p-1 rounded-md bg-amber-50 text-[#A88B57]">
-                        <ArrowDownLeft className="w-3.5 h-3.5" />
-                      </span>
-                    ) : (
-                      <span className="p-1 rounded-md bg-stone-100 text-[#1A1817]">
-                        <ArrowUpRight className="w-3.5 h-3.5" />
-                      </span>
-                    )}
-                    <span className="font-sans text-xs font-semibold text-[#1A1817] truncate max-w-[180px] sm:max-w-xs">
-                      {email.senderName || email.sender || email.recipient}
-                    </span>
-                  </div>
+          </div>
+          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9]">
+            <div className="text-[10px] font-mono uppercase text-[#7A7770]">Total Received</div>
+            <div className="font-serif text-2xl text-[#1A1817] font-medium mt-1">
+              {incomingCount}
+            </div>
+          </div>
+          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9]">
+            <div className="text-[10px] font-mono uppercase text-[#7A7770]">Sent Outbox</div>
+            <div className="font-serif text-2xl text-[#1A1817] font-medium mt-1">
+              {outgoingCount}
+            </div>
+          </div>
+          <div className="bg-white p-3.5 rounded-xl border border-[#E5E2D9]">
+            <div className="text-[10px] font-mono uppercase text-[#7A7770]">Atelier Address</div>
+            <div className="text-xs font-mono text-[#A88B57] font-medium mt-2 truncate" title="info@shalonasart.ch">
+              info@shalonasart.ch
+            </div>
+          </div>
+        </div>
+      </div>
 
-                  <div className="flex items-center gap-2">
-                    {email.status === 'unread' && (
-                      <span className="px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 font-bold text-[10px] uppercase tracking-wider">
-                        New
-                      </span>
-                    )}
-                    <span className="text-[10px] font-mono text-[#7A7770]">
-                      {email.created_at ? new Date(email.created_at).toLocaleDateString('de-CH', { month: 'short', day: 'numeric' }) : ''}
-                    </span>
-                  </div>
-                </div>
-
-                <div className="font-serif text-sm font-normal text-[#1A1817] mb-1 line-clamp-1">
-                  {email.subject}
-                </div>
-
-                <p className="text-xs font-sans text-[#7A7770] line-clamp-2 leading-relaxed">
-                  {email.body}
-                </p>
-
-                <div className="mt-3 pt-2.5 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
-                  {email.artworkTitle ? (
-                    <span className="text-[11px] font-sans text-[#A88B57] flex items-center gap-1 font-medium">
-                      <Palette className="w-3 h-3" />
-                      <span>{email.artworkTitle}</span>
-                    </span>
-                  ) : <span />}
-
-                  <span className={`text-[10px] font-sans uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                    email.status === 'unread'
-                      ? 'bg-amber-100 text-amber-900 font-semibold'
-                      : email.status === 'replied'
-                      ? 'bg-emerald-100 text-emerald-900 font-medium'
-                      : 'bg-gray-100 text-[#7A7770]'
-                  }`}>
-                    {email.status}
-                  </span>
-                </div>
-              </div>
-            ))
-          )}
+      {/* SEARCH & FILTERS BAR */}
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 bg-white p-4 rounded-xl border border-[#E5E2D9]">
+        <div className="relative flex-1">
+          <Search className="w-4 h-4 text-[#7A7770] absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <input
+            type="text"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search collector name, email, artwork title, or message..."
+            className="w-full pl-10 pr-4 py-2 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-xs font-sans text-[#2A2A2A] focus:outline-none focus:border-[#A88B57] focus:bg-white"
+          />
         </div>
 
-        {/* Detail Reader Column */}
-        {selectedEmail && (
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
+          <select
+            value={directionFilter}
+            onChange={(e) => setDirectionFilter(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-[#DCD9D0] bg-white text-xs font-sans text-[#2A2A2A] focus:outline-none focus:border-[#A88B57]"
+          >
+            <option value="all">All Directions</option>
+            <option value="incoming">Received (Inbound)</option>
+            <option value="outgoing">Sent (Outbound)</option>
+          </select>
+
+          <select
+            value={statusFilter}
+            onChange={(e) => setStatusFilter(e.target.value)}
+            className="px-3 py-2 rounded-lg border border-[#DCD9D0] bg-white text-xs font-sans text-[#2A2A2A] focus:outline-none focus:border-[#A88B57]"
+          >
+            <option value="all">All Status</option>
+            <option value="unread">Unread Only</option>
+            <option value="replied">Replied</option>
+            <option value="archived">Archived</option>
+          </select>
+        </div>
+      </div>
+
+      {/* SPLIT VIEW: INBOX LIST + MESSAGE READER */}
+      <div className="grid grid-cols-12 gap-6 items-start">
+        {/* LEFT COLUMN: EMAIL THREADS LIST */}
+        <div className={`${selectedEmail ? 'hidden lg:block lg:col-span-5' : 'col-span-12'} bg-white rounded-2xl border border-[#E5E2D9] overflow-hidden shadow-sm`}>
+          <div className="p-4 border-b border-[#E5E2D9] bg-[#FAF8F3] flex items-center justify-between text-xs font-sans font-medium text-[#7A7770]">
+            <span>Messages ({filteredEmails.length})</span>
+            <span>Sorted by newest</span>
+          </div>
+
+          <div className="divide-y divide-[#E5E2D9] max-h-[720px] overflow-y-auto">
+            {filteredEmails.length === 0 ? (
+              <div className="p-12 text-center text-[#7A7770] space-y-2">
+                <Inbox className="w-8 h-8 text-[#DCD9D0] mx-auto" />
+                <p className="text-xs font-sans">No messages found matching your search filter.</p>
+              </div>
+            ) : (
+              filteredEmails.map((email) => {
+                const isSelected = selectedEmail?.id === email.id;
+                const isUnread = email.direction === 'incoming' && email.status === 'unread';
+
+                return (
+                  <div
+                    key={email.id}
+                    onClick={() => {
+                      setSelectedEmail(email);
+                      if (email.direction === 'incoming' && email.status === 'unread') {
+                        handleUpdateStatus(email.id, 'read');
+                      }
+                    }}
+                    className={`p-4 cursor-pointer transition-all ${
+                      isSelected
+                        ? 'bg-[#FAF8F3] border-l-4 border-l-[#A88B57]'
+                        : isUnread
+                        ? 'bg-amber-50/40 hover:bg-amber-50/70 border-l-4 border-l-[#A88B57]/50'
+                        : 'hover:bg-[#FAF8F3]/60'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between gap-2 mb-1.5">
+                      <div className="flex items-center gap-2">
+                        {email.direction === 'incoming' ? (
+                          <span className="p-1 rounded bg-amber-100/70 text-[#A88B57]">
+                            <ArrowDownLeft className="w-3 h-3" />
+                          </span>
+                        ) : (
+                          <span className="p-1 rounded bg-emerald-100/70 text-emerald-700">
+                            <ArrowUpRight className="w-3 h-3" />
+                          </span>
+                        )}
+                        <span className={`text-xs font-sans truncate max-w-[170px] ${isUnread ? 'font-bold text-[#1A1817]' : 'font-medium text-[#2A2A2A]'}`}>
+                          {email.direction === 'incoming' ? (email.senderName || email.senderEmail) : `To: ${email.recipient}`}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-1.5">
+                        {isUnread && (
+                          <span className="w-2 h-2 rounded-full bg-[#A88B57]" />
+                        )}
+                        <span className="text-[10px] font-mono text-[#7A7770]">
+                          {email.created_at ? new Date(email.created_at).toLocaleDateString('de-CH') : ''}
+                        </span>
+                      </div>
+                    </div>
+
+                    <p className={`text-xs font-serif line-clamp-1 mb-1 ${isUnread ? 'font-semibold text-[#1A1817]' : 'text-[#2A2A2A]'}`}>
+                      {email.subject}
+                    </p>
+
+                    <p className="text-[11px] font-sans text-[#7A7770] line-clamp-2 leading-relaxed">
+                      {email.body}
+                    </p>
+
+                    {email.artworkTitle && (
+                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8F3] border border-[#E5E2D9] text-[9px] font-sans font-medium text-[#A88B57]">
+                        <Palette className="w-2.5 h-2.5" />
+                        <span className="truncate max-w-[200px]">{email.artworkTitle}</span>
+                      </div>
+                    )}
+                  </div>
+                );
+              })
+            )}
+          </div>
+        </div>
+
+        {/* RIGHT COLUMN: FULL EMAIL READER VIEW */}
+        {selectedEmail ? (
           <div className="col-span-12 lg:col-span-7 bg-white rounded-2xl border border-[#E5E2D9] p-5 sm:p-8 shadow-sm space-y-6 animate-fadeIn">
             {/* Mobile Back Button */}
             <div className="lg:hidden pb-1">
               <button
                 onClick={() => setSelectedEmail(null)}
-                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#FAF8F3] active:bg-[#EAE6DE] rounded-xl border border-[#DCD9D0] text-[#1A1817] text-xs font-sans font-semibold uppercase tracking-wider transition-all shadow-sm"
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 bg-[#FAF8F3] active:bg-[#EAE6DE] rounded-xl border border-[#DCD9D0] text-[#1A1817] text-xs font-sans font-semibold uppercase tracking-wider transition-all shadow-sm cursor-pointer"
               >
                 <ArrowLeft className="w-4 h-4 text-[#A88B57]" />
                 <span>← Back to All Messages</span>
@@ -403,7 +478,7 @@ export default function AdminEmailSystem() {
 
                 <button
                   onClick={() => setSelectedEmail(null)}
-                  className="hidden lg:block p-1.5 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3]"
+                  className="hidden lg:block p-1.5 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] cursor-pointer"
                   title="Close reader"
                 >
                   <X className="w-5 h-5" />
@@ -461,7 +536,7 @@ export default function AdminEmailSystem() {
                 {selectedEmail.direction === 'incoming' && (
                   <button
                     onClick={() => openReplyModal(selectedEmail)}
-                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm"
+                    className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all shadow-sm cursor-pointer"
                   >
                     <Reply className="w-4 h-4 text-[#A88B57]" />
                     <span>Reply from info@shalonasart.ch</span>
@@ -472,11 +547,9 @@ export default function AdminEmailSystem() {
                   <button
                     onClick={() => {
                       const next = selectedEmail.status === 'unread' ? 'read' : 'unread';
-                      updateStudioEmailStatus(selectedEmail.id, next);
-                      selectedEmail.status = next;
-                      setStoreVersion(v => v + 1);
+                      handleUpdateStatus(selectedEmail.id, next);
                     }}
-                    className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all text-center"
+                    className="flex-1 sm:flex-initial px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all text-center cursor-pointer"
                   >
                     Mark as {selectedEmail.status === 'unread' ? 'Read' : 'Unread'}
                   </button>
@@ -484,74 +557,173 @@ export default function AdminEmailSystem() {
                   <button
                     onClick={() => {
                       const next = selectedEmail.status === 'archived' ? 'read' : 'archived';
-                      updateStudioEmailStatus(selectedEmail.id, next);
-                      selectedEmail.status = next;
-                      setStoreVersion(v => v + 1);
+                      handleUpdateStatus(selectedEmail.id, next);
                       showToast(`Message marked as ${next}.`);
                     }}
-                    className="px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all"
+                    className="px-3.5 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] transition-all cursor-pointer"
                     title="Archive"
                   >
                     <Archive className="w-4 h-4" />
+                  </button>
+
+                  <button
+                    onClick={() => handleDeleteEmail(selectedEmail.id)}
+                    className="px-3.5 py-2.5 rounded-xl border border-red-200 text-xs font-sans text-red-600 hover:bg-red-50 transition-all cursor-pointer"
+                    title="Delete message from database"
+                  >
+                    <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
               </div>
 
               <div className="text-xs text-[#7A7770] font-sans text-center sm:text-right pt-2 sm:pt-0">
-                Status: <strong className="capitalize text-[#1A1817]">{selectedEmail.status}</strong>
+                Studio Archive ID: <span className="font-mono">{selectedEmail.id.slice ? selectedEmail.id.slice(0, 8) : selectedEmail.id}</span>
               </div>
+            </div>
+          </div>
+        ) : (
+          <div className="hidden lg:flex lg:col-span-7 bg-[#FAF8F3]/60 rounded-2xl border border-dashed border-[#DCD9D0] min-h-[400px] items-center justify-center text-center p-8 text-[#7A7770]">
+            <div className="space-y-3 max-w-sm">
+              <Mail className="w-10 h-10 text-[#A88B57] mx-auto opacity-60" />
+              <h4 className="font-serif text-lg text-[#1A1817]">Select a conversation to read</h4>
+              <p className="text-xs font-sans leading-relaxed">
+                Click any message on the left to read full collector inquiries and respond directly from <span className="font-semibold text-[#1A1817]">info@shalonasart.ch</span>.
+              </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* FLOATING ACTION BUTTON ON MOBILE */}
-      <button
-        onClick={openComposeNew}
-        className="sm:hidden fixed bottom-6 right-6 z-40 p-4 rounded-full bg-[#1A1817] text-white shadow-2xl border border-[#A88B57]/50 flex items-center justify-center active:scale-90 transition-all"
-        title="Compose Email from info@shalonasart.ch"
-      >
-        <Send className="w-5 h-5 text-[#A88B57]" />
-      </button>
-
-      {/* COMPOSE / REPLY MODAL */}
-      {(isComposeOpen || replyModalEmail) && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-end sm:items-center justify-center p-0 sm:p-4">
-          <div className="bg-white rounded-t-3xl sm:rounded-2xl border-0 sm:border border-[#E5E2D9] max-w-2xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto p-5 sm:p-8 shadow-2xl space-y-5 animate-scaleUp flex flex-col justify-between">
+      {/* MODAL: COMPOSE NEW EMAIL */}
+      {isComposeOpen && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-[#E5E2D9] max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-scaleUp">
             <div className="flex items-center justify-between border-b border-[#E5E2D9] pb-4">
-              <div className="space-y-1">
-                <div className="text-[11px] font-mono text-[#A88B57] uppercase tracking-wider">
-                  From: info@shalonasart.ch (Shalona Fine Art Atelier)
-                </div>
-                <h3 className="font-serif text-xl sm:text-2xl font-light text-[#1A1817]">
-                  {replyModalEmail ? `Reply to ${replyModalEmail.senderName || 'Collector'}` : 'Compose Studio Message'}
+              <div>
+                <h3 className="font-serif text-2xl font-light text-[#1A1817]">
+                  Compose New Studio Email
                 </h3>
+                <p className="text-xs font-mono text-[#A88B57] mt-0.5">
+                  Sending from: info@shalonasart.ch
+                </p>
               </div>
               <button
-                onClick={() => { setIsComposeOpen(false); setReplyModalEmail(null); }}
-                className="p-2 rounded-lg text-[#7A7770] hover:text-[#1A1817] active:bg-gray-100"
+                onClick={() => setIsComposeOpen(false)}
+                className="p-1 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] cursor-pointer"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
-            <form onSubmit={handleSendEmail} className="space-y-4">
+            <form onSubmit={handleSendEmail} className="space-y-4 text-xs font-sans">
               <div>
-                <label className="block text-xs font-mono uppercase tracking-wider text-[#7A7770] mb-1">
-                  To (Recipient Email)
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
+                  Recipient Email *
                 </label>
                 <input
                   type="email"
                   required
                   value={composeTo}
                   onChange={(e) => setComposeTo(e.target.value)}
-                  placeholder="collector@example.com"
-                  className="w-full px-4 py-3 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all"
+                  placeholder="collector@gallery.ch"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase tracking-wider text-[#7A7770] mb-1">
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
+                  Subject *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={composeSubject}
+                  onChange={(e) => setComposeSubject(e.target.value)}
+                  placeholder="Subject of the email"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
+                  Message Body *
+                </label>
+                <textarea
+                  rows={8}
+                  required
+                  value={composeBody}
+                  onChange={(e) => setComposeBody(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white font-sans leading-relaxed"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E2D9]">
+                <button
+                  type="button"
+                  onClick={() => setIsComposeOpen(false)}
+                  className="px-4 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:bg-[#FAF8F3] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] text-white text-xs font-sans font-medium uppercase tracking-wider disabled:opacity-50 transition-all shadow-sm cursor-pointer"
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Sending...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5 text-[#A88B57]" />
+                      <span>Dispatch Email</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: REPLY TO EMAIL */}
+      {replyModalEmail && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl border border-[#E5E2D9] max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl animate-scaleUp">
+            <div className="flex items-center justify-between border-b border-[#E5E2D9] pb-4">
+              <div>
+                <h3 className="font-serif text-2xl font-light text-[#1A1817]">
+                  Reply to {replyModalEmail.senderName || replyModalEmail.senderEmail}
+                </h3>
+                <p className="text-xs font-mono text-[#A88B57] mt-0.5">
+                  Replying from: info@shalonasart.ch
+                </p>
+              </div>
+              <button
+                onClick={() => setReplyModalEmail(null)}
+                className="p-1 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSendEmail} className="space-y-4 text-xs font-sans">
+              <div>
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
+                  Recipient
+                </label>
+                <input
+                  type="email"
+                  disabled
+                  value={composeTo}
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-gray-100 text-sm text-[#7A7770]"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
                   Subject
                 </label>
                 <input
@@ -559,56 +731,48 @@ export default function AdminEmailSystem() {
                   required
                   value={composeSubject}
                   onChange={(e) => setComposeSubject(e.target.value)}
-                  placeholder="Regarding your artwork inquiry..."
-                  className="w-full px-4 py-3 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-mono uppercase tracking-wider text-[#7A7770] mb-1">
-                  Message Body
+                <label className="block text-[10px] uppercase font-mono tracking-wider text-[#7A7770] mb-1">
+                  Your Studio Response *
                 </label>
                 <textarea
-                  rows={7}
+                  rows={9}
                   required
                   value={composeBody}
                   onChange={(e) => setComposeBody(e.target.value)}
-                  className="w-full p-4 bg-[#FAF8F3] border border-[#DCD9D0] rounded-xl text-sm font-sans text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white transition-all leading-relaxed resize-none"
+                  className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white font-sans leading-relaxed"
                 />
               </div>
 
-              <div className="pt-4 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <span className="text-[11px] font-sans text-[#7A7770] text-center sm:text-left">
-                  Sender: <strong className="text-[#1A1817]">info@shalonasart.ch</strong>
-                </span>
-
-                <div className="flex items-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => { setIsComposeOpen(false); setReplyModalEmail(null); }}
-                    className="flex-1 sm:flex-initial px-4 py-3 rounded-xl text-xs font-sans text-[#7A7770] hover:text-[#1A1817] text-center"
-                  >
-                    Cancel
-                  </button>
-
-                  <button
-                    type="submit"
-                    disabled={isSending}
-                    className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] active:scale-98 text-white text-xs font-sans font-medium uppercase tracking-wider transition-all disabled:opacity-50 shadow-sm"
-                  >
-                    {isSending ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                        <span>Sending...</span>
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4 text-[#A88B57]" />
-                        <span>Send Message</span>
-                      </>
-                    )}
-                  </button>
-                </div>
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E2D9]">
+                <button
+                  type="button"
+                  onClick={() => setReplyModalEmail(null)}
+                  className="px-4 py-2.5 rounded-xl border border-[#DCD9D0] text-xs font-sans text-[#7A7770] hover:bg-[#FAF8F3] cursor-pointer"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSending}
+                  className="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#1A1817] hover:bg-[#2A2A2A] text-white text-xs font-sans font-medium uppercase tracking-wider disabled:opacity-50 transition-all shadow-sm cursor-pointer"
+                >
+                  {isSending ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Dispatching Reply...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Send className="w-3.5 h-3.5 text-[#A88B57]" />
+                      <span>Send Studio Reply</span>
+                    </>
+                  )}
+                </button>
               </div>
             </form>
           </div>

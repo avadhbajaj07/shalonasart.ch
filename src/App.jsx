@@ -23,7 +23,7 @@ import TimelinePage from './pages/TimelinePage';
 import ContactPage from './pages/ContactPage';
 import AdminPage from './pages/AdminPage';
 
-import { getLiveArtworks } from './utils/studioStore';
+import { getLiveArtworks, loadArtworksFromSupabase } from './utils/studioStore';
 import { trackPageView } from './utils/analytics';
 
 export default function App() {
@@ -48,8 +48,9 @@ function AppContent() {
 
   const [artworkList, setArtworkList] = useState(() => getLiveArtworks());
 
-  // Listen for live studio updates from Admin Portal
+  // Load live artworks from Supabase on mount & listen for live updates
   useEffect(() => {
+    loadArtworksFromSupabase();
     const handleArtworksUpdate = () => {
       setArtworkList(getLiveArtworks());
     };

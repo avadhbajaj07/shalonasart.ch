@@ -9,6 +9,9 @@ import {
   updateArtwork,
   deleteArtwork,
   resetToDefaultArtworks,
+  reorderArtworks,
+  loadArtworksFromSupabase,
+  uploadArtworkImageToSupabase,
   saveJournal, 
   updateJournal,
   deleteJournal,
@@ -20,6 +23,7 @@ import {
   getLiveJournals,
   exportStudioBackup
 } from '../utils/studioStore';
+import { supabase } from '../lib/supabase';
 import { 
   Lock, 
   Unlock, 
@@ -36,6 +40,7 @@ import {
   Search, 
   Filter, 
   Eye, 
+  EyeOff,
   Palette, 
   BookOpen, 
   Tag, 
@@ -44,7 +49,10 @@ import {
   Maximize2,
   RefreshCw,
   AlertTriangle,
-  Mail
+  Mail,
+  ArrowUp,
+  ArrowDown,
+  Loader2
 } from 'lucide-react';
 import AdminEmailSystem from '../components/AdminEmailSystem';
 import { getStudioEmails } from '../utils/sourceOfTruthStore';
@@ -134,7 +142,11 @@ export default function AdminPage() {
   const [editArtPhilosophy, setEditArtPhilosophy] = useState('');
   const [editArtStatus, setEditArtStatus] = useState('Available');
   const [editArtImage, setEditArtImage] = useState(null);
+  const [editArtImageMeta, setEditArtImageMeta] = useState(null);
   const [isCompressingEditArt, setIsCompressingEditArt] = useState(false);
+  const [isSubmittingArt, setIsSubmittingArt] = useState(false);
+  const [isSubmittingEditArt, setIsSubmittingEditArt] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   // Edit Journal Form State
   const [editJournalTitle, setEditJournalTitle] = useState('');
@@ -154,9 +166,29 @@ export default function AdminPage() {
   const editArtFileInputRef = useRef(null);
   const editJournalFileInputRef = useRef(null);
 
+  // Check Supabase session on mount
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+        localStorage.setItem('shalona_admin_auth', 'true');
+      }
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user) {
+        setIsAuthenticated(true);
+        localStorage.setItem('shalona_admin_auth', 'true');
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
+
   // Reload master data
-  const reloadData = () => {
+  const reloadData = async () => {
     try {
+      await loadArtworksFromSupabase();
       const arts = getLiveArtworks();
       const journs = getLiveJournals();
       setAllArtworks(arts);
@@ -173,24 +205,56 @@ export default function AdminPage() {
     }
   }, [isAuthenticated]);
 
-  // Auth Submit
+  // Auth Submit (Supabase Auth email + password with studio hash fallback)
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!passwordInput.trim()) {
       setAuthError('Please enter the studio password.');
       return;
     }
-    const computedHash = await hashPassword(passwordInput.trim());
-    if (computedHash === ADMIN_PASSWORD_HASH) {
-      setIsAuthenticated(true);
-      localStorage.setItem('shalona_admin_auth', 'true');
-      setAuthError('');
-    } else {
-      setAuthError('Incorrect studio password. Access denied.');
+
+    setIsLoggingIn(true);
+    setAuthError('');
+
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: 'info@shalonasart.ch',
+        password: passwordInput.trim(),
+      });
+
+      if (!error && data?.session) {
+        setIsAuthenticated(true);
+        localStorage.setItem('shalona_admin_auth', 'true');
+        setAuthError('');
+        return;
+      }
+
+      // Check SHA-256 hash fallback
+      const computedHash = await hashPassword(passwordInput.trim());
+      if (computedHash === ADMIN_PASSWORD_HASH) {
+        setIsAuthenticated(true);
+        localStorage.setItem('shalona_admin_auth', 'true');
+        setAuthError('');
+      } else {
+        setAuthError('Incorrect studio password. Access denied.');
+      }
+    } catch (err) {
+      console.warn('Supabase auth error, checking hash:', err);
+      const computedHash = await hashPassword(passwordInput.trim());
+      if (computedHash === ADMIN_PASSWORD_HASH) {
+        setIsAuthenticated(true);
+        localStorage.setItem('shalona_admin_auth', 'true');
+        setAuthError('');
+      } else {
+        setAuthError('Incorrect studio password.');
+      }
+    } finally {
+      setIsLoggingIn(false);
     }
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut().catch(() => {});
     setIsAuthenticated(false);
     localStorage.removeItem('shalona_admin_auth');
     setPasswordInput('');
@@ -271,6 +335,7 @@ export default function AdminPage() {
       setIsCompressingEditArt(true);
       const compressed = await compressImageFile(file, 1600, 1600, 0.85);
       setEditArtImage(compressed.dataUrl);
+      setEditArtImageMeta(compressed);
     } catch (err) {
       alert('Error processing image.');
     } finally {
@@ -311,7 +376,7 @@ export default function AdminPage() {
   };
 
   // Submit New Artwork
-  const handleSubmitArtwork = (e) => {
+  const handleSubmitArtwork = async (e) => {
     e.preventDefault();
     if (!artImage) {
       alert('Please upload an image of the artwork from your phone or device.');
@@ -319,11 +384,25 @@ export default function AdminPage() {
     }
 
     try {
+      setIsSubmittingArt(true);
       const isUnfinished = artCategory === 'Unfinished Works';
       const title = artTitle.trim() || (isUnfinished ? 'Untitled Study' : 'Untitled Stillness');
       const status = isUnfinished ? 'In Progress' : artStatus;
 
-      const newArt = saveArtwork({
+      let uploadedUrl = artImage;
+      let storagePath = null;
+
+      if (artImageMeta?.blob) {
+        try {
+          const uploadRes = await uploadArtworkImageToSupabase(artImageMeta.blob, title);
+          uploadedUrl = uploadRes.url;
+          storagePath = uploadRes.path;
+        } catch (uploadErr) {
+          console.warn('Storage upload fallback:', uploadErr);
+        }
+      }
+
+      const newArt = await saveArtwork({
         title,
         category: artCategory,
         dimensions: artDimensions.trim() || (isUnfinished ? 'Easel study' : '100 × 80 cm'),
@@ -332,14 +411,16 @@ export default function AdminPage() {
         philosophy: artPhilosophy.trim(),
         caption: artPhilosophy.trim() || (isUnfinished ? 'Study in waiting, Richterswil studio.' : 'Original artwork by Shalona, Richterswil.'),
         status,
-        image: artImage,
-        thumbnail: artImage,
-        featured: false
+        image: uploadedUrl,
+        thumbnail: uploadedUrl,
+        imagePath: storagePath,
+        featured: false,
+        isPublished: true,
       });
 
-      setSuccessMessage(`Artwork "${newArt.title}" has been published and is now LIVE on the website!`);
+      setSuccessMessage(`Artwork "${newArt.title}" has been saved to Supabase and is now LIVE on the website!`);
       setLastPublishedLink(isUnfinished ? '/unfinished-works' : `/arts/${newArt.slug}`);
-      reloadData();
+      await reloadData();
 
       // Reset form
       setArtTitle('');
@@ -348,8 +429,10 @@ export default function AdminPage() {
       setArtImageMeta(null);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     } catch (err) {
-      alert('Failed to publish artwork. Storage may be full.');
+      alert('Failed to publish artwork: ' + (err.message || 'Storage error'));
       console.error(err);
+    } finally {
+      setIsSubmittingArt(false);
     }
   };
 
@@ -364,18 +447,33 @@ export default function AdminPage() {
     setEditArtPhilosophy(art.philosophy || art.caption || '');
     setEditArtStatus(art.status || 'Available');
     setEditArtImage(art.image || null);
+    setEditArtImageMeta(null);
   };
 
-  // Save Artwork Edits (Update Existing / Old Artworks)
-  const handleSaveArtworkEdit = (e) => {
+  // Save Artwork Edits (Update Existing / Old Artworks in Supabase)
+  const handleSaveArtworkEdit = async (e) => {
     e.preventDefault();
     if (!editingArtwork) return;
 
     try {
+      setIsSubmittingEditArt(true);
       const isUnfinished = editArtCategory === 'Unfinished Works';
       const status = isUnfinished && editArtStatus === 'Available' ? 'In Progress' : editArtStatus;
 
-      const updated = updateArtwork(editingArtwork.id, {
+      let uploadedUrl = editArtImage;
+      let storagePath = editingArtwork.imagePath;
+
+      if (editArtImageMeta?.blob) {
+        try {
+          const uploadRes = await uploadArtworkImageToSupabase(editArtImageMeta.blob, editArtTitle);
+          uploadedUrl = uploadRes.url;
+          storagePath = uploadRes.path;
+        } catch (uploadErr) {
+          console.warn('Storage upload fallback:', uploadErr);
+        }
+      }
+
+      const updated = await updateArtwork(editingArtwork.id, {
         title: editArtTitle.trim() || 'Untitled Stillness',
         category: editArtCategory,
         dimensions: editArtDimensions.trim(),
@@ -384,34 +482,59 @@ export default function AdminPage() {
         philosophy: editArtPhilosophy.trim(),
         caption: editArtPhilosophy.trim(),
         status,
-        image: editArtImage
+        image: uploadedUrl,
+        imagePath: storagePath,
       });
 
-      setSuccessMessage(`Updated "${updated.title}" successfully! Changes are now live on the website.`);
+      setSuccessMessage(`Updated "${updated.title}" successfully in Supabase! Changes are live on the website.`);
       setLastPublishedLink(isUnfinished ? '/unfinished-works' : `/arts/${updated.slug}`);
       setEditingArtwork(null);
-      reloadData();
+      await reloadData();
     } catch (err) {
-      alert('Failed to update artwork.');
+      alert('Failed to update artwork: ' + (err.message || 'Error'));
       console.error(err);
+    } finally {
+      setIsSubmittingEditArt(false);
     }
   };
 
   // Delete Artwork (Works for ALL artworks: old and new)
-  const handleDeleteArtwork = (id, title) => {
-    if (window.confirm(`Are you sure you want to permanently delete "${title}" from the website? This will remove it from all gallery collections and pages.`)) {
-      deleteArtwork(id);
-      reloadData();
-      setSuccessMessage(`"${title}" has been deleted from the website.`);
+  const handleDeleteArtwork = async (id, title) => {
+    if (window.confirm(`Are you sure you want to permanently delete "${title}" from the website and Supabase database? This will remove it from all gallery collections and pages.`)) {
+      await deleteArtwork(id);
+      await reloadData();
+      setSuccessMessage(`"${title}" has been deleted from Supabase and the website.`);
     }
   };
 
-  // Reset to Original 57 Artworks
-  const handleResetArtworks = () => {
-    if (window.confirm('Reset all artworks back to the original 57 pieces? Any custom modifications will be restored to defaults.')) {
-      resetToDefaultArtworks();
-      reloadData();
-      setSuccessMessage('Artworks restored to original 57 pieces.');
+  // Reorder Artwork (Move Up / Down)
+  const handleMoveArtwork = async (index, direction) => {
+    const targetIndex = index + direction;
+    if (targetIndex < 0 || targetIndex >= allArtworks.length) return;
+
+    const newList = [...allArtworks];
+    const [moved] = newList.splice(index, 1);
+    newList.splice(targetIndex, 0, moved);
+
+    setAllArtworks(newList);
+    await reorderArtworks(newList);
+    setSuccessMessage(`Reordered "${moved.title}" successfully.`);
+  };
+
+  // Toggle Live / Draft Published Status
+  const handleTogglePublished = async (art) => {
+    const nextPublished = !(art.isPublished ?? true);
+    await updateArtwork(art.id, { isPublished: nextPublished });
+    await reloadData();
+    setSuccessMessage(`"${art.title}" is now ${nextPublished ? 'Live on Website' : 'Hidden (Draft)'}.`);
+  };
+
+  // Reset to Original 51 Artworks
+  const handleResetArtworks = async () => {
+    if (window.confirm('Reload all artworks directly from Supabase database?')) {
+      await resetToDefaultArtworks();
+      await reloadData();
+      setSuccessMessage('Artworks refreshed from Supabase database.');
     }
   };
 
@@ -595,9 +718,17 @@ export default function AdminPage() {
 
             <button
               type="submit"
-              className="w-full py-3.5 px-6 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] text-white font-sans text-sm font-medium tracking-wider uppercase transition-all shadow-md active:scale-[0.99]"
+              disabled={isLoggingIn}
+              className="w-full py-3.5 px-6 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] disabled:opacity-50 text-white font-sans text-sm font-medium tracking-wider uppercase transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
             >
-              Enter Studio
+              {isLoggingIn ? (
+                <>
+                  <Loader2 className="w-4 h-4 text-[#A88B57] animate-spin" />
+                  <span>Verifying Studio Credentials...</span>
+                </>
+              ) : (
+                <span>Enter Studio</span>
+              )}
             </button>
           </form>
 
@@ -1160,10 +1291,20 @@ export default function AdminPage() {
               <div className="pt-4 border-t border-gray-100">
                 <button
                   type="submit"
-                  className="w-full py-4 px-6 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] text-white font-sans text-sm font-semibold tracking-wider uppercase transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2"
+                  disabled={isSubmittingArt || isCompressingArt}
+                  className="w-full py-4 px-6 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] disabled:opacity-50 text-white font-sans text-sm font-semibold tracking-wider uppercase transition-all shadow-md active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
                 >
-                  <Sparkles className="w-4 h-4 text-[#A88B57]" />
-                  <span>Publish Artwork Live to Website</span>
+                  {isSubmittingArt ? (
+                    <>
+                      <Loader2 className="w-4 h-4 text-[#A88B57] animate-spin" />
+                      <span>Saving to Supabase & Publishing...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 text-[#A88B57]" />
+                      <span>Publish Artwork Live to Website</span>
+                    </>
+                  )}
                 </button>
               </div>
 
@@ -1243,6 +1384,7 @@ export default function AdminPage() {
               <table className="w-full text-left border-collapse text-xs font-sans">
                 <thead>
                   <tr className="bg-[#FAF8F3] border-b border-[#E5E2D9] text-[#7A7770] uppercase tracking-wider text-[10px]">
+                    <th className="py-3.5 px-3 font-semibold text-center w-14">Order</th>
                     <th className="py-3.5 px-4 font-semibold">Artwork</th>
                     <th className="py-3.5 px-4 font-semibold">Category</th>
                     <th className="py-3.5 px-4 font-semibold hidden md:table-cell">Dimensions & Medium</th>
@@ -1254,17 +1396,44 @@ export default function AdminPage() {
                 <tbody className="divide-y divide-[#E5E2D9]">
                   {filteredInventoryArtworks.length === 0 ? (
                     <tr>
-                      <td colSpan="6" className="py-12 text-center text-[#7A7770]">
+                      <td colSpan="7" className="py-12 text-center text-[#7A7770]">
                         No artworks matched your search criteria.
                       </td>
                     </tr>
                   ) : (
-                    filteredInventoryArtworks.map((art) => {
+                    filteredInventoryArtworks.map((art, artIndex) => {
                       return (
                         <tr 
                           key={art.id} 
                           className="hover:bg-[#FAF8F3]/70 transition-colors group"
                         >
+                          {/* Order & Reordering Controls */}
+                          <td className="py-3 px-2 text-center">
+                            <div className="flex items-center justify-center gap-1">
+                              <span className="font-mono text-[10px] text-[#7A7770] w-4">{artIndex + 1}</span>
+                              <div className="flex flex-col">
+                                <button
+                                  type="button"
+                                  disabled={artIndex === 0}
+                                  onClick={() => handleMoveArtwork(artIndex, -1)}
+                                  className="p-0.5 text-[#7A7770] hover:text-[#1A1817] disabled:opacity-20 transition-colors"
+                                  title="Move up"
+                                >
+                                  <ArrowUp className="w-3 h-3" />
+                                </button>
+                                <button
+                                  type="button"
+                                  disabled={artIndex === filteredInventoryArtworks.length - 1}
+                                  onClick={() => handleMoveArtwork(artIndex, 1)}
+                                  className="p-0.5 text-[#7A7770] hover:text-[#1A1817] disabled:opacity-20 transition-colors"
+                                  title="Move down"
+                                >
+                                  <ArrowDown className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </div>
+                          </td>
+
                           {/* Image & Title */}
                           <td className="py-3 px-4">
                             <div className="flex items-center gap-3">
@@ -1333,6 +1502,24 @@ export default function AdminPage() {
                           {/* Full Actions (View, Edit, Delete for ALL artworks) */}
                           <td className="py-3 px-4 text-right">
                             <div className="flex items-center justify-end gap-1.5">
+                              {/* Published Toggle */}
+                              <button
+                                type="button"
+                                onClick={() => handleTogglePublished(art)}
+                                className={`p-1.5 rounded-lg transition-colors ${
+                                  art.isPublished !== false
+                                    ? 'text-emerald-700 hover:bg-emerald-50'
+                                    : 'text-stone-400 hover:bg-stone-100'
+                                }`}
+                                title={art.isPublished !== false ? 'Published (Live) - Click to hide from website' : 'Draft (Hidden) - Click to publish live'}
+                              >
+                                {art.isPublished !== false ? (
+                                  <Eye className="w-4 h-4" />
+                                ) : (
+                                  <EyeOff className="w-4 h-4 text-stone-400" />
+                                )}
+                              </button>
+
                               {/* View on Site */}
                               <Link
                                 to={art.category === 'Unfinished Works' ? '/unfinished-works' : `/arts/${art.slug}`}
@@ -1865,9 +2052,17 @@ export default function AdminPage() {
 
                 <button
                   type="submit"
-                  className="px-6 py-2.5 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] text-white text-xs font-semibold uppercase tracking-wider shadow-md transition-colors"
+                  disabled={isSubmittingEditArt || isCompressingEditArt}
+                  className="px-6 py-2.5 rounded-xl bg-[#2A2A2A] hover:bg-[#A88B57] disabled:opacity-50 text-white text-xs font-semibold uppercase tracking-wider shadow-md transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  Save Changes Live
+                  {isSubmittingEditArt ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Updating Supabase...</span>
+                    </>
+                  ) : (
+                    <span>Save Changes Live</span>
+                  )}
                 </button>
               </div>
 

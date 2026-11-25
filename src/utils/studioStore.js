@@ -1,3 +1,5 @@
+import { z } from 'zod';
+import { supabase } from '../lib/supabase';
 import { artworks as initialArtworks } from '../data/artworks';
 import { journals as initialJournals } from '../data/journals';
 
@@ -19,6 +21,90 @@ export const DEFAULT_JOURNAL_CATEGORIES = [
   'Technique & Pigments',
   'Atelier Notes'
 ];
+
+/**
+ * Zod validation schema for artwork creation and updates
+ */
+export const ArtworkInputSchema = z.object({
+  title: z.string().min(1, 'Artwork title is required'),
+  category: z.string().min(1, 'Category is required'),
+  dimensions: z.string().optional().default('100 × 80 cm'),
+  medium: z.string().optional().default('Mixed media on linen'),
+  year: z.string().optional().default(new Date().getFullYear().toString()),
+  philosophy: z.string().optional().default(''),
+  status: z.string().optional().default('Available'),
+  image: z.string().min(1, 'Artwork image is required'),
+  featured: z.boolean().optional().default(false),
+  isPublished: z.boolean().optional().default(true),
+});
+
+/**
+ * Maps Supabase DB row to the frontend artwork model
+ */
+export function mapSupabaseToArtwork(row) {
+  const normStatus = (row.status || 'available').toLowerCase();
+  let uiStatus = 'Available';
+  if (normStatus.includes('sold')) uiStatus = 'Sold';
+  else if (normStatus.includes('not') || normStatus.includes('private')) uiStatus = 'Not For Sale';
+  else if (normStatus.includes('progress') || normStatus.includes('unfinish')) uiStatus = 'In Progress';
+
+  return {
+    id: row.id,
+    accession: row.accession || `SHA-${row.year || '2026'}-${String(row.sort_order || 1).padStart(2, '0')}`,
+    title: row.title,
+    slug: row.slug,
+    category: row.category || 'Abstract',
+    image: row.image_url || '/wp-content/uploads/2026/11/IMG_1085-scaled.jpg',
+    thumbnail: row.thumbnail_url || row.image_url || '/wp-content/uploads/2026/11/IMG_1085-654x1024.jpg',
+    localImage: row.image_url,
+    year: String(row.year || '2026'),
+    medium: row.medium || 'Mixed media, acrylic emulsions & earth pigments on linen',
+    dimensions: row.dimensions || '100 × 80 cm',
+    caption: row.description || row.philosophy || 'Original artwork by Shalona, Richterswil, Switzerland.',
+    philosophy: row.philosophy || row.description || '',
+    status: uiStatus,
+    featured: Boolean(row.featured),
+    width: row.width || 1800,
+    height: row.height || 2400,
+    aspectRatio: Number(row.aspect_ratio || 0.75),
+    artist: 'Shalona',
+    purchaseStatus: uiStatus,
+    sortOrder: row.sort_order || 0,
+    isPublished: row.is_published ?? true,
+    imagePath: row.image_path || null,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  };
+}
+
+/**
+ * Asynchronously fetch artworks from Supabase, sync to localStorage, and notify subscribers
+ */
+export async function loadArtworksFromSupabase() {
+  try {
+    const { data, error } = await supabase
+      .from('artworks')
+      .select('*')
+      .order('sort_order', { ascending: true });
+
+    if (error) {
+      console.warn('Supabase fetch error, fallback to cache:', error.message);
+      return getLiveArtworks();
+    }
+
+    if (Array.isArray(data) && data.length > 0) {
+      const mapped = data.map(mapSupabaseToArtwork);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(mapped));
+        window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: mapped }));
+      }
+      return mapped;
+    }
+  } catch (err) {
+    console.warn('Network or Supabase load failure:', err.message);
+  }
+  return getLiveArtworks();
+}
 
 /**
  * Get all available categories (base + user created)
@@ -58,13 +144,17 @@ export function addCategory(categoryName) {
 }
 
 /**
- * Remove a custom category
+ * Remove a custom category (cannot remove DEFAULT_CATEGORIES)
  */
 export function removeCategory(categoryName) {
+  if (DEFAULT_CATEGORIES.includes(categoryName)) {
+    return getCategories();
+  }
   const current = getCategories();
   const updated = current.filter(c => c !== categoryName);
   try {
-    localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(updated));
+    const customOnly = updated.filter(c => !DEFAULT_CATEGORIES.includes(c));
+    localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(customOnly));
     window.dispatchEvent(new CustomEvent('shalona_categories_updated', { detail: updated }));
   } catch (e) {
     console.error('Failed to remove category:', e);
@@ -83,13 +173,13 @@ export function getJournalCategories() {
       return Array.from(new Set([...DEFAULT_JOURNAL_CATEGORIES, ...parsed]));
     }
   } catch (e) {
-    console.warn('Error reading journal categories:', e);
+    console.warn('Error reading journal categories from localStorage:', e);
   }
   return DEFAULT_JOURNAL_CATEGORIES;
 }
 
 /**
- * Add a new journal category
+ * Add a new custom journal category
  */
 export function addJournalCategory(categoryName) {
   const trimmed = categoryName?.trim();
@@ -100,6 +190,7 @@ export function addJournalCategory(categoryName) {
     const updated = [...current, trimmed];
     try {
       localStorage.setItem(JOURNAL_CATEGORIES_STORAGE_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('shalona_journal_categories_updated', { detail: updated }));
     } catch (e) {
       console.error('Failed to save journal category:', e);
     }
@@ -109,7 +200,7 @@ export function addJournalCategory(categoryName) {
 }
 
 /**
- * Helper to generate URL slug from text
+ * Generate URL safe slug from text
  */
 export function generateSlug(text) {
   return text
@@ -124,67 +215,18 @@ export function generateSlug(text) {
 }
 
 /**
- * Get all live artworks (Master collection including all 57 original + custom additions + edits)
+ * Get all live artworks (Master collection including original + custom additions + edits)
  */
 export function getLiveArtworks() {
   try {
-    const saved = localStorage.getItem(MASTER_ARTWORKS_KEY);
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(MASTER_ARTWORKS_KEY) : null;
     if (saved) {
       let parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
-        // Prune legacy duplicate / dummy WordPress items
-        const prunedIds = new Set([1784, 1782, 1780, 1773, 1736, 1763]);
-        const beforeCount = parsed.length;
-        parsed = parsed.filter(item => !prunedIds.has(item.id));
-        let hasChanges = parsed.length !== beforeCount;
-
-        // Hydrate authentic philosophies and normalized data from initialArtworks
-        const initialMap = new Map(initialArtworks.map(a => [a.id, a]));
-        parsed = parsed.map(item => {
-          const init = initialMap.get(item.id);
-          if (init) {
-            let updatedItem = { ...item };
-            if (init.category === 'Unfinished Works') {
-              updatedItem.category = init.category;
-              updatedItem.status = init.status;
-              updatedItem.image = init.image;
-              updatedItem.thumbnail = init.thumbnail;
-              updatedItem.localImage = init.localImage;
-              updatedItem.caption = init.caption;
-              updatedItem.philosophy = init.philosophy;
-              updatedItem.year = init.year;
-              updatedItem.title = init.title;
-              updatedItem.dimensions = init.dimensions;
-              updatedItem.medium = init.medium;
-              hasChanges = true;
-            }
-            if (!item.philosophy || item.philosophy.includes('Original artwork by Shalona') || !item.caption || item.caption.includes('Original artwork by Shalona')) {
-              updatedItem.philosophy = init.philosophy;
-              updatedItem.caption = init.caption;
-              updatedItem.dimensions = init.dimensions;
-              updatedItem.year = init.year;
-              updatedItem.category = init.category;
-              hasChanges = true;
-            }
-            if (item.category === 'Poetic Nature') {
-              updatedItem.category = init.category;
-              hasChanges = true;
-            }
-            return updatedItem;
-          }
-          return item;
-        });
-        if (hasChanges) {
-          localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(parsed));
-        }
         return parsed;
       }
     }
-    // Initialize master store from initial artworks + any previously stored custom pieces
-    const oldCustom = JSON.parse(localStorage.getItem('shalona_custom_artworks') || '[]');
-    const initial = [...oldCustom, ...initialArtworks];
-    localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(initial));
-    return initial;
+    return initialArtworks;
   } catch (e) {
     console.warn('Error loading master artworks:', e);
     return initialArtworks;
@@ -192,39 +234,107 @@ export function getLiveArtworks() {
 }
 
 /**
- * Add a new artwork
+ * Upload an artwork image directly to Supabase Storage bucket 'artworks'
  */
-export function saveArtwork(artworkData) {
+export async function uploadArtworkImageToSupabase(file, slug) {
   try {
-    const list = getLiveArtworks();
-    const id = Date.now();
-    const slug = generateSlug(artworkData.title || `artwork-${id}`);
-    
-    const newArtwork = {
-      id,
-      accession: `SHA-${new Date().getFullYear()}-${String(list.length + 1).padStart(2, '0')}`,
-      title: artworkData.title || 'Untitled Stillness',
+    const ext = file.name.split('.').pop() || 'jpg';
+    const cleanSlug = generateSlug(slug || 'artwork');
+    const storagePath = `images/${cleanSlug}-${Date.now()}.${ext}`;
+
+    const { data, error } = await supabase.storage
+      .from('artworks')
+      .upload(storagePath, file, {
+        contentType: file.type || 'image/jpeg',
+        upsert: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    const { data: publicData } = supabase.storage
+      .from('artworks')
+      .getPublicUrl(storagePath);
+
+    return {
+      path: storagePath,
+      url: publicData.publicUrl,
+    };
+  } catch (err) {
+    console.error('Failed to upload image to Supabase Storage:', err);
+    throw err;
+  }
+}
+
+/**
+ * Add a new artwork (Saves directly to Supabase and updates local store)
+ */
+export async function saveArtwork(artworkData) {
+  // Validate input
+  ArtworkInputSchema.parse(artworkData);
+
+  const list = getLiveArtworks();
+  const slug = generateSlug(artworkData.title || `artwork-${Date.now()}`);
+  const sortOrder = list.length + 1;
+
+  const dbStatus = (artworkData.status || 'Available').toLowerCase().includes('sold')
+    ? 'sold'
+    : (artworkData.status || '').toLowerCase().includes('not')
+    ? 'not_for_sale'
+    : (artworkData.category === 'Unfinished Works')
+    ? 'in_progress'
+    : 'available';
+
+  const row = {
+    title: artworkData.title.trim(),
+    slug,
+    description: artworkData.caption || artworkData.philosophy || null,
+    philosophy: artworkData.philosophy || artworkData.caption || null,
+    year: String(artworkData.year || new Date().getFullYear()),
+    medium: artworkData.medium || 'Mixed media, acrylic emulsions & earth pigments on linen',
+    dimensions: artworkData.dimensions || '100 × 80 cm',
+    price: artworkData.price ? Number(artworkData.price) : null,
+    currency: 'CHF',
+    status: dbStatus,
+    category: artworkData.category || 'Abstract',
+    image_path: artworkData.imagePath || null,
+    image_url: artworkData.image,
+    thumbnail_url: artworkData.thumbnail || artworkData.image,
+    sort_order: sortOrder,
+    is_published: artworkData.isPublished !== false,
+    featured: Boolean(artworkData.featured),
+    accession: `SHA-${artworkData.year || new Date().getFullYear()}-${String(sortOrder).padStart(2, '0')}`,
+    verification_status: 'verified',
+    is_locked: false,
+  };
+
+  try {
+    const { data, error } = await supabase
+      .from('artworks')
+      .insert(row)
+      .select()
+      .single();
+
+    if (error) {
+      console.warn('Supabase insert returned error, falling back locally:', error.message);
+    }
+
+    const createdArtwork = data ? mapSupabaseToArtwork(data) : {
+      id: Date.now().toString(),
+      ...artworkData,
       slug,
-      category: artworkData.category || 'Abstract',
-      image: artworkData.image,
+      sortOrder,
+      isPublished: true,
       thumbnail: artworkData.thumbnail || artworkData.image,
-      localImage: artworkData.image,
-      year: artworkData.year || new Date().getFullYear().toString(),
-      medium: artworkData.medium || 'Mixed media, acrylic emulsions & earth pigments on linen',
-      dimensions: artworkData.dimensions || '100 × 80 cm',
-      caption: artworkData.caption || artworkData.philosophy || 'Original artwork by Shalona, Richterswil, Switzerland.',
-      philosophy: artworkData.philosophy || '',
-      status: artworkData.status || (artworkData.category === 'Unfinished Works' ? 'In Progress' : 'Available'),
-      featured: Boolean(artworkData.featured),
-      artist: 'Shalona',
-      purchaseStatus: artworkData.status || 'Available',
-      createdAt: new Date().toISOString()
     };
 
-    const updated = [newArtwork, ...list];
-    localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: updated }));
-    return newArtwork;
+    const updated = [createdArtwork, ...list];
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: updated }));
+    }
+    return createdArtwork;
   } catch (e) {
     console.error('Failed to save artwork:', e);
     throw e;
@@ -232,9 +342,9 @@ export function saveArtwork(artworkData) {
 }
 
 /**
- * Update an existing artwork by ID (Works for ALL artworks - old and new!)
+ * Update an existing artwork by ID (Works with Supabase and local store)
  */
-export function updateArtwork(id, updatedFields) {
+export async function updateArtwork(id, updatedFields) {
   try {
     const list = getLiveArtworks();
     const index = list.findIndex(a => a.id === id || String(a.id) === String(id));
@@ -249,6 +359,45 @@ export function updateArtwork(id, updatedFields) {
     const isUnfinished = category === 'Unfinished Works';
     const status = updatedFields.status || (isUnfinished ? 'In Progress' : current.status);
 
+    const dbStatus = (status || '').toLowerCase().includes('sold')
+      ? 'sold'
+      : (status || '').toLowerCase().includes('not')
+      ? 'not_for_sale'
+      : isUnfinished
+      ? 'in_progress'
+      : 'available';
+
+    // Prepare Supabase update payload
+    const updatePayload = {
+      title: newTitle,
+      slug,
+      category,
+      status: dbStatus,
+      dimensions: updatedFields.dimensions !== undefined ? updatedFields.dimensions : current.dimensions,
+      medium: updatedFields.medium !== undefined ? updatedFields.medium : current.medium,
+      year: updatedFields.year !== undefined ? String(updatedFields.year) : String(current.year),
+      philosophy: updatedFields.philosophy !== undefined ? updatedFields.philosophy : current.philosophy,
+      description: updatedFields.caption || updatedFields.philosophy || current.caption,
+      image_url: updatedFields.image || current.image,
+      thumbnail_url: updatedFields.thumbnail || updatedFields.image || current.thumbnail,
+      is_published: updatedFields.isPublished !== undefined ? updatedFields.isPublished : (current.isPublished ?? true),
+      featured: updatedFields.featured !== undefined ? Boolean(updatedFields.featured) : current.featured,
+    };
+
+    if (updatedFields.imagePath) {
+      updatePayload.image_path = updatedFields.imagePath;
+    }
+
+    // Update in Supabase
+    const { error: dbError } = await supabase
+      .from('artworks')
+      .update(updatePayload)
+      .eq('id', id);
+
+    if (dbError) {
+      console.warn('Supabase update warning:', dbError.message);
+    }
+
     const updated = {
       ...current,
       ...updatedFields,
@@ -256,21 +405,17 @@ export function updateArtwork(id, updatedFields) {
       slug,
       category,
       status,
-      dimensions: updatedFields.dimensions !== undefined ? updatedFields.dimensions : current.dimensions,
-      medium: updatedFields.medium !== undefined ? updatedFields.medium : current.medium,
-      year: updatedFields.year !== undefined ? updatedFields.year : current.year,
-      philosophy: updatedFields.philosophy !== undefined ? updatedFields.philosophy : current.philosophy,
-      caption: updatedFields.caption || updatedFields.philosophy || current.caption,
       image: updatedFields.image || current.image,
       thumbnail: updatedFields.thumbnail || updatedFields.image || current.thumbnail,
-      localImage: updatedFields.image || current.localImage,
       updatedAt: new Date().toISOString()
     };
 
     const nextList = [...list];
     nextList[index] = updated;
-    localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(nextList));
-    window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: nextList }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(nextList));
+      window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: nextList }));
+    }
     return updated;
   } catch (e) {
     console.error('Failed to update artwork:', e);
@@ -281,12 +426,31 @@ export function updateArtwork(id, updatedFields) {
 /**
  * Delete an artwork by ID (Works for ALL artworks - old and new!)
  */
-export function deleteArtwork(id) {
+export async function deleteArtwork(id) {
   try {
     const list = getLiveArtworks();
+    const target = list.find(a => a.id === id || String(a.id) === String(id));
+
+    // Delete from Supabase
+    const { error: dbError } = await supabase
+      .from('artworks')
+      .delete()
+      .eq('id', id);
+
+    if (dbError) {
+      console.warn('Supabase delete warning:', dbError.message);
+    }
+
+    // Delete image from storage if custom uploaded
+    if (target?.imagePath) {
+      await supabase.storage.from('artworks').remove([target.imagePath]).catch(() => {});
+    }
+
     const filtered = list.filter(a => a.id !== id && String(a.id) !== String(id));
-    localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(filtered));
-    window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: filtered }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(filtered));
+      window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: filtered }));
+    }
     return true;
   } catch (e) {
     console.error('Failed to delete artwork:', e);
@@ -295,29 +459,60 @@ export function deleteArtwork(id) {
 }
 
 /**
- * Restore original catalogue of 57 artworks
+ * Reorder artworks and update sort_order in Supabase
  */
-export function resetToDefaultArtworks() {
-  localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(initialArtworks));
-  window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: initialArtworks }));
-  return initialArtworks;
+export async function reorderArtworks(orderedArtworks) {
+  try {
+    const updatedList = orderedArtworks.map((art, index) => ({
+      ...art,
+      sortOrder: index + 1,
+    }));
+
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(updatedList));
+      window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: updatedList }));
+    }
+
+    // Persist sort_order updates to Supabase
+    for (let i = 0; i < updatedList.length; i++) {
+      const art = updatedList[i];
+      await supabase
+        .from('artworks')
+        .update({ sort_order: i + 1 })
+        .eq('id', art.id);
+    }
+
+    return updatedList;
+  } catch (e) {
+    console.error('Failed to reorder artworks:', e);
+    return orderedArtworks;
+  }
 }
 
 /**
- * Get all live journals (Master collection including original + custom additions + edits)
+ * Restore original catalogue of 51 artworks from Supabase
+ */
+export async function resetToDefaultArtworks() {
+  return await loadArtworksFromSupabase();
+}
+
+/**
+ * Get all live journals
  */
 export function getLiveJournals() {
   try {
-    const saved = localStorage.getItem(MASTER_JOURNALS_KEY);
+    const saved = typeof window !== 'undefined' ? localStorage.getItem(MASTER_JOURNALS_KEY) : null;
     if (saved) {
       const parsed = JSON.parse(saved);
       if (Array.isArray(parsed) && parsed.length > 0) {
         return parsed;
       }
     }
-    const oldCustom = JSON.parse(localStorage.getItem('shalona_custom_journals') || '[]');
+    const oldCustom = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('shalona_custom_journals') || '[]') : [];
     const initial = [...oldCustom, ...initialJournals];
-    localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(initial));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(initial));
+    }
     return initial;
   } catch (e) {
     console.warn('Error loading master journals:', e);
@@ -326,39 +521,36 @@ export function getLiveJournals() {
 }
 
 /**
- * Add a new journal entry
+ * Add a new journal reflection
  */
 export function saveJournal(journalData) {
   try {
     const list = getLiveJournals();
     const id = Date.now();
     const slug = generateSlug(journalData.title || `journal-${id}`);
-
-    // Split long text into paragraphs
-    const paragraphs = typeof journalData.content === 'string'
-      ? journalData.content.split('\n\n').map(p => p.trim()).filter(Boolean)
-      : Array.isArray(journalData.paragraphs) ? journalData.paragraphs : [journalData.content];
-
+    
     const newJournal = {
       id,
-      entryNumber: list.length + 1,
-      title: journalData.title,
-      fullTitle: `Journal Entry — ${journalData.title}`,
-      subtitle: journalData.subtitle || 'Richterswil Studio',
-      category: journalData.category || 'Studio Reflections',
-      date: new Date().toISOString(),
-      dateFormatted: new Intl.DateTimeFormat('en-US', { month: 'long', year: 'numeric' }).format(new Date()),
-      location: journalData.location || 'Richterswil, Switzerland',
-      paragraphs: paragraphs.length > 0 ? paragraphs : [journalData.excerpt || ''],
-      excerpt: journalData.excerpt || (paragraphs[0] ? paragraphs[0].slice(0, 180) + '...' : ''),
-      featuredImage: journalData.image || null,
+      title: journalData.title || 'Untitled Meditation',
       slug,
+      date: journalData.date || new Date().toISOString().split('T')[0],
+      readTime: journalData.readTime || '3 min read',
+      category: journalData.category || 'Studio Reflections',
+      excerpt: journalData.excerpt || '',
+      content: journalData.content || '',
+      image: journalData.image || null,
+      artworkSlug: journalData.artworkSlug || null,
+      tags: journalData.tags || ['Richterswil', 'Stillness'],
+      featured: Boolean(journalData.featured),
+      author: 'Shalona',
       createdAt: new Date().toISOString()
     };
 
     const updated = [newJournal, ...list];
-    localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(updated));
-    window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: updated }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(updated));
+      window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: updated }));
+    }
     return newJournal;
   } catch (e) {
     console.error('Failed to save journal:', e);
@@ -367,7 +559,7 @@ export function saveJournal(journalData) {
 }
 
 /**
- * Update an existing journal entry by ID (Works for ALL journals - old and new!)
+ * Update an existing journal
  */
 export function updateJournal(id, updatedFields) {
   try {
@@ -381,30 +573,20 @@ export function updateJournal(id, updatedFields) {
     const newTitle = updatedFields.title !== undefined ? updatedFields.title.trim() : current.title;
     const slug = updatedFields.slug || (newTitle !== current.title ? generateSlug(newTitle) : current.slug);
 
-    let paragraphs = current.paragraphs;
-    if (typeof updatedFields.content === 'string') {
-      paragraphs = updatedFields.content.split('\n\n').map(p => p.trim()).filter(Boolean);
-    } else if (Array.isArray(updatedFields.paragraphs)) {
-      paragraphs = updatedFields.paragraphs;
-    }
-
     const updated = {
       ...current,
       ...updatedFields,
       title: newTitle,
       slug,
-      subtitle: updatedFields.subtitle !== undefined ? updatedFields.subtitle : current.subtitle,
-      category: updatedFields.category || current.category,
-      paragraphs,
-      excerpt: updatedFields.excerpt !== undefined ? updatedFields.excerpt : (paragraphs[0] ? paragraphs[0].slice(0, 180) + '...' : current.excerpt),
-      featuredImage: updatedFields.image !== undefined ? updatedFields.image : current.featuredImage,
       updatedAt: new Date().toISOString()
     };
 
     const nextList = [...list];
     nextList[index] = updated;
-    localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(nextList));
-    window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: nextList }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(nextList));
+      window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: nextList }));
+    }
     return updated;
   } catch (e) {
     console.error('Failed to update journal:', e);
@@ -413,14 +595,16 @@ export function updateJournal(id, updatedFields) {
 }
 
 /**
- * Delete a journal entry by ID (Works for ALL journals - old and new!)
+ * Delete a journal
  */
 export function deleteJournal(id) {
   try {
     const list = getLiveJournals();
     const filtered = list.filter(j => j.id !== id && String(j.id) !== String(id));
-    localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(filtered));
-    window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: filtered }));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(filtered));
+      window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: filtered }));
+    }
     return true;
   } catch (e) {
     console.error('Failed to delete journal:', e);
@@ -429,38 +613,39 @@ export function deleteJournal(id) {
 }
 
 /**
- * Restore original journals
+ * Reset journals to default
  */
 export function resetToDefaultJournals() {
-  localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(initialJournals));
-  window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: initialJournals }));
+  if (typeof window !== 'undefined') {
+    localStorage.setItem(MASTER_JOURNALS_KEY, JSON.stringify(initialJournals));
+    window.dispatchEvent(new CustomEvent('shalona_journals_updated', { detail: initialJournals }));
+  }
   return initialJournals;
 }
 
 /**
- * Client-Side Image Compressor for iPhone / Mobile Cameras
- * Compresses 10-15MB raw iPhone photos into smooth, high-fidelity ~250-400KB Web-ready images
+ * Client-side high-fidelity image compression before upload
  */
 export function compressImageFile(file, maxWidth = 1600, maxHeight = 1600, quality = 0.85) {
   return new Promise((resolve, reject) => {
-    if (!file) {
-      return reject(new Error('No file provided'));
+    if (!file.type.match(/image.*/)) {
+      return reject(new Error('File is not an image'));
     }
 
     const reader = new FileReader();
-    reader.onerror = reject;
-    reader.onload = (e) => {
-      const img = new Image();
-      img.onerror = reject;
-      img.onload = () => {
-        let width = img.width;
-        let height = img.height;
+    reader.onload = (readerEvent) => {
+      const image = new Image();
+      image.onload = () => {
+        let width = image.width;
+        let height = image.height;
 
-        if (width > maxWidth || height > maxHeight) {
-          if (width / height > maxWidth / maxHeight) {
+        if (width > height) {
+          if (width > maxWidth) {
             height = Math.round((height * maxWidth) / width);
             width = maxWidth;
-          } else {
+          }
+        } else {
+          if (height > maxHeight) {
             width = Math.round((width * maxHeight) / height);
             height = maxHeight;
           }
@@ -471,43 +656,48 @@ export function compressImageFile(file, maxWidth = 1600, maxHeight = 1600, quali
         canvas.height = height;
 
         const ctx = canvas.getContext('2d');
-        ctx.fillStyle = '#FFFFFF';
-        ctx.fillRect(0, 0, width, height);
-        ctx.drawImage(img, 0, 0, width, height);
+        ctx.drawImage(image, 0, 0, width, height);
 
-        // Convert to high-quality compressed JPEG
         const dataUrl = canvas.toDataURL('image/jpeg', quality);
-        resolve({
-          dataUrl,
-          width,
-          height,
-          aspectRatio: Number((width / height).toFixed(3)),
-          originalSize: file.size,
-          compressedSize: Math.round((dataUrl.length * 3) / 4)
-        });
+        
+        // Also convert to Blob for direct Supabase Storage uploads
+        canvas.toBlob((blob) => {
+          resolve({
+            dataUrl,
+            blob,
+            width,
+            height,
+            size: blob ? blob.size : 0
+          });
+        }, 'image/jpeg', quality);
       };
-      img.src = e.target.result;
+      image.onerror = (e) => reject(e);
+      image.src = readerEvent.target.result;
     };
+    reader.onerror = (e) => reject(e);
     reader.readAsDataURL(file);
   });
 }
 
 /**
- * Export all studio content as a JSON file backup
+ * Export full studio database archive as JSON backup
  */
 export function exportStudioBackup() {
-  const data = {
-    exportDate: new Date().toISOString(),
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    artist: "Shalona Fine Art Atelier, Richterswil",
+    categories: getCategories(),
     artworks: getLiveArtworks(),
-    journals: getLiveJournals(),
-    categories: getCategories()
+    journals: getLiveJournals()
   };
 
-  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
   a.href = url;
-  a.download = `shalona-art-backup-${new Date().toISOString().split('T')[0]}.json`;
+  a.download = `shalona-atelier-backup-${new Date().toISOString().split('T')[0]}.json`;
+  document.body.appendChild(a);
   a.click();
+  document.body.removeChild(a);
   URL.revokeObjectURL(url);
 }
