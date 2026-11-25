@@ -8,7 +8,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/11/IMG_1085-scaled.jpg",
     "thumbnail": "/wp-content/uploads/2026/11/IMG_1085-654x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "mixed media",
     "dimensions": "120cm x 80cm",
     "caption": "Waves of emotional brilliancy to the unknown and known",
     "status": "Available",
@@ -30,7 +30,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/09/IMG_0228-scaled.jpeg",
     "thumbnail": "/wp-content/uploads/2026/09/IMG_0228-694x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "mixed media",
     "dimensions": "42cm x 30cm",
     "caption": "An earthy reference to nature",
     "status": "Available",
@@ -52,7 +52,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/09/IMG_0224-scaled.jpeg",
     "thumbnail": "/wp-content/uploads/2026/09/IMG_0224-718x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "water color and Ink",
     "dimensions": "42cm x 30cm",
     "caption": "A dreamy calming water colour in Blues",
     "status": "Available",
@@ -74,7 +74,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/09/IMG_0704-scaled.jpeg",
     "thumbnail": "/wp-content/uploads/2026/09/IMG_0704-694x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "water cooler, oil",
     "dimensions": "42cm x 30",
     "caption": "An explosive,colorful happy piece",
     "status": "Available",
@@ -96,7 +96,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/09/IMG_0700-scaled.jpeg",
     "thumbnail": "/wp-content/uploads/2026/09/IMG_0700-1018x1024.jpeg",
     "year": "2025",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
+    "medium": "Acrylic on Canvas",
     "dimensions": "100cm x 100cm",
     "caption": "A quiet reflective painting with scattered thoughts",
     "status": "Available",
@@ -118,7 +118,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/04/img_4649.jpg",
     "thumbnail": "/wp-content/uploads/2026/04/img_4649-680x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "mixed media",
     "dimensions": "80 x 120cm",
     "caption": "a quiet woman of strength",
     "status": "Available",
@@ -140,7 +140,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/04/img_4609.jpg",
     "thumbnail": "/wp-content/uploads/2026/04/img_4609-686x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "mixed media",
     "dimensions": "80 x 120cm",
     "caption": "Expression of feminine protective power breaking patriarchal rules and creating a positive fresh energy",
     "status": "Available",
@@ -161,10 +161,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/04/img_4601.jpg",
     "thumbnail": "/wp-content/uploads/2026/04/img_4601-681x1024.jpg",
-    "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
-    "dimensions": "80 × 120 cm",
-    "caption": "A sacred space of metamorphosis and quiet protection before the awakening.",
+    "year": "2026",
+    "medium": "mixed media",
+    "dimensions": "80cm x 120cm",
+    "caption": "The butterfly develops with patience and a rearrangement of its whole being...the soul is like that, vulnerable until it is ready to express itself",
     "status": "Available",
     "featured": false,
     "width": 1330,
@@ -173,7 +173,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/04/img_4601.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "A sacred space of metamorphosis and quiet protection before the awakening."
+    "philosophy": "The butterfly develops with patience and a rearrangement of its whole being...the soul is like that, vulnerable until it is ready to express itself"
   },
   {
     "id": 1843,
@@ -183,10 +183,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/03/img_4551.jpg",
     "thumbnail": "/wp-content/uploads/2026/03/img_4551-1008x1024.jpg",
-    "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
-    "dimensions": "100 × 100 cm",
-    "caption": "Playful grace and unbounded spirit dancing through raw texture and color.",
+    "year": "2026",
+    "medium": "mixed media",
+    "dimensions": "100 x 100cm",
+    "caption": "Quietly she's there, and holds a secret, golden truth shines through for those ready to see through illusion",
     "status": "Available",
     "featured": false,
     "width": 1968,
@@ -195,7 +195,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/03/img_4551.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Playful grace and unbounded spirit dancing through raw texture and color."
+    "philosophy": "Quietly she's there, and holds a secret, golden truth shines through for those ready to see through illusion"
   },
   {
     "id": 1769,
@@ -206,7 +206,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/03/img_4179.jpg",
     "thumbnail": "/wp-content/uploads/2026/03/img_4179-809x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Oil and Acrylic",
     "dimensions": "80 x 100cm",
     "caption": "an explosive, joyful and energetic play of blues, expressing the power of the feminine.",
     "status": "Available",
@@ -222,15 +222,15 @@ export const artworks = [
   {
     "id": 1760,
     "accession": "SHA-2026-16",
-    "title": "Don’t Speak",
+    "title": "Don't Speak",
     "slug": "dont-speak",
     "category": "Unfinished Works",
     "image": "/wp-content/uploads/2026/03/img_4156.jpg",
     "thumbnail": "/wp-content/uploads/2026/03/img_4156-1024x1022.jpg",
     "year": "2026",
-    "medium": "Oil & mixed media on canvas",
-    "dimensions": "80 × 100 cm",
-    "caption": "A dynamic yet quiet piece of mystery… yet to unfold.",
+    "medium": "Oil and mixed media",
+    "dimensions": "120 x 120cm",
+    "caption": "A dynamic yet quiet piece of mystery...yet to unfold",
     "status": "In Progress",
     "featured": false,
     "width": 2000,
@@ -239,20 +239,20 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/03/img_4156.jpg",
     "artist": "Shalona",
     "purchaseStatus": "In Progress",
-    "philosophy": "A dynamic yet quiet piece of mystery… yet to unfold."
+    "philosophy": "A dynamic yet quiet piece of mystery...yet to unfold"
   },
   {
     "id": 1759,
     "accession": "SHA-2026-17",
-    "title": "Explosive Breakthrough",
+    "title": "Explosive breakthrough",
     "slug": "explosive-breakthrough",
     "category": "Unfinished Works",
     "image": "/wp-content/uploads/2026/02/img_0837.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_0837.jpg",
     "year": "2026",
-    "medium": "Oil & mixed media on canvas",
-    "dimensions": "100 × 100 cm",
-    "caption": "An explosive, joyful and energetic play of blues, expressing the power of the feminine. This one done mostly in oil for realistic skin tones.",
+    "medium": "Oil Piant and Canvas",
+    "dimensions": "80 x 100cm",
+    "caption": "an explosive, joyful and energetic play of blues, expressing the power of the feminine.  This one done mostly in oil for realistic skin tones",
     "status": "In Progress",
     "featured": false,
     "width": 2000,
@@ -261,7 +261,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_0837.jpg",
     "artist": "Shalona",
     "purchaseStatus": "In Progress",
-    "philosophy": "An explosive, joyful and energetic play of blues, expressing the power of the feminine. This one done mostly in oil for realistic skin tones."
+    "philosophy": "an explosive, joyful and energetic play of blues, expressing the power of the feminine.  This one done mostly in oil for realistic skin tones"
   },
   {
     "id": 1735,
@@ -272,9 +272,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4110.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4110-710x1024.jpg",
     "year": "2026",
-    "medium": "Oil & mixed media on canvas",
-    "dimensions": "80 × 100 cm",
-    "caption": "This piece was originally something I just did to warm up, however figure will emerge… let’s see what happens.",
+    "medium": "Mixed Media",
+    "dimensions": "60 x 80cm",
+    "caption": "This piece was originally something I just did to warm up, however figure will emerge....let's see what happens",
     "status": "In Progress",
     "featured": false,
     "width": 1386,
@@ -283,7 +283,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_4110.jpg",
     "artist": "Shalona",
     "purchaseStatus": "In Progress",
-    "philosophy": "This piece was originally something I just did to warm up, however figure will emerge… let’s see what happens."
+    "philosophy": "This piece was originally something I just did to warm up, however figure will emerge....let's see what happens"
   },
   {
     "id": 1734,
@@ -294,9 +294,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/03/img_4145.jpg",
     "thumbnail": "/wp-content/uploads/2026/03/img_4145-1006x1024.jpg",
     "year": "2026",
-    "medium": "Oil & mixed media, photographic study on canvas",
-    "dimensions": "80 × 100 cm",
-    "caption": "This work I wanted it to be very energetic and full of colour, it still needs a vibrancy, a punch that will give it the wow effect.. this will come in the perfect time.",
+    "medium": "Acrylic on  Canvas",
+    "dimensions": "100 x 100cm",
+    "caption": "This work I wanted it to be very energetic and full of colour, it still needs a vibrancy, a punch that will give it the wow effect..this will come in the perfect time",
     "status": "In Progress",
     "featured": false,
     "width": 1964,
@@ -305,7 +305,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/03/img_4145.jpg",
     "artist": "Shalona",
     "purchaseStatus": "In Progress",
-    "philosophy": "This work I wanted it to be very energetic and full of colour, it still needs a vibrancy, a punch that will give it the wow effect.. this will come in the perfect time."
+    "philosophy": "This work I wanted it to be very energetic and full of colour, it still needs a vibrancy, a punch that will give it the wow effect..this will come in the perfect time"
   },
   {
     "id": 1720,
@@ -316,7 +316,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/389b4755-c48e-4a3a-ae0f-9069f5d3e46d.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/389b4755-c48e-4a3a-ae0f-9069f5d3e46d-802x1024.jpg",
     "year": "2023",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Acrylic on Canvas",
     "dimensions": "60 x 80cm",
     "caption": "An expression of natures beauty and tranquility",
     "status": "Available",
@@ -338,7 +338,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_2599.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_2599-509x1024.jpg",
     "year": "2023",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
+    "medium": "Mixed Media",
     "dimensions": "40 x 80cm",
     "caption": "Indigenous, colourful and simply beautiful, not totally revealed",
     "status": "Available",
@@ -360,7 +360,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4067-1.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4067-1-1024x1024.jpg",
     "year": "2023",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "80 x 80",
     "caption": "Vibrant parallel worlds, so many possibilities to explore..have we only touched the serface",
     "status": "Available",
@@ -381,10 +381,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/02/img_0837.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_0837.jpg",
-    "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
-    "dimensions": "80 × 100 cm",
-    "caption": "An intimate unveiling of the inner spirit through light, raw texture and truth.",
+    "year": "2023",
+    "medium": "Acrylic on Canvas",
+    "dimensions": "50 x 70cm",
+    "caption": "Exposing your emotion through art and music is never easy...but you will reach someone who needs it",
     "status": "Available",
     "featured": false,
     "width": 2000,
@@ -393,7 +393,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_0837.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "An intimate unveiling of the inner spirit through light, raw texture and truth."
+    "philosophy": "Exposing your emotion through art and music is never easy...but you will reach someone who needs it"
   },
   {
     "id": 1714,
@@ -404,7 +404,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_1017.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_1017-1024x792.jpg",
     "year": "2023",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Mixed Media",
     "dimensions": "50 x 70cm",
     "caption": "Three dimension enduring Rose...she will leave, but she will be back",
     "status": "Private Collection",
@@ -426,7 +426,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4098-1.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4098-1-753x1024.jpg",
     "year": "2023",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Acrylic on Canvas",
     "dimensions": "50 x 70cm",
     "caption": "Beauty, Strength and Silence of the original American",
     "status": "Private Collection",
@@ -447,10 +447,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/02/img_0957.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_0957-1024x756.jpg",
-    "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
-    "dimensions": "100 × 70 cm",
-    "caption": "A portrait of warmth, affection and timeless personal connection.",
+    "year": "2023",
+    "medium": "Acrylic on Canvas",
+    "dimensions": "50x70cm",
+    "caption": "The beauty of the feminine at one with nature...Auric energies flow freely in a peaceful state",
     "status": "Private Collection",
     "featured": false,
     "width": 2000,
@@ -459,7 +459,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_0957.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Private Collection",
-    "philosophy": "A portrait of warmth, affection and timeless personal connection."
+    "philosophy": "The beauty of the feminine at one with nature...Auric energies flow freely in a peaceful state"
   },
   {
     "id": 1683,
@@ -470,9 +470,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_0837.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_0837.jpg",
     "year": "2025",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
-    "dimensions": "50 × 70 cm",
-    "caption": "A gentle study of nature's living flow and ancient roots intertwining.",
+    "medium": "Mixed Media",
+    "dimensions": "60 x 60cm",
+    "caption": "A quiet blend of emotion and color, this piece captures a fleeting moment between chaos and calm. Soft textures and bold strokes come together to express inner movement and silent strength. Inspired by nature and human connection, this artwork reflects harmony in contrast.  Here we see small version of original",
     "status": "Private Collection",
     "featured": false,
     "width": 2000,
@@ -481,7 +481,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_0837.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Private Collection",
-    "philosophy": "A gentle study of nature's living flow and ancient roots intertwining."
+    "philosophy": "A quiet blend of emotion and color, this piece captures a fleeting moment between chaos and calm. Soft textures and bold strokes come together to express inner movement and silent strength. Inspired by nature and human connection, this artwork reflects harmony in contrast.  Here we see small version of original"
   },
   {
     "id": 1677,
@@ -492,7 +492,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4069.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4069-1024x761.jpg",
     "year": "2024",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "60 x 80cm",
     "caption": "A continuation of original explosive spring",
     "status": "Private Collection",
@@ -514,7 +514,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4068.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4068-1024x892.jpg",
     "year": "2024",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "70 x 70cm",
     "caption": "A chaotic moment when nature explodes with vibrancy, color and Power...A piece that makes you feel alive!",
     "status": "Available",
@@ -535,8 +535,8 @@ export const artworks = [
     "category": "Abstract",
     "image": "/wp-content/uploads/2026/02/img_4073.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4073-1024x1024.jpg",
-    "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "year": "February 2026",
+    "medium": "Acrylic on Canvas",
     "dimensions": "80 x 80cm",
     "caption": "Belonging to the series Many Worlds, this is a vibrant, dynamic painting representing other perspectives",
     "status": "Available",
@@ -557,10 +557,10 @@ export const artworks = [
     "category": "Abstract",
     "image": "/wp-content/uploads/2026/02/img_0837.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_0837.jpg",
-    "year": "2023",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
-    "dimensions": "80 × 80 cm",
-    "caption": "An exploration of alternate dimensions, where vibrant energy and possibilities intertwine.",
+    "year": "2026",
+    "medium": "Acrylic on Canvas",
+    "dimensions": "80 x 80cm",
+    "caption": "Bright, happy fluorescent colours suggesting many possibilities",
     "status": "Available",
     "featured": false,
     "width": 2000,
@@ -569,7 +569,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/img_0837.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "An exploration of alternate dimensions, where vibrant energy and possibilities intertwine."
+    "philosophy": "Bright, happy fluorescent colours suggesting many possibilities"
   },
   {
     "id": 1650,
@@ -580,7 +580,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img_4070.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img_4070-1004x1024.jpg",
     "year": "2025",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Acrylic on  Canvas",
     "dimensions": "70x 70cm",
     "caption": "Do we know what other worlds exist? what would it be like to jump through!!!!!!!!!",
     "status": "Available",
@@ -602,7 +602,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/img-20260221-wa00703249739477377347948.jpg",
     "thumbnail": "/wp-content/uploads/2026/02/img-20260221-wa00703249739477377347948-799x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "80 x 100cm",
     "caption": "A quiet blend of emotion and color, this piece captures a fleeting moment between chaos and calm. Soft textures and bold strokes come together to express inner movement and silent strength. Inspired by nature and human connection, this artwork reflects harmony in contrast.",
     "status": "Available",
@@ -624,9 +624,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasartist1.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasartist1-1024x801.jpeg",
     "year": "2025",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Mixed Media on Canvas",
     "dimensions": "80 x 100 cm",
-    "caption": "Soft horizons awaken in silence, where memory and hope gently meet— and something new begins to breathe.",
+    "caption": "Soft horizons awaken in silence,\r\nwhere memory and hope gently meet—\r\nand something new begins to breathe.",
     "status": "Available",
     "featured": false,
     "width": 2048,
@@ -635,7 +635,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasartist1.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Soft horizons awaken in silence, where memory and hope gently meet— and something new begins to breathe."
+    "philosophy": "Soft horizons awaken in silence,\r\nwhere memory and hope gently meet—\r\nand something new begins to breathe."
   },
   {
     "id": 1474,
@@ -646,9 +646,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasartist2.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasartist2-769x1024.jpeg",
     "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "60 x 80 cm",
-    "caption": "In every shade she releases, the soul loosens its chains— becoming nothing but light and movement.",
+    "caption": "In every shade she releases,\r\nthe soul loosens its chains—\r\nbecoming nothing but light and movement.",
     "status": "Available",
     "featured": false,
     "width": 1201,
@@ -657,7 +657,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasartist2.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In every shade she releases, the soul loosens its chains— becoming nothing but light and movement."
+    "philosophy": "In every shade she releases,\r\nthe soul loosens its chains—\r\nbecoming nothing but light and movement."
   },
   {
     "id": 1467,
@@ -668,9 +668,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart0s2.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart0s2-719x1024.jpeg",
     "year": "2025",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Oil/Acrylic and Canvas",
     "dimensions": "60 x 80 cm",
-    "caption": "Written in silence, carried in quiet eyes— a life speaking without words.",
+    "caption": "Written in silence,\r\ncarried in quiet eyes—\r\na life speaking without words.",
     "status": "Available",
     "featured": false,
     "width": 1124,
@@ -679,7 +679,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart0s2.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Written in silence, carried in quiet eyes— a life speaking without words."
+    "philosophy": "Written in silence,\r\ncarried in quiet eyes—\r\na life speaking without words."
   },
   {
     "id": 1465,
@@ -690,9 +690,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/03/img_4160.jpg",
     "thumbnail": "/wp-content/uploads/2026/03/img_4160-673x1024.jpg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Mixed Media",
     "dimensions": "80 x 120 cm",
-    "caption": "In the freedom of movement, the heart forgets its weight— and remembers how to fly.",
+    "caption": "In the freedom of movement,\r\nthe heart forgets its weight—\r\nand remembers how to fly.",
     "status": "Available",
     "featured": false,
     "width": 1314,
@@ -701,7 +701,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/03/img_4160.jpg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In the freedom of movement, the heart forgets its weight— and remembers how to fly."
+    "philosophy": "In the freedom of movement,\r\nthe heart forgets its weight—\r\nand remembers how to fly."
   },
   {
     "id": 1374,
@@ -712,9 +712,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalona.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalona-782x1024.jpeg",
     "year": "2024",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Acrylic on Canvas",
     "dimensions": "60 × 80 cm",
-    "caption": "Between hiding and revealing, truth appears for a moment— soft, fragile, and real.",
+    "caption": "Between hiding and revealing,\r\ntruth appears for a moment—\r\nsoft, fragile, and real.",
     "status": "Available",
     "featured": false,
     "width": 1222,
@@ -723,7 +723,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalona.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Between hiding and revealing, truth appears for a moment— soft, fragile, and real."
+    "philosophy": "Between hiding and revealing,\r\ntruth appears for a moment—\r\nsoft, fragile, and real."
   },
   {
     "id": 1372,
@@ -734,9 +734,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalona-art.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalona-art-813x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Mixed Media on Canvas",
     "dimensions": "80 x 100cm",
-    "caption": "A figure of wings, A quiet presence— felt where tenderness and compassion remains.",
+    "caption": "A figure of wings,\r\nA quiet presence—\r\nfelt where tenderness and compassion remains.",
     "status": "Available",
     "featured": false,
     "width": 1271,
@@ -745,7 +745,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalona-art.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "A figure of wings, A quiet presence— felt where tenderness and compassion remains."
+    "philosophy": "A figure of wings,\r\nA quiet presence—\r\nfelt where tenderness and compassion remains."
   },
   {
     "id": 1370,
@@ -756,9 +756,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonas-art.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonas-art-1011x1024.jpeg",
     "year": "2025",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Mixed Media",
     "dimensions": "100 × 100 cm",
-    "caption": "In perfect stillness, strength needs no movement— it simply is.",
+    "caption": "In perfect stillness,\r\nstrength needs no movement—\r\nit simply is.",
     "status": "Available",
     "featured": false,
     "width": 1580,
@@ -767,7 +767,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonas-art.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In perfect stillness, strength needs no movement— it simply is."
+    "philosophy": "In perfect stillness,\r\nstrength needs no movement—\r\nit simply is."
   },
   {
     "id": 1369,
@@ -777,10 +777,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/02/shalonasart014.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart014-733x1024.jpeg",
-    "year": "2024",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
-    "dimensions": "80 × 100 cm",
-    "caption": "A sanctuary of quiet dreams and layered reflections known only to the heart.",
+    "year": "2026",
+    "medium": "Mixed Media",
+    "dimensions": "60 × 80 cm",
+    "caption": "In the quiet she creates,\r\nnothing needs permission—\r\nshe simply becomes herself.",
     "status": "Available",
     "featured": false,
     "width": 1466,
@@ -789,7 +789,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart014.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "A sanctuary of quiet dreams and layered reflections known only to the heart."
+    "philosophy": "In the quiet she creates,\r\nnothing needs permission—\r\nshe simply becomes herself."
   },
   {
     "id": 1368,
@@ -800,9 +800,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart015.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart015-816x1024.jpeg",
     "year": "2023",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Mixed Media",
     "dimensions": "80 × 100 cm",
-    "caption": "From shattered pieces, a truer self rises— free, fearless, and whole.",
+    "caption": "From shattered pieces,\r\na truer self rises—\r\nfree, fearless, and whole.",
     "status": "Available",
     "featured": false,
     "width": 1125,
@@ -811,7 +811,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart015.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "From shattered pieces, a truer self rises— free, fearless, and whole."
+    "philosophy": "From shattered pieces,\r\na truer self rises—\r\nfree, fearless, and whole."
   },
   {
     "id": 1367,
@@ -822,9 +822,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart09.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart09-781x1024.jpeg",
     "year": "2025",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Mixed Media",
     "dimensions": "80 × 100 cm",
-    "caption": "In stillness, she listens to what the heart whispers. Sometimes, looking far away is the only way to find yourself.",
+    "caption": "In stillness, she listens to what the heart whispers.\r\nSometimes, looking far away is the only way to find yourself.",
     "status": "Available",
     "featured": false,
     "width": 1562,
@@ -833,7 +833,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart09.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In stillness, she listens to what the heart whispers. Sometimes, looking far away is the only way to find yourself."
+    "philosophy": "In stillness, she listens to what the heart whispers.\r\nSometimes, looking far away is the only way to find yourself."
   },
   {
     "id": 1225,
@@ -844,9 +844,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart010.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart010-501x1024.jpeg",
     "year": "2023",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
+    "medium": "Mixed Media",
     "dimensions": "40 × 80 cm",
-    "caption": "In the space between shadow and glow, a quiet truth waits— soft, steady, and unseen.",
+    "caption": "In the space between shadow and glow,\r\na quiet truth waits—\r\nsoft, steady, and unseen.",
     "status": "Available",
     "featured": false,
     "width": 1002,
@@ -855,7 +855,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart010.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In the space between shadow and glow, a quiet truth waits— soft, steady, and unseen."
+    "philosophy": "In the space between shadow and glow,\r\na quiet truth waits—\r\nsoft, steady, and unseen."
   },
   {
     "id": 1224,
@@ -866,9 +866,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart012.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart012-857x1024.jpeg",
     "year": "2024",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
-    "dimensions": "80 × 100 cm",
-    "caption": "An embodiment of archetypal presence bridging earthly emotion and cosmic stillness.",
+    "medium": "Mixed Media on Canvas",
+    "dimensions": "60 × 70 cm",
+    "caption": "Between shadow and light,\r\na truer self begins to appear—\r\nnot created, only revealed.",
     "status": "Available",
     "featured": false,
     "width": 1714,
@@ -877,7 +877,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart012.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "An embodiment of archetypal presence bridging earthly emotion and cosmic stillness."
+    "philosophy": "Between shadow and light,\r\na truer self begins to appear—\r\nnot created, only revealed."
   },
   {
     "id": 1223,
@@ -888,9 +888,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart016.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart016-1024x1024.jpeg",
     "year": "2024",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Mixed Media",
     "dimensions": "100 × 100 cm",
-    "caption": "In stillness, awakening begins. Nothing to seek, nothing to hold— only the quiet truth of being.",
+    "caption": "In stillness, awakening begins.\r\nNothing to seek, nothing to hold—\r\nonly the quiet truth of being.",
     "status": "Available",
     "featured": false,
     "width": 2046,
@@ -899,7 +899,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart016.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In stillness, awakening begins. Nothing to seek, nothing to hold— only the quiet truth of being."
+    "philosophy": "In stillness, awakening begins.\r\nNothing to seek, nothing to hold—\r\nonly the quiet truth of being."
   },
   {
     "id": 1222,
@@ -910,9 +910,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart013.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart013-721x1024.jpeg",
     "year": "2025",
-    "medium": "Mixed media, original photography, graphite & impasto on canvas",
+    "medium": "Mixed Media",
     "dimensions": "80 × 60 cm",
-    "caption": "The past does not call to hold us— only to remind us how far the heart has traveled.",
+    "caption": "The past does not call to hold us—\r\nonly to remind us\r\nhow far the heart has traveled.",
     "status": "Available",
     "featured": false,
     "width": 1442,
@@ -921,7 +921,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart013.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "The past does not call to hold us— only to remind us how far the heart has traveled."
+    "philosophy": "The past does not call to hold us—\r\nonly to remind us\r\nhow far the heart has traveled."
   },
   {
     "id": 1221,
@@ -932,9 +932,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart011.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart011-787x1024.jpeg",
     "year": "2023",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Mixed Media",
     "dimensions": "80 × 100 cm",
-    "caption": "Continuing the exploration of Stillness—where the soul rests beyond thought and form.",
+    "caption": "A quiet blend of emotion and color, this piece captures a fleeting moment between chaos and calm. Soft textures and bold strokes come together to express inner movement and silent strength. Inspired by nature and human connection, this artwork reflects harmony in contrast.",
     "status": "Available",
     "featured": true,
     "width": 1574,
@@ -943,7 +943,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart011.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Continuing the exploration of Stillness—where the soul rests beyond thought and form."
+    "philosophy": "A quiet blend of emotion and color, this piece captures a fleeting moment between chaos and calm. Soft textures and bold strokes come together to express inner movement and silent strength. Inspired by nature and human connection, this artwork reflects harmony in contrast."
   },
   {
     "id": 1220,
@@ -954,9 +954,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart08.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart08-1006x1024.jpeg",
     "year": "2025",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
+    "medium": "Acrylic on Canvas",
     "dimensions": "100 × 100 cm",
-    "caption": "Within silence, her strength becomes gentle light. Peace is not distant—it is already resting inside.",
+    "caption": "Within silence, her strength becomes gentle light.\r\nPeace is not distant—it is already resting inside.",
     "status": "Available",
     "featured": false,
     "width": 2012,
@@ -965,7 +965,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart08.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Within silence, her strength becomes gentle light. Peace is not distant—it is already resting inside."
+    "philosophy": "Within silence, her strength becomes gentle light.\r\nPeace is not distant—it is already resting inside."
   },
   {
     "id": 1219,
@@ -976,9 +976,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart07.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart07-976x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Mixed media on Canvas",
     "dimensions": "80 × 100 cm",
-    "caption": "From a single breath of silence, calm begins to take form— simple, endless, whole.",
+    "caption": "From a single breath of silence,\r\ncalm begins to take form—\r\nsimple, endless, whole.",
     "status": "Available",
     "featured": false,
     "width": 1952,
@@ -987,7 +987,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart07.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "From a single breath of silence, calm begins to take form— simple, endless, whole."
+    "philosophy": "From a single breath of silence,\r\ncalm begins to take form—\r\nsimple, endless, whole."
   },
   {
     "id": 1218,
@@ -998,9 +998,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart04.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart04-742x1024.jpeg",
     "year": "2023",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Mixed Media",
     "dimensions": "80 × 60 cm",
-    "caption": "In the quiet, the self returns to its true shape. Nothing is missing—only waiting to be felt.",
+    "caption": "In the quiet, the self returns to its true shape.\r\nNothing is missing—only waiting to be felt.",
     "status": "Available",
     "featured": true,
     "width": 1484,
@@ -1009,7 +1009,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart04.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "In the quiet, the self returns to its true shape. Nothing is missing—only waiting to be felt."
+    "philosophy": "In the quiet, the self returns to its true shape.\r\nNothing is missing—only waiting to be felt."
   },
   {
     "id": 1217,
@@ -1019,10 +1019,10 @@ export const artworks = [
     "category": "Figurative Abstracts",
     "image": "/wp-content/uploads/2026/02/shalonasart03.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart03-709x1024.jpeg",
-    "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
-    "dimensions": "80 × 120 cm",
-    "caption": "An unspoken word carried across realms of intuitive consciousness.",
+    "year": "2023",
+    "medium": "Mixed Media",
+    "dimensions": "80 × 60 cm",
+    "caption": "Between silence and motion,\r\nsomething gentle tries to speak—\r\na truth only the heart can hear.",
     "status": "Available",
     "featured": false,
     "width": 1418,
@@ -1031,7 +1031,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart03.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "An unspoken word carried across realms of intuitive consciousness."
+    "philosophy": "Between silence and motion,\r\nsomething gentle tries to speak—\r\na truth only the heart can hear."
   },
   {
     "id": 1215,
@@ -1042,9 +1042,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart02.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart02-629x1024.jpeg",
     "year": "2023",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Oil Piant and Canvas",
     "dimensions": "100 × 160 cm",
-    "caption": "Amid fragments and noise, the soul finds a quiet center— whole, even in pieces.",
+    "caption": "Amid fragments and noise,\r\nthe soul finds a quiet center—\r\nwhole, even in pieces.",
     "status": "Available",
     "featured": true,
     "width": 1258,
@@ -1053,7 +1053,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart02.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Amid fragments and noise, the soul finds a quiet center— whole, even in pieces."
+    "philosophy": "Amid fragments and noise,\r\nthe soul finds a quiet center—\r\nwhole, even in pieces."
   },
   {
     "id": 1148,
@@ -1064,9 +1064,9 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart06.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart06-1016x1024.jpeg",
     "year": "2026",
-    "medium": "Mixed media, acrylic emulsions, ink & raw earth pigments on Belgian linen",
+    "medium": "Mixed Media",
     "dimensions": "80 × 80 cm",
-    "caption": "Forms drift between matter and dream. What seems distant is quietly connected— the universe turning within itself.",
+    "caption": "Forms drift between matter and dream.\r\nWhat seems distant is quietly connected—\r\nthe universe turning within itself.",
     "status": "Available",
     "featured": false,
     "width": 2032,
@@ -1075,7 +1075,7 @@ export const artworks = [
     "localImage": "/wp-content/uploads/2026/02/shalonasart06.jpeg",
     "artist": "Shalona",
     "purchaseStatus": "Available",
-    "philosophy": "Forms drift between matter and dream. What seems distant is quietly connected— the universe turning within itself."
+    "philosophy": "Forms drift between matter and dream.\r\nWhat seems distant is quietly connected—\r\nthe universe turning within itself."
   },
   {
     "id": 1147,
@@ -1086,7 +1086,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart05.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart05-820x1024.jpeg",
     "year": "2024",
-    "medium": "Organic pigments, mixed media, lake water wash & emulsion on canvas",
+    "medium": "Mixed Media",
     "dimensions": "80 × 100 cm",
     "caption": "Echoes in Pink, An intuitive Piece with emotions in Pink yet strong",
     "status": "Private Collection",
@@ -1108,7 +1108,7 @@ export const artworks = [
     "image": "/wp-content/uploads/2026/02/shalonasart01.jpeg",
     "thumbnail": "/wp-content/uploads/2026/02/shalonasart01-808x1024.jpeg",
     "year": "2024",
-    "medium": "Mixed media, photographic transfer, oil & textured gesso on linen",
+    "medium": "Acrylic on Canvas",
     "dimensions": "80 × 100 cm",
     "caption": "Softness and Vulnerability mixed with shades and layers of emotions.  These complex emotional states are within all of us.  To honestly look them requires courage, patience and self love, but the reward is well worth it....one is left with a state of true serenity and strength that cannot be threatened.",
     "status": "Available",
