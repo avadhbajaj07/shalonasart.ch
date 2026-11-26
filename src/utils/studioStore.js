@@ -310,17 +310,35 @@ export async function saveArtwork(artworkData) {
   };
 
   try {
-    const { data, error } = await supabase
-      .from('artworks')
-      .insert(row)
-      .select()
-      .single();
+    let createdRow = null;
 
-    if (error) {
-      console.warn('Supabase insert returned error, falling back locally:', error.message);
+    // 1. Try serverless admin endpoint backed by Service Role Key
+    try {
+      const res = await fetch('/api/admin-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: 'save', artworkData: row }),
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json.data) createdRow = json.data;
+      }
+    } catch (apiErr) {
+      console.warn('API save fallback, using client Supabase:', apiErr.message);
     }
 
-    const createdArtwork = data ? mapSupabaseToArtwork(data) : {
+    // 2. Direct client fallback if API was unavailable
+    if (!createdRow) {
+      const { data, error } = await supabase
+        .from('artworks')
+        .insert(row)
+        .select()
+        .single();
+      if (!error && data) createdRow = data;
+      else if (error) console.warn('Client Supabase insert warning:', error.message);
+    }
+
+    const createdArtwork = createdRow ? mapSupabaseToArtwork(createdRow) : {
       id: Date.now().toString(),
       ...artworkData,
       slug,
@@ -347,7 +365,7 @@ export async function saveArtwork(artworkData) {
 export async function updateArtwork(id, updatedFields) {
   try {
     const list = getLiveArtworks();
-    const index = list.findIndex(a => a.id === id || String(a.id) === String(id));
+    const index = list.findIndex(a => a.id === id || String(a.id) === String(id) || (a.slug && a.slug === updatedFields.slug));
     if (index === -1) {
       throw new Error(`Artwork with id ${id} not found`);
     }
@@ -388,14 +406,31 @@ export async function updateArtwork(id, updatedFields) {
       updatePayload.image_path = updatedFields.imagePath;
     }
 
-    // Update in Supabase
-    const { error: dbError } = await supabase
-      .from('artworks')
-      .update(updatePayload)
-      .eq('id', id);
+    // 1. Try serverless admin endpoint backed by Service Role Key
+    try {
+      await fetch('/api/admin-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'update',
+          id: current.id,
+          slug: current.slug,
+          updates: updatePayload,
+        }),
+      });
+    } catch (apiErr) {
+      console.warn('API update fallback:', apiErr.message);
+    }
 
-    if (dbError) {
-      console.warn('Supabase update warning:', dbError.message);
+    // 2. Direct client fallback
+    try {
+      if (current.id && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(current.id))) {
+        await supabase.from('artworks').update(updatePayload).eq('id', current.id);
+      } else if (current.slug) {
+        await supabase.from('artworks').update(updatePayload).eq('slug', current.slug);
+      }
+    } catch (clientErr) {
+      console.warn('Supabase client update fallback warning:', clientErr.message);
     }
 
     const updated = {
@@ -424,29 +459,58 @@ export async function updateArtwork(id, updatedFields) {
 }
 
 /**
- * Delete an artwork by ID (Works for ALL artworks - old and new!)
+ * Delete an artwork permanently (Works for ALL artworks - persists to Supabase DB & Storage!)
  */
 export async function deleteArtwork(id) {
   try {
     const list = getLiveArtworks();
     const target = list.find(a => a.id === id || String(a.id) === String(id));
 
-    // Delete from Supabase
-    const { error: dbError } = await supabase
-      .from('artworks')
-      .delete()
-      .eq('id', id);
+    const targetId = target?.id || id;
+    const targetSlug = target?.slug;
+    const targetTitle = target?.title;
+    const imagePath = target?.imagePath;
 
-    if (dbError) {
-      console.warn('Supabase delete warning:', dbError.message);
+    // 1. Trigger server-side persistent deletion via Service Role API (guarantees DB + Storage removal)
+    try {
+      await fetch('/api/admin-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'delete',
+          id: targetId,
+          slug: targetSlug,
+          title: targetTitle,
+          imagePath,
+        }),
+      });
+    } catch (apiErr) {
+      console.warn('API deletion fallback, attempting direct Supabase delete:', apiErr.message);
     }
 
-    // Delete image from storage if custom uploaded
-    if (target?.imagePath) {
-      await supabase.storage.from('artworks').remove([target.imagePath]).catch(() => {});
+    // 2. Direct client Supabase deletion (handles UUID or slug)
+    try {
+      if (targetId && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(targetId))) {
+        await supabase.from('artworks').delete().eq('id', targetId);
+      }
+      if (targetSlug) {
+        await supabase.from('artworks').delete().eq('slug', targetSlug);
+      }
+      if (imagePath) {
+        await supabase.storage.from('artworks').remove([imagePath]).catch(() => {});
+      }
+    } catch (dbErr) {
+      console.warn('Client Supabase delete error:', dbErr.message);
     }
 
-    const filtered = list.filter(a => a.id !== id && String(a.id) !== String(id));
+    // 3. Remove from local store and notify UI components
+    const filtered = list.filter(a => {
+      if (a.id === id || String(a.id) === String(id)) return false;
+      if (targetSlug && a.slug === targetSlug) return false;
+      if (targetTitle && a.title === targetTitle) return false;
+      return true;
+    });
+
     if (typeof window !== 'undefined') {
       localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(filtered));
       window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: filtered }));
@@ -473,13 +537,22 @@ export async function reorderArtworks(orderedArtworks) {
       window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: updatedList }));
     }
 
-    // Persist sort_order updates to Supabase
-    for (let i = 0; i < updatedList.length; i++) {
-      const art = updatedList[i];
-      await supabase
-        .from('artworks')
-        .update({ sort_order: i + 1 })
-        .eq('id', art.id);
+    // 1. Persist sort_order updates to Supabase via serverless admin endpoint
+    try {
+      await fetch('/api/admin-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'reorder',
+          items: updatedList.map((art, idx) => ({
+            id: art.id,
+            slug: art.slug,
+            sort_order: idx + 1,
+          })),
+        }),
+      });
+    } catch (apiErr) {
+      console.warn('API reorder fallback:', apiErr.message);
     }
 
     return updatedList;

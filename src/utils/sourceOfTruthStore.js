@@ -374,38 +374,9 @@ export function exportArtworksCSV() {
 // ---------------------------------------------------------------------------
 
 function getInitialEmails() {
-  return [
-    {
-      id: 'em-seed-1',
-      direction: 'incoming',
-      sender: 'Marcella Meier <m.meier@kunstzuerich.ch>',
-      senderName: 'Marcella Meier',
-      senderEmail: 'm.meier@kunstzuerich.ch',
-      recipient: 'info@shalonasart.ch',
-      subject: 'Inquiry regarding "Solitude" painting & studio visit',
-      body: 'Dear Shalona,\n\nI was deeply moved by your figurative abstract artwork "Solitude" and would love to arrange a quiet studio visit in Richterswil to view it in person before your December exhibition.\n\nPlease let me know your availability.\n\nWarm regards,\nMarcella Meier\nZürich, Switzerland\n+41 79 402 11 88',
-      artworkTitle: 'Solitude',
-      phone: '+41 79 402 11 88',
-      location: 'Zürich, Switzerland',
-      status: 'unread',
-      created_at: '2026-11-25T19:30:00.000Z'
-    },
-    {
-      id: 'em-seed-2',
-      direction: 'incoming',
-      sender: 'Dr. Beat Wipf <beat.wipf@richterswil-art.ch>',
-      senderName: 'Dr. Beat Wipf',
-      senderEmail: 'beat.wipf@richterswil-art.ch',
-      recipient: 'info@shalonasart.ch',
-      subject: 'Ortsmuseum Bärenkeller Exhibition catalogue confirmation',
-      body: 'Grüezi Shalona,\n\nConfirming our room setup and lighting arrangements for "Mysticism, Resilience and Empowerment" from 3.–6. Dezember 2026. The wall hanging panels in the Bärenkeller are ready for your linen pieces.\n\nBest regards,\nBeat Wipf\nOrtsmuseum Bärenkeller Richterswil',
-      artworkTitle: 'Exhibition Setup',
-      phone: '+41 44 787 12 00',
-      location: 'Richterswil, Switzerland',
-      status: 'replied',
-      created_at: '2026-11-25T14:15:00.000Z'
-    }
-  ];
+  // Empty clean slate: Zero fake or mock emails. 
+  // Only real inquiries submitted by genuine collectors through the website are displayed.
+  return [];
 }
 
 export function getStudioEmails(filter = {}) {
