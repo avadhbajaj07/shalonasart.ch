@@ -35,7 +35,16 @@ import {
 
 function mapDbEmail(row) {
   const isIncoming = row.direction === 'inbound';
-  const meta = row.metadata || {};
+  let meta = row.metadata;
+  if (typeof meta === 'string') {
+    try {
+      meta = JSON.parse(meta);
+    } catch {
+      meta = {};
+    }
+  }
+  meta = meta || {};
+
   let senderName = meta.name;
   let senderEmail = meta.email;
 
@@ -49,6 +58,9 @@ function mapDbEmail(row) {
     }
   }
 
+  // Ensure attachments is always an array
+  const attachments = Array.isArray(meta.attachments) ? meta.attachments : [];
+
   return {
     id: row.id,
     direction: isIncoming ? 'incoming' : 'outgoing',
@@ -57,14 +69,14 @@ function mapDbEmail(row) {
     senderEmail: senderEmail || row.from_email,
     recipient: row.to_email,
     subject: row.subject || 'No Subject',
-    body: row.body_text || '',
+    body: (row.body_text && row.body_text.trim()) ? row.body_text : (attachments.length > 0 ? `[Collector sent ${attachments.length} attached file${attachments.length > 1 ? 's' : ''}]` : 'No text content.'),
     bodyHtml: row.body_html || null,
     status: row.status === 'sent' ? 'replied' : row.status,
     artworkTitle: meta.artworkTitle || null,
     phone: meta.phone || null,
     location: meta.location || null,
     created_at: row.created_at || row.received_at || row.sent_at,
-    attachments: meta.attachments || [],
+    attachments,
   };
 }
 
@@ -476,12 +488,22 @@ export default function AdminEmailSystem() {
                       {email.body}
                     </p>
 
-                    {email.artworkTitle && (
-                      <div className="mt-2 inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8F3] border border-[#E5E2D9] text-[9px] font-sans font-medium text-[#A88B57]">
-                        <Palette className="w-2.5 h-2.5" />
-                        <span className="truncate max-w-[200px]">{email.artworkTitle}</span>
-                      </div>
-                    )}
+                    {/* Attachment & Artwork Pills in List */}
+                    <div className="flex flex-wrap items-center gap-1.5 mt-2">
+                      {email.attachments && email.attachments.length > 0 && (
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200/90 text-[10px] font-sans font-semibold text-amber-900 shadow-xs">
+                          <Paperclip className="w-3 h-3 text-[#A88B57]" />
+                          <span>{email.attachments.length} attached file{email.attachments.length > 1 ? 's' : ''}</span>
+                        </div>
+                      )}
+
+                      {email.artworkTitle && (
+                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8F3] border border-[#E5E2D9] text-[9px] font-sans font-medium text-[#A88B57]">
+                          <Palette className="w-2.5 h-2.5" />
+                          <span className="truncate max-w-[180px]">{email.artworkTitle}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 );
               })
@@ -571,10 +593,13 @@ export default function AdminEmailSystem() {
 
             {/* Attached Files from Collector / Inbound */}
             {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
-              <div className="mt-6 pt-4 border-t border-[#E5E2D9] space-y-3">
-                <div className="flex items-center gap-2 text-xs font-sans font-semibold text-[#1A1817]">
-                  <Paperclip className="w-4 h-4 text-[#A88B57]" />
-                  <span>Attachments ({selectedEmail.attachments.length})</span>
+              <div className="mt-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/80 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-xs font-sans font-bold text-[#1A1817]">
+                    <Paperclip className="w-4 h-4 text-[#A88B57]" />
+                    <span>Attached Files ({selectedEmail.attachments.length})</span>
+                  </div>
+                  <span className="text-[10px] font-mono text-[#7A7770]">Stored securely in Supabase</span>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
                   {selectedEmail.attachments.map((att, idx) => {
@@ -583,24 +608,40 @@ export default function AdminEmailSystem() {
                     return (
                       <div
                         key={att.id || idx}
-                        className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F3] hover:bg-stone-100 border border-[#DCD9D0] transition-colors"
+                        className="flex items-center justify-between p-3 rounded-xl bg-white hover:bg-stone-50 border border-[#DCD9D0] shadow-xs transition-colors"
                       >
                         <div className="flex items-center gap-3 overflow-hidden">
                           {isImg && fileUrl ? (
-                            <img
-                              src={fileUrl}
-                              alt={att.filename}
-                              className="w-10 h-10 rounded object-cover border border-[#DCD9D0] shrink-0"
-                            />
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="w-12 h-12 rounded-lg overflow-hidden bg-[#FAF8F3] border border-[#DCD9D0] shrink-0 hover:opacity-80 transition-opacity"
+                              title="Click to view full image"
+                            >
+                              <img
+                                src={fileUrl}
+                                alt={att.filename}
+                                className="w-full h-full object-cover"
+                              />
+                            </a>
                           ) : (
-                            <div className="w-10 h-10 rounded bg-[#ECE6DC] flex items-center justify-center shrink-0 text-[#A88B57]">
-                              <FileText className="w-5 h-5" />
+                            <div className="w-12 h-12 rounded-lg bg-[#ECE6DC] flex items-center justify-center shrink-0 text-[#A88B57]">
+                              <FileText className="w-6 h-6" />
                             </div>
                           )}
                           <div className="overflow-hidden">
-                            <p className="text-xs font-sans font-medium text-[#1A1817] truncate">{att.filename || 'Attachment'}</p>
+                            <a
+                              href={fileUrl || '#'}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-xs font-sans font-semibold text-[#1A1817] hover:text-[#A88B57] truncate block"
+                              title={att.filename}
+                            >
+                              {att.filename || 'Attachment'}
+                            </a>
                             {att.size ? (
-                              <p className="text-[10px] text-[#7A7770] font-mono">
+                              <p className="text-[10px] text-[#7A7770] font-mono mt-0.5">
                                 {att.size > 1024 * 1024
                                   ? `${(att.size / (1024 * 1024)).toFixed(1)} MB`
                                   : `${Math.round(att.size / 1024)} KB`}
@@ -609,16 +650,25 @@ export default function AdminEmailSystem() {
                           </div>
                         </div>
                         {fileUrl && (
-                          <a
-                            href={fileUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            download={att.filename || 'attachment'}
-                            className="p-2 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-white border border-transparent hover:border-[#DCD9D0] transition-colors ml-2 shrink-0 cursor-pointer"
-                            title="Download file"
-                          >
-                            <Download className="w-4 h-4" />
-                          </a>
+                          <div className="flex items-center gap-1 shrink-0 ml-2">
+                            <a
+                              href={fileUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-[#FAF8F3] border border-transparent hover:border-[#DCD9D0] transition-colors"
+                              title="Open in new tab"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </a>
+                            <a
+                              href={fileUrl}
+                              download={att.filename || 'attachment'}
+                              className="p-2 rounded-lg bg-[#FAF8F3] hover:bg-[#1A1817] text-[#7A7770] hover:text-white border border-[#DCD9D0] transition-colors"
+                              title="Download to computer"
+                            >
+                              <Download className="w-4 h-4" />
+                            </a>
+                          </div>
                         )}
                       </div>
                     );
