@@ -101,6 +101,7 @@ export default function AdminPage() {
   // Artwork Creation Form State
   const [artTitle, setArtTitle] = useState('');
   const [artCategory, setArtCategory] = useState('Abstract');
+  const [artCategory2, setArtCategory2] = useState('');
   const [artDimensions, setArtDimensions] = useState('120 × 90 cm');
   const [artMedium, setArtMedium] = useState('Mixed media, acrylic emulsions & raw pigments on linen');
   const [artYear, setArtYear] = useState('2026');
@@ -136,6 +137,7 @@ export default function AdminPage() {
   // Edit Artwork Form State
   const [editArtTitle, setEditArtTitle] = useState('');
   const [editArtCategory, setEditArtCategory] = useState('Abstract');
+  const [editArtCategory2, setEditArtCategory2] = useState('');
   const [editArtDimensions, setEditArtDimensions] = useState('');
   const [editArtMedium, setEditArtMedium] = useState('');
   const [editArtYear, setEditArtYear] = useState('');
@@ -388,6 +390,9 @@ export default function AdminPage() {
       const isUnfinished = artCategory === 'Unfinished Works';
       const title = artTitle.trim() || (isUnfinished ? 'Untitled Study' : 'Untitled Stillness');
       const status = isUnfinished ? 'In Progress' : artStatus;
+      const combinedCategory = artCategory2 && artCategory2 !== artCategory
+        ? `${artCategory}, ${artCategory2}`
+        : artCategory;
 
       let uploadedUrl = artImage;
       let storagePath = null;
@@ -404,7 +409,7 @@ export default function AdminPage() {
 
       const newArt = await saveArtwork({
         title,
-        category: artCategory,
+        category: combinedCategory,
         dimensions: artDimensions.trim() || (isUnfinished ? 'Easel study' : '100 × 80 cm'),
         medium: artMedium.trim() || (isUnfinished ? 'Raw pigments, emulsion on linen' : 'Mixed media on linen'),
         year: artYear.trim() || new Date().getFullYear().toString(),
@@ -424,6 +429,8 @@ export default function AdminPage() {
 
       // Reset form
       setArtTitle('');
+      setArtCategory2('');
+      setArtStatus('Available');
       setArtPhilosophy('');
       setArtImage(null);
       setArtImageMeta(null);
@@ -440,12 +447,15 @@ export default function AdminPage() {
   const handleStartEditArtwork = (art) => {
     setEditingArtwork(art);
     setEditArtTitle(art.title || '');
-    setEditArtCategory(art.category || 'Abstract');
+    const cats = (art.category || 'Abstract').split(',').map(s => s.trim()).filter(Boolean);
+    setEditArtCategory(cats[0] || 'Abstract');
+    setEditArtCategory2(cats[1] || '');
     setEditArtDimensions(art.dimensions || '');
     setEditArtMedium(art.medium || '');
     setEditArtYear(art.year || '2026');
     setEditArtPhilosophy(art.philosophy || art.caption || '');
-    setEditArtStatus(art.status || 'Available');
+    const isArtSold = art.isSold || art.status === 'Sold' || art.status === 'Private Collection' || (art.status || '').toLowerCase().includes('sold');
+    setEditArtStatus(isArtSold ? 'Sold' : (art.status || 'Available'));
     setEditArtImage(art.image || null);
     setEditArtImageMeta(null);
   };
@@ -459,6 +469,9 @@ export default function AdminPage() {
       setIsSubmittingEditArt(true);
       const isUnfinished = editArtCategory === 'Unfinished Works';
       const status = isUnfinished && editArtStatus === 'Available' ? 'In Progress' : editArtStatus;
+      const combinedCategory = editArtCategory2 && editArtCategory2 !== editArtCategory
+        ? `${editArtCategory}, ${editArtCategory2}`
+        : editArtCategory;
 
       let uploadedUrl = editArtImage;
       let storagePath = editingArtwork.imagePath;
@@ -475,7 +488,7 @@ export default function AdminPage() {
 
       const updated = await updateArtwork(editingArtwork.id, {
         title: editArtTitle.trim() || 'Untitled Stillness',
-        category: editArtCategory,
+        category: combinedCategory,
         dimensions: editArtDimensions.trim(),
         medium: editArtMedium.trim(),
         year: editArtYear.trim(),
@@ -495,6 +508,20 @@ export default function AdminPage() {
       console.error(err);
     } finally {
       setIsSubmittingEditArt(false);
+    }
+  };
+
+  // Quick 1-click Sold Tag Toggle directly from Inventory Table
+  const handleQuickToggleSold = async (art) => {
+    const isCurrentlySold = art.isSold || art.status === 'Sold' || art.status === 'Private Collection' || (art.status || '').toLowerCase().includes('sold');
+    const newStatus = isCurrentlySold ? 'Available' : 'Sold';
+    try {
+      await updateArtwork(art.id, { status: newStatus });
+      await reloadData();
+      setSuccessMessage(`"${art.title}" marked as ${newStatus === 'Sold' ? 'SOLD (Private Collection)' : 'Available'}! Changes are live.`);
+    } catch (err) {
+      alert('Failed to update status: ' + (err.message || 'Error'));
+      console.error(err);
     }
   };
 
@@ -623,16 +650,26 @@ export default function AdminPage() {
   // Filtered Artworks for the Inventory Table
   const filteredInventoryArtworks = useMemo(() => {
     return allArtworks.filter((art) => {
-      // Category Match
+      // Category Match (supports multi-category matching)
       let matchCat = true;
       if (inventoryCategoryFilter !== 'All') {
-        matchCat = art.category === inventoryCategoryFilter;
+        const itemCats = (art.category || '').split(',').map((c) => c.trim().toLowerCase());
+        matchCat = itemCats.includes(inventoryCategoryFilter.toLowerCase());
       }
 
       // Status Match
       let matchStatus = true;
+      const isArtSold = art.isSold || art.status === 'Sold' || art.status === 'Private Collection' || (art.status || '').toLowerCase().includes('sold');
       if (inventoryStatusFilter !== 'All') {
-        matchStatus = art.status === inventoryStatusFilter;
+        if (inventoryStatusFilter === 'Sold') {
+          matchStatus = isArtSold;
+        } else if (inventoryStatusFilter === 'Available') {
+          matchStatus = !isArtSold && art.status === 'Available' && art.category !== 'Unfinished Works';
+        } else if (inventoryStatusFilter === 'In Progress') {
+          matchStatus = art.status === 'In Progress' || art.category === 'Unfinished Works';
+        } else {
+          matchStatus = art.status === inventoryStatusFilter;
+        }
       }
 
       // Search Match
@@ -655,10 +692,10 @@ export default function AdminPage() {
   const stats = useMemo(() => {
     const totalArts = allArtworks.length;
     const unfinishedCount = allArtworks.filter(a => a.category === 'Unfinished Works' || a.status === 'In Progress').length;
-    const availableCount = allArtworks.filter(a => a.status === 'Available').length;
-    const privateCount = allArtworks.filter(a => a.status === 'Private Collection').length;
+    const soldCount = allArtworks.filter(a => a.isSold || a.status === 'Sold' || a.status === 'Private Collection' || (a.status || '').toLowerCase().includes('sold')).length;
+    const availableCount = allArtworks.filter(a => !(a.isSold || a.status === 'Sold' || a.status === 'Private Collection' || (a.status || '').toLowerCase().includes('sold')) && a.status === 'Available' && a.category !== 'Unfinished Works').length;
     const journalCount = allJournals.length;
-    return { totalArts, unfinishedCount, availableCount, privateCount, journalCount };
+    return { totalArts, unfinishedCount, availableCount, soldCount, journalCount };
   }, [allArtworks, allJournals]);
 
   // Preset Dimensions & Mediums
@@ -821,7 +858,7 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-8 pt-6 space-y-6">
         
         {/* KPI Quick Overview Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-4">
           <div className="bg-white p-4 rounded-xl border border-[#E5E2D9] shadow-sm">
             <span className="text-[10px] uppercase font-sans tracking-widest text-[#7A7770] block">
               Total Artworks
@@ -831,21 +868,35 @@ export default function AdminPage() {
                 {stats.totalArts}
               </span>
               <span className="text-xs text-[#A88B57] font-sans">
-                Editable Live
+                Catalogue
               </span>
             </div>
           </div>
 
           <div className="bg-white p-4 rounded-xl border border-[#E5E2D9] shadow-sm">
-            <span className="text-[10px] uppercase font-sans tracking-widest text-[#7A7770] block">
-              Active Categories
+            <span className="text-[10px] uppercase font-sans tracking-widest text-emerald-800 font-semibold block">
+              Available Works
             </span>
             <div className="mt-1 flex items-baseline gap-2">
-              <span className="font-serif text-3xl font-light text-[#2A2A2A]">
-                {categories.length}
+              <span className="font-serif text-3xl font-light text-emerald-700">
+                {stats.availableCount}
               </span>
-              <span className="text-xs text-[#7A7770] font-sans">
-                Collections
+              <span className="text-xs text-emerald-600 font-sans">
+                For Sale
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-zinc-900 p-4 rounded-xl border border-amber-400/40 shadow-sm text-white">
+            <span className="text-[10px] uppercase font-sans tracking-widest text-amber-300 font-semibold block">
+              Sold Artworks
+            </span>
+            <div className="mt-1 flex items-baseline gap-2">
+              <span className="font-serif text-3xl font-light text-amber-200">
+                {stats.soldCount}
+              </span>
+              <span className="text-xs text-amber-400/80 font-sans">
+                Acquired
               </span>
             </div>
           </div>
@@ -1093,6 +1144,66 @@ export default function AdminPage() {
                     </div>
                   </div>
                 )}
+
+                {/* Secondary Category Selector (Allows choosing two categories) */}
+                <div className="pt-3 border-t border-[#E5E2D9]/70 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <span className="block text-xs uppercase font-sans tracking-wider text-[#7A7770] font-semibold">
+                        Second Category (Optional)
+                      </span>
+                      <p className="text-[11px] text-[#7A7770]/80">
+                        Choose an extra category to place this artwork in two collections simultaneously.
+                      </p>
+                    </div>
+                    {artCategory2 && (
+                      <button
+                        type="button"
+                        onClick={() => setArtCategory2('')}
+                        className="text-[11px] text-stone-500 hover:text-stone-800 underline"
+                      >
+                        Remove 2nd Category
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setArtCategory2('')}
+                      className={`p-2.5 rounded-xl border text-xs font-sans transition-all text-center ${
+                        !artCategory2
+                          ? 'bg-[#A88B57]/15 border-[#A88B57] text-[#1A1817] font-semibold'
+                          : 'bg-[#FAF8F3] text-[#7A7770] border-[#DCD9D0]'
+                      }`}
+                    >
+                      Single Category Only
+                    </button>
+                    {categories.filter(c => c !== artCategory).map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setArtCategory2(cat)}
+                        className={`p-2.5 rounded-xl border text-xs font-sans transition-all text-center ${
+                          artCategory2 === cat
+                            ? 'bg-[#2A2A2A] text-white border-[#2A2A2A] font-semibold shadow-xs'
+                            : 'bg-[#FAF8F3] text-[#7A7770] hover:text-[#2A2A2A] border-[#DCD9D0]'
+                        }`}
+                      >
+                        + {cat}
+                      </button>
+                    ))}
+                  </div>
+
+                  {artCategory2 && (
+                    <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-900 text-xs font-sans flex items-center gap-2">
+                      <Check className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>
+                        Two categories selected: <strong>{artCategory}</strong> + <strong>{artCategory2}</strong>
+                      </span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Photo Upload Zone */}
@@ -1258,17 +1369,31 @@ export default function AdminPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs uppercase font-sans tracking-wider text-[#7A7770] font-semibold mb-1.5">
-                    Availability Status
-                  </label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block text-xs uppercase font-sans tracking-wider text-[#7A7770] font-semibold">
+                      Availability Status
+                    </label>
+                    <button
+                      type="button"
+                      onClick={() => setArtStatus(artStatus === 'Sold' ? 'Available' : 'Sold')}
+                      className={`text-[10px] uppercase font-sans tracking-wider font-semibold px-2 py-0.5 rounded transition-all flex items-center gap-1 ${
+                        artStatus === 'Sold'
+                          ? 'bg-zinc-900 text-amber-300 border border-amber-400/40 shadow-xs'
+                          : 'bg-amber-50 text-amber-800 border border-amber-200 hover:bg-amber-100'
+                      }`}
+                    >
+                      <Tag className="w-3 h-3" />
+                      <span>{artStatus === 'Sold' ? 'SOLD TAG ACTIVE' : '+ Add Sold Tag'}</span>
+                    </button>
+                  </div>
                   <select
                     value={artStatus}
                     onChange={(e) => setArtStatus(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl border border-[#DCD9D0] bg-[#FAF8F3] text-sm focus:outline-none focus:border-[#A88B57] text-[#2A2A2A]"
                   >
                     <option value="Available">Available for Acquisition</option>
+                    <option value="Sold">Sold · Private Collection (Sold Badge &amp; Sold Tab)</option>
                     <option value="In Progress">In Progress (Unfinished Study)</option>
-                    <option value="Private Collection">Private Collection (Acquired)</option>
                   </select>
                 </div>
               </div>
@@ -1357,26 +1482,56 @@ export default function AdminPage() {
               </div>
             </div>
 
-            {/* Category Filter Pills Bar */}
-            <div className="flex flex-wrap items-center gap-2 pb-2">
-              <span className="text-xs font-sans text-[#7A7770] mr-1 flex items-center gap-1">
-                <Filter className="w-3.5 h-3.5" />
-                <span>Collection:</span>
-              </span>
+            {/* Filter Pills Bar: Collection & Status */}
+            <div className="space-y-2 pb-2">
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs font-sans text-[#7A7770] mr-1 flex items-center gap-1">
+                  <Filter className="w-3.5 h-3.5" />
+                  <span>Collection:</span>
+                </span>
 
-              {['All', ...categories].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setInventoryCategoryFilter(cat)}
-                  className={`px-3 py-1.5 rounded-full text-xs font-sans transition-colors ${
-                    inventoryCategoryFilter === cat
-                      ? 'bg-[#2A2A2A] text-white font-medium shadow-sm'
-                      : 'bg-[#FAF8F3] text-[#7A7770] hover:text-[#2A2A2A] border border-[#DCD9D0]'
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
+                {['All', ...categories].map((cat) => (
+                  <button
+                    key={cat}
+                    onClick={() => setInventoryCategoryFilter(cat)}
+                    className={`px-3 py-1 rounded-full text-xs font-sans transition-colors ${
+                      inventoryCategoryFilter === cat
+                        ? 'bg-[#2A2A2A] text-white font-medium shadow-sm'
+                        : 'bg-[#FAF8F3] text-[#7A7770] hover:text-[#2A2A2A] border border-[#DCD9D0]'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#E5E2D9]/40">
+                <span className="text-xs font-sans text-[#7A7770] mr-1 flex items-center gap-1">
+                  <Tag className="w-3.5 h-3.5" />
+                  <span>Status:</span>
+                </span>
+
+                {[
+                  { id: 'All', label: 'All Statuses' },
+                  { id: 'Available', label: 'Available' },
+                  { id: 'Sold', label: 'Sold (Acquired)' },
+                  { id: 'In Progress', label: 'In Progress (Unfinished)' },
+                ].map((st) => (
+                  <button
+                    key={st.id}
+                    onClick={() => setInventoryStatusFilter(st.id)}
+                    className={`px-3 py-1 rounded-full text-xs font-sans transition-colors ${
+                      inventoryStatusFilter === st.id
+                        ? st.id === 'Sold'
+                          ? 'bg-zinc-900 text-amber-300 font-semibold border border-amber-400/40 shadow-sm'
+                          : 'bg-[#2A2A2A] text-white font-medium shadow-sm'
+                        : 'bg-[#FAF8F3] text-[#7A7770] hover:text-[#2A2A2A] border border-[#DCD9D0]'
+                    }`}
+                  >
+                    {st.label}
+                  </button>
+                ))}
+              </div>
             </div>
 
             {/* Advanced Responsive Table */}
@@ -1461,17 +1616,21 @@ export default function AdminPage() {
 
                           {/* Category Badge */}
                           <td className="py-3 px-4">
-                            <span className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-medium tracking-wide ${
-                              art.category === 'Unfinished Works'
-                                ? 'bg-amber-100 text-amber-800 border border-amber-200'
-                                : art.category === 'Abstract'
-                                ? 'bg-blue-50 text-blue-800 border border-blue-200'
-                                : art.category === 'Figurative Abstracts'
-                                ? 'bg-purple-50 text-purple-800 border border-purple-200'
-                                : 'bg-stone-100 text-stone-800 border border-stone-200'
-                            }`}>
-                              {art.category}
-                            </span>
+                            <div className="flex flex-wrap gap-1">
+                              {(art.category || 'Abstract').split(',').map((catName, cIdx) => (
+                                <span key={cIdx} className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-medium tracking-wide ${
+                                  catName.trim() === 'Unfinished Works'
+                                    ? 'bg-amber-100 text-amber-800 border border-amber-200'
+                                    : catName.trim() === 'Abstract'
+                                    ? 'bg-blue-50 text-blue-800 border border-blue-200'
+                                    : catName.trim() === 'Figurative Abstracts'
+                                    ? 'bg-purple-50 text-purple-800 border border-purple-200'
+                                    : 'bg-stone-100 text-stone-800 border border-stone-200'
+                                }`}>
+                                  {catName.trim()}
+                                </span>
+                              ))}
+                            </div>
                           </td>
 
                           {/* Dimensions & Medium */}
@@ -1485,18 +1644,40 @@ export default function AdminPage() {
                             {art.year}
                           </td>
 
-                          {/* Status */}
+                          {/* Status & 1-Click Sold Tag */}
                           <td className="py-3 px-4">
-                            <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
-                              art.status === 'Available'
-                                ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                                : art.status === 'In Progress'
-                                ? 'bg-amber-50 text-amber-700 border border-amber-200'
-                                : 'bg-slate-100 text-slate-700 border border-slate-200'
-                            }`}>
-                              <span className="w-1.5 h-1.5 rounded-full bg-current" />
-                              <span>{art.status}</span>
-                            </span>
+                            {(() => {
+                              const isArtSold = art.isSold || art.status === 'Sold' || art.status === 'Private Collection' || (art.status || '').toLowerCase().includes('sold');
+                              return (
+                                <div className="flex flex-col gap-1 items-start">
+                                  <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-medium ${
+                                    isArtSold
+                                      ? 'bg-zinc-900 text-amber-300 border border-amber-400/40 shadow-xs'
+                                      : art.status === 'In Progress'
+                                      ? 'bg-amber-50 text-amber-700 border border-amber-200'
+                                      : 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                                  }`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${isArtSold ? 'bg-amber-400' : 'bg-current'}`} />
+                                    <span>{isArtSold ? 'SOLD' : art.status}</span>
+                                  </span>
+
+                                  {/* Quick 1-click Sold Tag Toggle */}
+                                  <button
+                                    type="button"
+                                    onClick={() => handleQuickToggleSold(art)}
+                                    className={`text-[9px] font-sans uppercase tracking-wider px-2 py-0.5 rounded transition-all flex items-center gap-1 ${
+                                      isArtSold
+                                        ? 'text-stone-500 hover:text-stone-900 hover:bg-stone-100 underline underline-offset-2'
+                                        : 'text-amber-900 bg-amber-100/70 hover:bg-amber-200/80 border border-amber-300/60 font-semibold shadow-xs'
+                                    }`}
+                                    title={isArtSold ? 'Click to make Available' : 'Click to quickly add Sold tag'}
+                                  >
+                                    <Tag className="w-2.5 h-2.5" />
+                                    <span>{isArtSold ? 'Mark Available' : '+ Sold Tag'}</span>
+                                  </button>
+                                </div>
+                              );
+                            })()}
                           </td>
 
                           {/* Full Actions (View, Edit, Delete for ALL artworks) */}
@@ -1958,7 +2139,7 @@ export default function AdminPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-[#7A7770] font-semibold mb-1">
-                    Category
+                    Primary Category
                   </label>
                   <select
                     value={editArtCategory}
@@ -1973,17 +2154,51 @@ export default function AdminPage() {
 
                 <div>
                   <label className="block text-[11px] uppercase tracking-wider text-[#7A7770] font-semibold mb-1">
+                    Secondary Category (Optional)
+                  </label>
+                  <select
+                    value={editArtCategory2}
+                    onChange={(e) => setEditArtCategory2(e.target.value)}
+                    className="w-full px-3 py-2.5 rounded-lg border border-[#DCD9D0] bg-white text-sm text-[#2A2A2A] focus:outline-none focus:border-[#A88B57]"
+                  >
+                    <option value="">None (Single Category)</option>
+                    {categories.filter(c => c !== editArtCategory).map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+              </div>
+
+              {/* Status & Sold Tag Quick Selector */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3 bg-[#FAF8F3] rounded-xl border border-[#DCD9D0] items-center">
+                <div>
+                  <label className="block text-[11px] uppercase tracking-wider text-[#7A7770] font-semibold mb-1">
                     Availability Status
                   </label>
                   <select
                     value={editArtStatus}
                     onChange={(e) => setEditArtStatus(e.target.value)}
-                    className="w-full px-3 py-2.5 rounded-lg border border-[#DCD9D0] bg-white text-sm text-[#2A2A2A] focus:outline-none focus:border-[#A88B57]"
+                    className="w-full px-3 py-2 rounded-lg border border-[#DCD9D0] bg-white text-sm text-[#2A2A2A] focus:outline-none focus:border-[#A88B57]"
                   >
                     <option value="Available">Available for Acquisition</option>
+                    <option value="Sold">Sold · Private Collection (Sold Badge &amp; Sold Tab)</option>
                     <option value="In Progress">In Progress (Unfinished Study)</option>
-                    <option value="Private Collection">Private Collection (Acquired)</option>
                   </select>
+                </div>
+
+                <div className="pt-2 sm:pt-4">
+                  <button
+                    type="button"
+                    onClick={() => setEditArtStatus(editArtStatus === 'Sold' ? 'Available' : 'Sold')}
+                    className={`w-full py-2.5 px-3 rounded-lg text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-1.5 transition-all shadow-xs ${
+                      editArtStatus === 'Sold'
+                        ? 'bg-zinc-900 text-amber-300 border border-amber-400/40'
+                        : 'bg-white text-amber-900 border border-amber-300 hover:bg-amber-50'
+                    }`}
+                  >
+                    <Tag className="w-3.5 h-3.5" />
+                    <span>{editArtStatus === 'Sold' ? 'SOLD TAG ACTIVE' : '+ Add Sold Tag'}</span>
+                  </button>
                 </div>
               </div>
 

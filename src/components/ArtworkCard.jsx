@@ -3,7 +3,7 @@ import { Eye, Home, ArrowUpRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 export default function ArtworkCard({ artwork, onSelect, onOpenRoom }) {
-  const isSold = artwork.status === 'Private Collection';
+  const isSold = artwork.isSold || artwork.status === 'Sold' || artwork.status === 'Private Collection' || artwork.status === 'not_for_sale' || (artwork.status || '').toLowerCase().includes('sold');
   const isWip = artwork.status === 'In Progress';
 
   return (
@@ -68,8 +68,9 @@ export default function ArtworkCard({ artwork, onSelect, onOpenRoom }) {
         {/* Status Badge */}
         <div className="absolute top-2.5 right-2.5 pointer-events-none">
           {isSold ? (
-            <span className="px-2 py-0.5 rounded-full text-[9px] font-sans uppercase tracking-[0.2em] bg-[#1A1817]/80 text-white/90 backdrop-blur-sm">
-              Private Collection
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9px] font-sans uppercase tracking-[0.2em] font-semibold bg-[#1A1817]/95 text-amber-200 border border-amber-300/40 shadow-lg backdrop-blur-md">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              SOLD
             </span>
           ) : isWip ? (
             <span className="px-2 py-0.5 rounded-full text-[9px] font-sans uppercase tracking-[0.2em] bg-[#A88B57]/90 text-white backdrop-blur-sm">
@@ -101,9 +102,16 @@ export default function ArtworkCard({ artwork, onSelect, onOpenRoom }) {
           <span className="truncate pr-2 font-mono text-[10px]" title={artwork.dimensions}>
             {artwork.dimensions}
           </span>
-          <span className="text-[10px] tracking-widest uppercase text-[#A88B57] font-medium shrink-0">
-            {artwork.category}
-          </span>
+          <div className="flex items-center gap-1.5 shrink-0">
+            {isSold && (
+              <span className="text-[9px] font-sans uppercase tracking-widest font-semibold px-2 py-0.5 rounded bg-zinc-900 text-amber-300 border border-amber-400/30">
+                SOLD
+              </span>
+            )}
+            <span className="text-[10px] tracking-widest uppercase text-[#A88B57] font-medium">
+              {artwork.category}
+            </span>
+          </div>
         </div>
 
         {/* Curatorial note if available */}

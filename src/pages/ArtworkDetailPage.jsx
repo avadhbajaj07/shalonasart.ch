@@ -14,6 +14,7 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
   const navigate = useNavigate();
 
   const artwork = artworks.find((a) => a.slug === slug) || artworks[0];
+  const isSold = artwork.isSold || artwork.status === 'Sold' || artwork.status === 'Private Collection' || artwork.status === 'not_for_sale' || (artwork.status || '').toLowerCase().includes('sold');
   const currentIndex = artworks.findIndex((a) => a.id === artwork.id);
   const prevArtwork = artworks[(currentIndex - 1 + artworks.length) % artworks.length];
   const nextArtwork = artworks[(currentIndex + 1) % artworks.length];
@@ -29,7 +30,9 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
     email: '',
     location: '',
     phone: '',
-    message: `I am interested in acquiring or viewing "${artwork.title}" (${artwork.dimensions}, ${artwork.year}).`
+    message: isSold
+      ? `I admire "${artwork.title}" (Acquired) and would like to inquire about commissioning a related original work or visiting the Richterswil studio.`
+      : `I am interested in acquiring or viewing "${artwork.title}" (${artwork.dimensions}, ${artwork.year}).`
   });
   const [inquirySent, setInquirySent] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -178,9 +181,17 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
                 <span>{artwork.year}</span>
               </div>
 
-              <h1 className="font-serif text-4xl sm:text-5xl font-light text-[#1A1817] tracking-tight">
-                {artwork.title}
-              </h1>
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <h1 className="font-serif text-4xl sm:text-5xl font-light text-[#1A1817] tracking-tight">
+                  {artwork.title}
+                </h1>
+                {isSold && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-sans uppercase tracking-[0.2em] font-semibold bg-[#1A1817] text-amber-200 border border-amber-300/40 shadow-sm shrink-0">
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                    SOLD · PRIVATE COLLECTION
+                  </span>
+                )}
+              </div>
 
               <p className="font-sans text-xs uppercase tracking-widest text-[#1A1817]/50">
                 Shalona · Richterswil, Switzerland
@@ -216,13 +227,13 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
               <div className="flex justify-between items-center pt-1">
                 <span className="text-[#1A1817]/50 uppercase tracking-widest text-[10px]">Status</span>
                 <span className={`font-semibold uppercase tracking-wider text-[11px] ${
-                  artwork.status === 'Private Collection'
-                    ? 'text-[#1A1817]/50'
+                  isSold
+                    ? 'text-amber-900 bg-amber-100/80 px-2.5 py-0.5 rounded border border-amber-300/50'
                     : artwork.status === 'In Progress'
                     ? 'text-[#A88B57]'
                     : 'text-emerald-700'
                 }`}>
-                  {artwork.status}
+                  {isSold ? 'Sold · Private Collection' : artwork.status}
                 </span>
               </div>
             </div>
@@ -248,13 +259,15 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
               <span>Original artwork cataloged with signed Certificate of Authenticity</span>
             </div>
 
-            {/* Direct Acquisition Inquiry Form */}
+            {/* Direct Acquisition / Commission Inquiry Form */}
             <div className="pt-6 border-t border-[#1A1817]/08 space-y-4">
               <h3 className="font-serif text-2xl font-light text-[#1A1817]">
-                Private Acquisition Inquiry
+                {isSold ? 'Commission or Studio Viewing Inquiry' : 'Private Acquisition Inquiry'}
               </h3>
               <p className="text-xs font-sans text-[#1A1817]/60 leading-relaxed font-light">
-                For price guidance, private studio viewing appointments in Richterswil, or international shipping quotes, contact the atelier directly.
+                {isSold
+                  ? 'This original piece has been acquired into a private collection. You are warmly welcome to inquire about commissioning a related original work or visiting the studio in Richterswil.'
+                  : 'For price guidance, private studio viewing appointments in Richterswil, or international shipping quotes, contact the atelier directly.'}
               </p>
 
               {inquirySent ? (

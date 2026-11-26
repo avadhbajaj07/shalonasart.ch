@@ -44,16 +44,24 @@ export const ArtworkInputSchema = z.object({
 export function mapSupabaseToArtwork(row) {
   const normStatus = (row.status || 'available').toLowerCase();
   let uiStatus = 'Available';
-  if (normStatus.includes('sold')) uiStatus = 'Sold';
-  else if (normStatus.includes('not') || normStatus.includes('private')) uiStatus = 'Not For Sale';
-  else if (normStatus.includes('progress') || normStatus.includes('unfinish')) uiStatus = 'In Progress';
+  if (normStatus.includes('sold') || normStatus.includes('not') || normStatus.includes('private')) {
+    uiStatus = 'Sold';
+  } else if (normStatus.includes('progress') || normStatus.includes('unfinish')) {
+    uiStatus = 'In Progress';
+  }
+
+  const rawCat = row.category || 'Abstract';
+  const catArray = rawCat.split(',').map(s => s.trim()).filter(Boolean);
 
   return {
     id: row.id,
     accession: row.accession || `SHA-${row.year || '2026'}-${String(row.sort_order || 1).padStart(2, '0')}`,
     title: row.title,
     slug: row.slug,
-    category: row.category || 'Abstract',
+    category: rawCat,
+    categories: catArray.length > 0 ? catArray : ['Abstract'],
+    primaryCategory: catArray[0] || 'Abstract',
+    secondaryCategory: catArray[1] || '',
     image: row.image_url || '/wp-content/uploads/2026/11/IMG_1085-scaled.jpg',
     thumbnail: row.thumbnail_url || row.image_url || '/wp-content/uploads/2026/11/IMG_1085-654x1024.jpg',
     localImage: row.image_url,
@@ -63,6 +71,7 @@ export function mapSupabaseToArtwork(row) {
     caption: row.description || row.philosophy || 'Original artwork by Shalona, Richterswil, Switzerland.',
     philosophy: row.philosophy || row.description || '',
     status: uiStatus,
+    isSold: uiStatus === 'Sold',
     featured: Boolean(row.featured),
     width: row.width || 1800,
     height: row.height || 2400,
@@ -338,9 +347,19 @@ export async function saveArtwork(artworkData) {
       else if (error) console.warn('Client Supabase insert warning:', error.message);
     }
 
+    const catArray = (artworkData.category || 'Abstract').split(',').map(s => s.trim()).filter(Boolean);
+    const isSold = dbStatus === 'sold' || dbStatus === 'not_for_sale';
+    const displayStatus = isSold ? 'Sold' : (dbStatus === 'in_progress' ? 'In Progress' : 'Available');
+
     const createdArtwork = createdRow ? mapSupabaseToArtwork(createdRow) : {
       id: Date.now().toString(),
       ...artworkData,
+      category: artworkData.category || 'Abstract',
+      categories: catArray.length > 0 ? catArray : ['Abstract'],
+      primaryCategory: catArray[0] || 'Abstract',
+      secondaryCategory: catArray[1] || '',
+      status: displayStatus,
+      isSold,
       slug,
       sortOrder,
       isPublished: true,
@@ -433,13 +452,21 @@ export async function updateArtwork(id, updatedFields) {
       console.warn('Supabase client update fallback warning:', clientErr.message);
     }
 
+    const catArray = category.split(',').map(s => s.trim()).filter(Boolean);
+    const isSold = (status || '').toLowerCase().includes('sold') || (status || '').toLowerCase().includes('private') || (status || '').toLowerCase().includes('not');
+    const displayStatus = isSold ? 'Sold' : (isUnfinished || status === 'In Progress' ? 'In Progress' : 'Available');
+
     const updated = {
       ...current,
       ...updatedFields,
       title: newTitle,
       slug,
       category,
-      status,
+      categories: catArray.length > 0 ? catArray : ['Abstract'],
+      primaryCategory: catArray[0] || 'Abstract',
+      secondaryCategory: catArray[1] || '',
+      status: displayStatus,
+      isSold,
       image: updatedFields.image || current.image,
       thumbnail: updatedFields.thumbnail || updatedFields.image || current.thumbnail,
       updatedAt: new Date().toISOString()

@@ -10,23 +10,29 @@ export default function Gallery({ artworks, onSelectArtwork, onOpenRoom, isStand
 
   const categories = [
     { id: 'All', label: 'All Works' },
+    { id: 'Sold', label: 'Sold Works' },
     { id: 'Figurative Abstracts', label: 'Figurative Abstracts' },
     { id: 'Expressions', label: 'Expressions' },
     { id: 'Abstract', label: 'Abstract' },
     { id: 'Unfinished Works', label: 'Unfinished Works' },
-    { id: 'Private Collection', label: 'Private Collection' },
   ];
 
   // Filter artworks by category
   const filteredArtworks = useMemo(() => {
     return artworks.filter((item) => {
+      const isItemSold = item.isSold || item.status === 'Sold' || item.status === 'Private Collection' || item.status === 'not_for_sale' || (item.status || '').toLowerCase().includes('sold');
+
       if (selectedCategory === 'All') {
         // Exclude unfinished / untitled studies from the main exhibition collection
         return item.category !== 'Unfinished Works';
-      } else if (selectedCategory === 'Private Collection') {
-        return item.status === 'Private Collection';
+      } else if (selectedCategory === 'Sold' || selectedCategory === 'Private Collection') {
+        return isItemSold;
       } else {
-        return item.category === selectedCategory;
+        // Multi-category support: checks if category string includes selectedCategory
+        const itemCats = (item.category || '')
+          .split(',')
+          .map((c) => c.trim().toLowerCase());
+        return itemCats.includes(selectedCategory.toLowerCase());
       }
     });
   }, [artworks, selectedCategory]);
@@ -156,8 +162,16 @@ export default function Gallery({ artworks, onSelectArtwork, onOpenRoom, isStand
 
               {/* Middle: Category, Title & Philosophy Only */}
               <div className="space-y-1 sm:space-y-1.5 min-w-0 flex-1">
-                <div className="text-[10px] sm:text-xs uppercase font-sans tracking-[0.2em] text-[#A88B57] font-medium truncate">
-                  {artwork.category}
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] sm:text-xs uppercase font-sans tracking-[0.2em] text-[#A88B57] font-medium truncate">
+                    {artwork.category}
+                  </span>
+                  {(artwork.isSold || artwork.status === 'Sold' || artwork.status === 'Private Collection' || artwork.status === 'not_for_sale' || (artwork.status || '').toLowerCase().includes('sold')) && (
+                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-sans uppercase tracking-[0.16em] font-semibold bg-[#1A1817] text-amber-200 border border-amber-300/40">
+                      <span className="w-1 h-1 rounded-full bg-amber-400" />
+                      SOLD
+                    </span>
+                  )}
                 </div>
                 <h3 className="font-serif text-lg sm:text-2xl font-light text-[#1A1817] group-hover:text-[#A88B57] transition-colors truncate">
                   {artwork.title}
