@@ -455,19 +455,24 @@ export function updateStudioEmailStatus(id, newStatus) {
 }
 
 export async function sendOutgoingStudioEmail(emailData) {
-  const { recipient, subject, body, inReplyToId } = emailData;
+  const { recipient, subject, body, inReplyToId, attachments = [] } = emailData;
 
   const outgoingEntry = {
     id: 'out_' + Date.now(),
     direction: 'outgoing',
-    sender: "Shalona's Art <info@shalonasart.ch>",
-    senderName: "Shalona's Art",
+    sender: "Shalona Chandler <info@shalonasart.ch>",
+    senderName: "Shalona Chandler",
     senderEmail: 'info@shalonasart.ch',
     recipient,
     subject,
     body,
     status: 'sent',
     in_reply_to: inReplyToId || null,
+    attachments: attachments.map(a => ({
+      filename: a.filename,
+      size: a.size || 0,
+      contentType: a.contentType || 'application/octet-stream',
+    })),
     created_at: new Date().toISOString()
   };
 
@@ -477,10 +482,12 @@ export async function sendOutgoingStudioEmail(emailData) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        from: 'info@shalonasart.ch',
+        from: 'Shalona Chandler <info@shalonasart.ch>',
         to: recipient,
         subject,
-        text: body
+        text: body,
+        inReplyTo: inReplyToId || null,
+        attachments: attachments || [],
       })
     });
     if (!res.ok) {

@@ -29,29 +29,106 @@ export default async function handler(req, res) {
     if (Array.isArray(to)) to = to.join(', ');
     if (typeof from === 'object') from = from.email ? `${from.name || ''} <${from.email}>`.trim() : JSON.stringify(from);
 
-    // If Resend sent only an email_id without body, try fetching the content from Resend Receiving API
-    const resendApiKey = process.env.RESEND_API_KEY;
-    if (emailData.email_id && (!text && !html) && resendApiKey && !resendApiKey.startsWith('re_your_api_key')) {
-      try {
-        const resendRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}`, {
-          headers: { 'Authorization': `Bearer ${resendApiKey}` },
-        });
-        if (resendRes.ok) {
-          const detail = await resendRes.json();
-          if (detail.text) text = detail.text;
-          if (detail.html) html = detail.html;
-          if (detail.subject) subject = detail.subject;
-          if (detail.from) from = detail.from;
-        }
-      } catch (fetchErr) {
-        console.warn('Could not fetch full email body from Resend:', fetchErr.message);
-      }
-    }
-
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mhiyjqcwdbqpmplghewi.supabase.co';
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_4tV2fBv9dgzSHv7sjdzYWw_jnIQxJDa';
-
     const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+
+    // If Resend sent an email_id, fetch full content and attachments from Resend Receiving API
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const attachmentsList = [];
+
+    if (emailData.email_id && resendApiKey && !resendApiKey.startsWith('re_your_api_key')) {
+      // 1. Fetch full email body if text/html is empty
+      if (!text && !html) {
+        try {
+          const resendRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}`, {
+            headers: { 'Authorization': `Bearer ${resendApiKey}` },
+          });
+          if (resendRes.ok) {
+            const detail = await resendRes.json();
+            if (detail.text) text = detail.text;
+            if (detail.html) html = detail.html;
+            if (detail.subject) subject = detail.subject;
+            if (detail.from) from = detail.from;
+          }
+        } catch (fetchErr) {
+          console.warn('Could not fetch full email body from Resend:', fetchErr.message);
+        }
+      }
+
+      // 2. Fetch attachments from Resend Receiving Attachments API
+      try {
+        const attListRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}/attachments`, {
+          headers: { 'Authorization': `Bearer ${resendApiKey}` },
+        });
+
+        if (attListRes.ok) {
+          const attJson = await attListRes.json();
+          const items = attJson.data || attJson || [];
+
+          if (Array.isArray(items) && items.length > 0) {
+            for (const att of items) {
+              try {
+                // Get attachment details including download_url
+                const singleRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}/attachments/${att.id}`, {
+                  headers: { 'Authorization': `Bearer ${resendApiKey}` },
+                });
+
+                if (singleRes.ok) {
+                  const singleData = await singleRes.json();
+                  const filename = singleData.filename || att.filename || 'attachment';
+                  const contentType = singleData.content_type || att.content_type || 'application/octet-stream';
+                  const downloadUrl = singleData.download_url;
+                  let permanentUrl = downloadUrl;
+
+                  // Optionally copy file into Supabase Storage for permanent preservation
+                  if (downloadUrl) {
+                    try {
+                      const fileFetch = await fetch(downloadUrl);
+                      if (fileFetch.ok) {
+                        const fileBuffer = await fileFetch.arrayBuffer();
+                        const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+                        const storagePath = `attachments/${emailData.email_id}/${safeFilename}`;
+
+                        const { data: uploadData, error: uploadErr } = await supabase.storage
+                          .from('artworks')
+                          .upload(storagePath, fileBuffer, {
+                            contentType,
+                            upsert: true,
+                          });
+
+                        if (!uploadErr && uploadData) {
+                          const { data: publicUrlData } = supabase.storage
+                            .from('artworks')
+                            .getPublicUrl(storagePath);
+                          if (publicUrlData?.publicUrl) {
+                            permanentUrl = publicUrlData.publicUrl;
+                          }
+                        }
+                      }
+                    } catch (storageErr) {
+                      console.warn('Supabase storage upload fallback for attachment:', storageErr.message);
+                    }
+                  }
+
+                  attachmentsList.push({
+                    id: singleData.id || att.id,
+                    filename,
+                    size: singleData.size || att.size || 0,
+                    contentType,
+                    downloadUrl: permanentUrl || downloadUrl,
+                  });
+                }
+              } catch (singleErr) {
+                console.warn('Error fetching single attachment details:', singleErr.message);
+              }
+            }
+          }
+        }
+      } catch (attErr) {
+        console.warn('Could not fetch attachments from Resend Receiving API:', attErr.message);
+      }
+    }
 
     const record = {
       direction: 'inbound',
@@ -66,6 +143,7 @@ export default async function handler(req, res) {
       metadata: {
         raw_headers: emailData.headers || payload.headers || null,
         inbound_provider: 'resend_webhook',
+        attachments: attachmentsList,
       },
     };
 

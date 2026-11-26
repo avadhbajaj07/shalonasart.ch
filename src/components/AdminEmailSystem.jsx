@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import {
   Mail,
   Send,
@@ -21,7 +21,10 @@ import {
   Check,
   AlertCircle,
   Trash2,
-  Loader2
+  Loader2,
+  Paperclip,
+  FileText,
+  Download
 } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import {
@@ -61,6 +64,7 @@ function mapDbEmail(row) {
     phone: meta.phone || null,
     location: meta.location || null,
     created_at: row.created_at || row.received_at || row.sent_at,
+    attachments: meta.attachments || [],
   };
 }
 
@@ -80,12 +84,43 @@ export default function AdminEmailSystem() {
   const [composeTo, setComposeTo] = useState('');
   const [composeSubject, setComposeSubject] = useState('');
   const [composeBody, setComposeBody] = useState('');
+  const [composeAttachments, setComposeAttachments] = useState([]);
+  const composeFileInputRef = useRef(null);
+  const replyFileInputRef = useRef(null);
   const [isSending, setIsSending] = useState(false);
   const [toastMessage, setToastMessage] = useState(null);
 
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
+  };
+
+  const handleFileSelect = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+
+    files.forEach(file => {
+      if (file.size > 25 * 1024 * 1024) {
+        alert(`File "${file.name}" exceeds the 25MB limit.`);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = () => {
+        const base64 = reader.result.split(',')[1];
+        setComposeAttachments(prev => [...prev, {
+          filename: file.name,
+          content: base64,
+          contentType: file.type || 'application/octet-stream',
+          size: file.size,
+        }]);
+      };
+      reader.readAsDataURL(file);
+    });
+    e.target.value = '';
+  };
+
+  const removeAttachment = (index) => {
+    setComposeAttachments(prev => prev.filter((_, i) => i !== index));
   };
 
   const fetchEmailsFromSupabase = async () => {
@@ -178,6 +213,7 @@ export default function AdminEmailSystem() {
   // Handle open reply modal
   const openReplyModal = (email) => {
     setReplyModalEmail(email);
+    setComposeAttachments([]);
     setComposeTo(email.senderEmail || '');
     setComposeSubject(email.subject?.startsWith('Re:') ? email.subject : `Re: ${email.subject}`);
     setComposeBody(
@@ -188,6 +224,7 @@ export default function AdminEmailSystem() {
   // Handle compose new
   const openComposeNew = () => {
     setReplyModalEmail(null);
+    setComposeAttachments([]);
     setComposeTo('');
     setComposeSubject('Inquiry Regarding Shalona Fine Art Atelier');
     setComposeBody(
@@ -210,7 +247,8 @@ export default function AdminEmailSystem() {
         recipient: composeTo.trim(),
         subject: composeSubject.trim(),
         body: composeBody.trim(),
-        inReplyToId: replyModalEmail ? replyModalEmail.id : null
+        inReplyToId: replyModalEmail ? replyModalEmail.id : null,
+        attachments: composeAttachments,
       });
 
       showToast(`Email dispatched to ${composeTo} from info@shalonasart.ch`);
@@ -219,6 +257,7 @@ export default function AdminEmailSystem() {
       setComposeTo('');
       setComposeSubject('');
       setComposeBody('');
+      setComposeAttachments([]);
       await fetchEmailsFromSupabase();
     } catch (err) {
       alert(`Failed to send email: ${err.message}`);
@@ -530,6 +569,64 @@ export default function AdminEmailSystem() {
               {selectedEmail.body}
             </div>
 
+            {/* Attached Files from Collector / Inbound */}
+            {selectedEmail.attachments && selectedEmail.attachments.length > 0 && (
+              <div className="mt-6 pt-4 border-t border-[#E5E2D9] space-y-3">
+                <div className="flex items-center gap-2 text-xs font-sans font-semibold text-[#1A1817]">
+                  <Paperclip className="w-4 h-4 text-[#A88B57]" />
+                  <span>Attachments ({selectedEmail.attachments.length})</span>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+                  {selectedEmail.attachments.map((att, idx) => {
+                    const isImg = att.contentType?.startsWith('image/') || /\.(jpg|jpeg|png|webp|gif)$/i.test(att.filename || '');
+                    const fileUrl = att.downloadUrl || att.url;
+                    return (
+                      <div
+                        key={att.id || idx}
+                        className="flex items-center justify-between p-3 rounded-xl bg-[#FAF8F3] hover:bg-stone-100 border border-[#DCD9D0] transition-colors"
+                      >
+                        <div className="flex items-center gap-3 overflow-hidden">
+                          {isImg && fileUrl ? (
+                            <img
+                              src={fileUrl}
+                              alt={att.filename}
+                              className="w-10 h-10 rounded object-cover border border-[#DCD9D0] shrink-0"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded bg-[#ECE6DC] flex items-center justify-center shrink-0 text-[#A88B57]">
+                              <FileText className="w-5 h-5" />
+                            </div>
+                          )}
+                          <div className="overflow-hidden">
+                            <p className="text-xs font-sans font-medium text-[#1A1817] truncate">{att.filename || 'Attachment'}</p>
+                            {att.size ? (
+                              <p className="text-[10px] text-[#7A7770] font-mono">
+                                {att.size > 1024 * 1024
+                                  ? `${(att.size / (1024 * 1024)).toFixed(1)} MB`
+                                  : `${Math.round(att.size / 1024)} KB`}
+                              </p>
+                            ) : null}
+                          </div>
+                        </div>
+                        {fileUrl && (
+                          <a
+                            href={fileUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            download={att.filename || 'attachment'}
+                            className="p-2 rounded-lg text-[#7A7770] hover:text-[#1A1817] hover:bg-white border border-transparent hover:border-[#DCD9D0] transition-colors ml-2 shrink-0 cursor-pointer"
+                            title="Download file"
+                          >
+                            <Download className="w-4 h-4" />
+                          </a>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Actions Toolbar */}
             <div className="pt-6 border-t border-[#E5E2D9] flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
@@ -657,6 +754,55 @@ export default function AdminEmailSystem() {
                 />
               </div>
 
+              {/* Attachments Section in Compose */}
+              <div className="pt-2 border-t border-[#E5E2D9]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-[#7A7770]">
+                    Attached Files ({composeAttachments.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => composeFileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#DCD9D0] hover:border-[#A88B57] bg-[#FAF8F3] hover:bg-white text-xs font-sans text-[#2A2A2A] transition-colors cursor-pointer"
+                  >
+                    <Paperclip className="w-3.5 h-3.5 text-[#A88B57]" />
+                    <span>Attach Files</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={composeFileInputRef}
+                    onChange={handleFileSelect}
+                    multiple
+                    className="hidden"
+                  />
+                </div>
+
+                {composeAttachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {composeAttachments.map((att, idx) => (
+                      <div
+                        key={idx}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FAF8F3] border border-[#DCD9D0] text-xs font-sans text-[#1A1817]"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-[#A88B57] shrink-0" />
+                        <span className="max-w-[180px] truncate font-medium">{att.filename}</span>
+                        <span className="text-[10px] text-[#7A7770] font-mono">
+                          {att.size ? `${Math.round(att.size / 1024)} KB` : ''}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeAttachment(idx)}
+                          className="p-0.5 text-[#7A7770] hover:text-red-600 transition-colors cursor-pointer"
+                          title="Remove attachment"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E2D9]">
                 <button
                   type="button"
@@ -746,6 +892,55 @@ export default function AdminEmailSystem() {
                   onChange={(e) => setComposeBody(e.target.value)}
                   className="w-full px-3.5 py-2.5 rounded-lg border border-[#DCD9D0] bg-[#FAF8F3] text-sm text-[#1A1817] focus:outline-none focus:border-[#A88B57] focus:bg-white font-sans leading-relaxed"
                 />
+              </div>
+
+              {/* Attachments Section in Reply */}
+              <div className="pt-2 border-t border-[#E5E2D9]">
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-[10px] uppercase font-mono tracking-wider text-[#7A7770]">
+                    Attached Files ({composeAttachments.length})
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => replyFileInputRef.current?.click()}
+                    className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-[#DCD9D0] hover:border-[#A88B57] bg-[#FAF8F3] hover:bg-white text-xs font-sans text-[#2A2A2A] transition-colors cursor-pointer"
+                  >
+                    <Paperclip className="w-3.5 h-3.5 text-[#A88B57]" />
+                    <span>Attach Files</span>
+                  </button>
+                  <input
+                    type="file"
+                    ref={replyFileInputRef}
+                    onChange={handleFileSelect}
+                    multiple
+                    className="hidden"
+                  />
+                </div>
+
+                {composeAttachments.length > 0 && (
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    {composeAttachments.map((att, idx) => (
+                      <div
+                        key={idx}
+                        className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#FAF8F3] border border-[#DCD9D0] text-xs font-sans text-[#1A1817]"
+                      >
+                        <Paperclip className="w-3.5 h-3.5 text-[#A88B57] shrink-0" />
+                        <span className="max-w-[180px] truncate font-medium">{att.filename}</span>
+                        <span className="text-[10px] text-[#7A7770] font-mono">
+                          {att.size ? `${Math.round(att.size / 1024)} KB` : ''}
+                        </span>
+                        <button
+                          type="button"
+                          onClick={() => removeAttachment(idx)}
+                          className="p-0.5 text-[#7A7770] hover:text-red-600 transition-colors cursor-pointer"
+                          title="Remove attachment"
+                        >
+                          <X className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
 
               <div className="flex items-center justify-end gap-3 pt-4 border-t border-[#E5E2D9]">
