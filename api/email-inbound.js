@@ -14,53 +14,70 @@ export default async function handler(req, res) {
 
   try {
     const payload = req.body || {};
-    // Extract common email webhook fields (compatible with Resend Inbound, SendGrid, Mailgun, Postmark)
-    const from = payload.from || payload.sender || payload['from'] || 'Unknown Sender';
-    const to = payload.to || payload.recipient || 'info@shalonasart.ch';
-    const subject = payload.subject || 'No Subject';
-    const text = payload.text || payload.body || payload['stripped-text'] || '';
-    const html = payload.html || payload['body-html'] || payload['stripped-html'] || '';
-    const messageId = payload.message_id || payload.headers?.['message-id'] || null;
+    
+    // Support Resend webhook format (payload.type === 'email.received', payload.data)
+    const emailData = payload.data || payload;
+
+    let from = emailData.from || emailData.sender || payload.from || 'Unknown Sender';
+    let to = emailData.to || emailData.recipient || payload.to || 'info@shalonasart.ch';
+    let subject = emailData.subject || payload.subject || 'No Subject';
+    let text = emailData.text || emailData.body || emailData['stripped-text'] || payload.text || '';
+    let html = emailData.html || emailData['body-html'] || emailData['stripped-html'] || payload.html || '';
+    const messageId = emailData.email_id || emailData.message_id || payload.message_id || payload.headers?.['message-id'] || null;
+
+    // Normalize from / to fields
+    if (Array.isArray(to)) to = to.join(', ');
+    if (typeof from === 'object') from = from.email ? `${from.name || ''} <${from.email}>`.trim() : JSON.stringify(from);
+
+    // If Resend sent only an email_id without body, try fetching the content from Resend Receiving API
+    const resendApiKey = process.env.RESEND_API_KEY;
+    if (emailData.email_id && (!text && !html) && resendApiKey && !resendApiKey.startsWith('re_your_api_key')) {
+      try {
+        const resendRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}`, {
+          headers: { 'Authorization': `Bearer ${resendApiKey}` },
+        });
+        if (resendRes.ok) {
+          const detail = await resendRes.json();
+          if (detail.text) text = detail.text;
+          if (detail.html) html = detail.html;
+          if (detail.subject) subject = detail.subject;
+          if (detail.from) from = detail.from;
+        }
+      } catch (fetchErr) {
+        console.warn('Could not fetch full email body from Resend:', fetchErr.message);
+      }
+    }
 
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mhiyjqcwdbqpmplghewi.supabase.co';
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-
-    if (!supabaseKey) {
-      return res.status(500).json({ error: 'SUPABASE_SERVICE_ROLE_KEY is not configured.' });
-    }
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_4tV2fBv9dgzSHv7sjdzYWw_jnIQxJDa';
 
     const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-    const { data, error } = await supabase
-      .from('emails')
-      .insert({
-        direction: 'inbound',
-        from_email: typeof from === 'object' ? JSON.stringify(from) : String(from),
-        to_email: typeof to === 'object' ? JSON.stringify(to) : String(to),
-        subject: String(subject),
-        body_text: String(text),
-        body_html: html ? String(html) : null,
-        status: 'unread',
-        provider_message_id: messageId,
-        received_at: new Date().toISOString(),
-        metadata: {
-          raw_headers: payload.headers || null,
-          inbound_provider: 'resend_webhook',
-        },
-      })
-      .select()
-      .single();
+    const record = {
+      direction: 'inbound',
+      from_email: String(from),
+      to_email: String(to),
+      subject: String(subject),
+      body_text: String(text || 'No text content in received email.'),
+      body_html: html ? String(html) : null,
+      status: 'unread',
+      provider_message_id: messageId,
+      received_at: new Date().toISOString(),
+      metadata: {
+        raw_headers: emailData.headers || payload.headers || null,
+        inbound_provider: 'resend_webhook',
+      },
+    };
 
-    if (error) {
-      console.error('Failed to store inbound email in Supabase:', error.message);
-      return res.status(500).json({ error: error.message });
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      const { data, error } = await supabase.from('emails').insert(record).select().single();
+      if (error) throw error;
+      return res.status(200).json({ success: true, id: data?.id });
+    } else {
+      const { error } = await supabase.from('emails').insert(record);
+      if (error) throw error;
+      return res.status(200).json({ success: true, note: 'Saved via inbound policy.' });
     }
-
-    return res.status(200).json({
-      success: true,
-      id: data?.id,
-      message: 'Inbound email received and recorded in studio inbox.',
-    });
   } catch (error) {
     console.error('Server error in /api/email-inbound:', error);
     return res.status(500).json({ error: error.message || 'Internal server error processing inbound email.' });

@@ -162,43 +162,39 @@ export default async function handler(req, res) {
 
     // 1. Store directly into Supabase emails table (Inbound)
     const supabaseUrl = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://mhiyjqcwdbqpmplghewi.supabase.co';
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_4tV2fBv9dgzSHv7sjdzYWw_jnIQxJDa';
     let dbRecordId = null;
 
-    if (supabaseKey) {
-      try {
-        const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
-        const { data: dbData, error: dbError } = await supabase
-          .from('emails')
-          .insert({
-            direction: 'inbound',
-            from_email: `${cleanName} <${cleanEmail}>`,
-            to_email: recipientEmail,
-            subject: emailSubject,
-            body_text: cleanMessage || 'Collector submitted inquiry via shalonasart.ch',
-            body_html: emailHtml,
-            status: 'unread',
-            received_at: new Date().toISOString(),
-            metadata: {
-              name: cleanName,
-              email: cleanEmail,
-              phone: cleanPhone,
-              location: cleanLocation,
-              artworkTitle: cleanTitle,
-              inquiryType: cleanType,
-            },
-          })
-          .select()
-          .single();
+    try {
+      const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
+      const record = {
+        direction: 'inbound',
+        from_email: `${cleanName} <${cleanEmail}>`,
+        to_email: recipientEmail,
+        subject: emailSubject,
+        body_text: cleanMessage || 'Collector submitted inquiry via shalonasart.ch',
+        body_html: emailHtml,
+        status: 'unread',
+        received_at: new Date().toISOString(),
+        metadata: {
+          name: cleanName,
+          email: cleanEmail,
+          phone: cleanPhone,
+          location: cleanLocation,
+          artworkTitle: cleanTitle,
+          inquiryType: cleanType,
+        },
+      };
 
-        if (!dbError && dbData) {
-          dbRecordId = dbData.id;
-        } else if (dbError) {
-          console.warn('Supabase emails insertion warning:', dbError.message);
-        }
-      } catch (dbErr) {
-        console.warn('Supabase DB connection error:', dbErr.message);
+      if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+        const { data: dbData } = await supabase.from('emails').insert(record).select().single();
+        if (dbData) dbRecordId = dbData.id;
+      } else {
+        const { error: insErr } = await supabase.from('emails').insert(record);
+        if (!insErr) dbRecordId = 'recorded-via-inbound-policy';
       }
+    } catch (dbErr) {
+      console.warn('Supabase DB insertion fallback:', dbErr.message);
     }
 
     // 2. Dispatch via Resend if API key is present
