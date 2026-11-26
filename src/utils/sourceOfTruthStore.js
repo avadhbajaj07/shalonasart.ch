@@ -376,21 +376,6 @@ export function exportArtworksCSV() {
 function getInitialEmails() {
   return [
     {
-      id: 'em-seed-3',
-      direction: 'incoming',
-      sender: 'Elena Rossi <elena.rossi@artcollector.ch>',
-      senderName: 'Elena Rossi',
-      senderEmail: 'elena.rossi@artcollector.ch',
-      recipient: 'info@shalonasart.ch',
-      subject: 'Acquisition Inquiry: "Breaking Waves"',
-      body: 'Dear Shalona,\n\nI was captivated by your mixed-media painting "Breaking Waves" and would like to inquire about its availability, pricing, and a private studio viewing in Richterswil.\n\nCould you please send acquisition details and your studio viewing schedule?\n\nWarm regards,\nElena Rossi\nZürich, Switzerland\n+41 78 619 44 20',
-      artworkTitle: 'Breaking Waves',
-      phone: '+41 78 619 44 20',
-      location: 'Zürich, Switzerland',
-      status: 'unread',
-      created_at: '2026-11-26T09:45:00.000Z'
-    },
-    {
       id: 'em-seed-1',
       direction: 'incoming',
       sender: 'Marcella Meier <m.meier@kunstzuerich.ch>',
