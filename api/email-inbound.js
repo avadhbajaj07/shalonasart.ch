@@ -129,7 +129,6 @@ export default async function handler(req, res) {
               }
             }
           }
-        }
       } catch (attErr) {
         console.warn('Could not fetch attachments from Resend Receiving API:', attErr.message);
       }
