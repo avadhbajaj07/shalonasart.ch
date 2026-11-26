@@ -9,7 +9,7 @@ import initialSourceOfTruth from '../data/source_of_truth.json';
 
 const SOT_KEY = 'shalona_source_of_truth_v2';
 const REVISIONS_KEY = 'shalona_content_revisions_v2';
-const EMAILS_KEY = 'shalona_studio_emails_v2';
+const EMAILS_KEY = 'shalona_studio_emails_v3';
 
 // ---------------------------------------------------------------------------
 // INITIALIZATION & STATE RECOVERY
@@ -376,6 +376,21 @@ export function exportArtworksCSV() {
 function getInitialEmails() {
   return [
     {
+      id: 'em-seed-3',
+      direction: 'incoming',
+      sender: 'Elena Rossi <elena.rossi@artcollector.ch>',
+      senderName: 'Elena Rossi',
+      senderEmail: 'elena.rossi@artcollector.ch',
+      recipient: 'info@shalonasart.ch',
+      subject: 'Acquisition Inquiry: "Breaking Waves"',
+      body: 'Dear Shalona,\n\nI was captivated by your mixed-media painting "Breaking Waves" and would like to inquire about its availability, pricing, and a private studio viewing in Richterswil.\n\nCould you please send acquisition details and your studio viewing schedule?\n\nWarm regards,\nElena Rossi\nZürich, Switzerland\n+41 78 619 44 20',
+      artworkTitle: 'Breaking Waves',
+      phone: '+41 78 619 44 20',
+      location: 'Zürich, Switzerland',
+      status: 'unread',
+      created_at: '2026-11-26T09:45:00.000Z'
+    },
+    {
       id: 'em-seed-1',
       direction: 'incoming',
       sender: 'Marcella Meier <m.meier@kunstzuerich.ch>',
@@ -388,7 +403,7 @@ function getInitialEmails() {
       phone: '+41 79 402 11 88',
       location: 'Zürich, Switzerland',
       status: 'unread',
-      created_at: new Date(Date.now() - 3600000 * 4).toISOString()
+      created_at: '2026-11-25T19:30:00.000Z'
     },
     {
       id: 'em-seed-2',
@@ -403,7 +418,7 @@ function getInitialEmails() {
       phone: '+41 44 787 12 00',
       location: 'Richterswil, Switzerland',
       status: 'replied',
-      created_at: new Date(Date.now() - 3600000 * 28).toISOString()
+      created_at: '2026-11-25T14:15:00.000Z'
     }
   ];
 }
