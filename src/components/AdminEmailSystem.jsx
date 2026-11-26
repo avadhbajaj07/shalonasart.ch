@@ -29,6 +29,7 @@ import {
 import { supabase } from '../lib/supabase';
 import {
   getStudioEmails,
+  deleteStudioEmail,
   updateStudioEmailStatus,
   sendOutgoingStudioEmail
 } from '../utils/sourceOfTruthStore';
@@ -82,7 +83,7 @@ function mapDbEmail(row) {
 
 export default function AdminEmailSystem() {
   const [storeVersion, setStoreVersion] = useState(0);
-  const [dbEmails, setDbEmails] = useState([]);
+  const [dbEmails, setDbEmails] = useState(null);
   const [isLoadingEmails, setIsLoadingEmails] = useState(false);
 
   const [directionFilter, setDirectionFilter] = useState('all'); // 'all' | 'incoming' | 'outgoing'
@@ -138,17 +139,36 @@ export default function AdminEmailSystem() {
   const fetchEmailsFromSupabase = async () => {
     try {
       setIsLoadingEmails(true);
+      // 1. Fetch from serverless privileged endpoint (uses SUPABASE_SERVICE_ROLE_KEY to bypass RLS)
+      try {
+        const res = await fetch('/api/admin-email');
+        if (res.ok) {
+          const json = await res.json();
+          if (json && Array.isArray(json.emails)) {
+            const mapped = json.emails.map(mapDbEmail);
+            setDbEmails(mapped);
+            return;
+          }
+        }
+      } catch (apiErr) {
+        console.warn('API emails fetch fallback:', apiErr.message);
+      }
+
+      // 2. Direct client fallback
       const { data, error } = await supabase
         .from('emails')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (!error && Array.isArray(data) && data.length > 0) {
+      if (!error && Array.isArray(data)) {
         const mapped = data.map(mapDbEmail);
         setDbEmails(mapped);
+      } else {
+        setDbEmails([]);
       }
     } catch (err) {
       console.warn('Supabase emails fetch fallback:', err.message);
+      setDbEmails([]);
     } finally {
       setIsLoadingEmails(false);
     }
@@ -181,7 +201,7 @@ export default function AdminEmailSystem() {
   }, []);
 
   const allEmails = useMemo(() => {
-    if (dbEmails.length > 0) return dbEmails;
+    if (dbEmails !== null) return dbEmails;
     return getStudioEmails();
   }, [dbEmails, storeVersion]);
 
@@ -294,15 +314,31 @@ export default function AdminEmailSystem() {
 
   const handleDeleteEmail = async (id) => {
     if (window.confirm('Permanently delete this email from the database?')) {
+      // 1. Delete from local store / localStorage
+      deleteStudioEmail(id);
+
+      // 2. Delete via serverless admin API backed by Service Role Key
+      try {
+        await fetch('/api/admin-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ action: 'delete', id }),
+        });
+      } catch (apiErr) {
+        console.warn('API email delete fallback:', apiErr.message);
+      }
+
+      // 3. Direct client delete fallback
       try {
         await supabase.from('emails').delete().eq('id', id);
       } catch (err) {
         console.warn('Supabase delete error:', err);
       }
-      setDbEmails(prev => prev.filter(e => e.id !== id));
+
+      setDbEmails(prev => (prev ? prev.filter(e => e.id !== id && String(e.id) !== String(id)) : []));
       setSelectedEmail(null);
       setStoreVersion(v => v + 1);
-      showToast('Message deleted.');
+      showToast('Message permanently deleted.');
     }
   };
 
@@ -477,6 +513,17 @@ export default function AdminEmailSystem() {
                         <span className="text-[10px] font-mono text-[#7A7770]">
                           {email.created_at ? new Date(email.created_at).toLocaleDateString('de-CH') : ''}
                         </span>
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDeleteEmail(email.id);
+                          }}
+                          className="p-1 rounded text-[#7A7770] hover:text-red-600 hover:bg-red-50 transition-colors ml-0.5 cursor-pointer"
+                          title="Permanently delete message"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
                     </div>
 

@@ -23,7 +23,8 @@ export default async function handler(req, res) {
     let subject = emailData.subject || payload.subject || 'No Subject';
     let text = emailData.text || emailData.body || emailData['stripped-text'] || payload.text || '';
     let html = emailData.html || emailData['body-html'] || emailData['stripped-html'] || payload.html || '';
-    const messageId = emailData.email_id || emailData.message_id || payload.message_id || payload.headers?.['message-id'] || null;
+    const receivedEmailId = emailData.email_id || emailData.id || payload.email_id || payload.id || null;
+    const messageId = receivedEmailId || emailData.message_id || payload.message_id || payload.headers?.['message-id'] || null;
 
     // Normalize from / to fields
     if (Array.isArray(to)) to = to.join(', ');
@@ -33,15 +34,15 @@ export default async function handler(req, res) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'sb_publishable_4tV2fBv9dgzSHv7sjdzYWw_jnIQxJDa';
     const supabase = createClient(supabaseUrl, supabaseKey, { auth: { persistSession: false } });
 
-    // If Resend sent an email_id, fetch full content and attachments from Resend Receiving API
+    // If Resend sent an email_id or id, fetch full content and attachments from Resend Receiving API
     const resendApiKey = process.env.RESEND_API_KEY;
     const attachmentsList = [];
 
-    if (emailData.email_id && resendApiKey && !resendApiKey.startsWith('re_your_api_key')) {
+    if (receivedEmailId && resendApiKey && !resendApiKey.startsWith('re_your_api_key')) {
       // 1. Fetch full email body if text/html is empty
       if (!text && !html) {
         try {
-          const resendRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}`, {
+          const resendRes = await fetch(`https://api.resend.com/emails/receiving/${receivedEmailId}`, {
             headers: { 'Authorization': `Bearer ${resendApiKey}` },
           });
           if (resendRes.ok) {
@@ -58,46 +59,50 @@ export default async function handler(req, res) {
 
       // 2. Fetch attachments from Resend Receiving Attachments API
       try {
-        const attListRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}/attachments`, {
+        const attListRes = await fetch(`https://api.resend.com/emails/receiving/${receivedEmailId}/attachments`, {
           headers: { 'Authorization': `Bearer ${resendApiKey}` },
         });
 
+        let items = [];
         if (attListRes.ok) {
           const attJson = await attListRes.json();
-          const items = attJson.data || attJson || [];
+          items = attJson.data || attJson || [];
+        } else if (Array.isArray(emailData.attachments)) {
+          items = emailData.attachments;
+        }
 
-          if (Array.isArray(items) && items.length > 0) {
-            for (const att of items) {
-              try {
-                // Get attachment details including download_url
-                const singleRes = await fetch(`https://api.resend.com/emails/receiving/${emailData.email_id}/attachments/${att.id}`, {
-                  headers: { 'Authorization': `Bearer ${resendApiKey}` },
-                });
+        if (Array.isArray(items) && items.length > 0) {
+          for (const att of items) {
+            try {
+              // Get attachment details including download_url
+              const singleRes = await fetch(`https://api.resend.com/emails/receiving/${receivedEmailId}/attachments/${att.id}`, {
+                headers: { 'Authorization': `Bearer ${resendApiKey}` },
+              });
 
-                if (singleRes.ok) {
-                  const singleData = await singleRes.json();
-                  const filename = singleData.filename || att.filename || 'attachment';
-                  const contentType = singleData.content_type || att.content_type || 'application/octet-stream';
-                  const downloadUrl = singleData.download_url;
-                  let permanentUrl = downloadUrl;
+              if (singleRes.ok) {
+                const singleData = await singleRes.json();
+                const filename = singleData.filename || att.filename || 'attachment';
+                const contentType = singleData.content_type || att.content_type || 'application/octet-stream';
+                const downloadUrl = singleData.download_url;
+                let permanentUrl = downloadUrl;
 
-                  // Optionally copy file into Supabase Storage for permanent preservation
-                  if (downloadUrl) {
-                    try {
-                      const fileFetch = await fetch(downloadUrl);
-                      if (fileFetch.ok) {
-                        const fileBuffer = await fileFetch.arrayBuffer();
-                        const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
-                        const storagePath = `attachments/${emailData.email_id}/${safeFilename}`;
+                // Optionally copy file into Supabase Storage for permanent preservation
+                if (downloadUrl) {
+                  try {
+                    const fileFetch = await fetch(downloadUrl);
+                    if (fileFetch.ok) {
+                      const fileBuffer = await fileFetch.arrayBuffer();
+                      const safeFilename = filename.replace(/[^a-zA-Z0-9.-]/g, '_');
+                      const storagePath = `attachments/${receivedEmailId}/${safeFilename}`;
 
-                        const { data: uploadData, error: uploadErr } = await supabase.storage
-                          .from('artworks')
-                          .upload(storagePath, fileBuffer, {
-                            contentType,
-                            upsert: true,
-                          });
+                      const { data: uploadData, error: uploadErr } = await supabase.storage
+                        .from('artworks')
+                        .upload(storagePath, fileBuffer, {
+                          contentType,
+                          upsert: true,
+                        });
 
-                        if (!uploadErr && uploadData) {
+                      if (!uploadErr && uploadData) {
                           const { data: publicUrlData } = supabase.storage
                             .from('artworks')
                             .getPublicUrl(storagePath);

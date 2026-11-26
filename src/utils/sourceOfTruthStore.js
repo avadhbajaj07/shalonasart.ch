@@ -382,10 +382,34 @@ function getInitialEmails() {
 export function getStudioEmails(filter = {}) {
   if (typeof window === 'undefined') return getInitialEmails();
   try {
+    // Purge deprecated legacy storage keys
+    localStorage.removeItem('shalona_studio_emails');
+    localStorage.removeItem('shalona_studio_emails_v2');
+
     const raw = localStorage.getItem(EMAILS_KEY);
     let list = raw ? JSON.parse(raw) : getInitialEmails();
-    if (!raw) {
-      localStorage.setItem(EMAILS_KEY, JSON.stringify(list));
+
+    // Cleanse all legacy seed mock data from local storage
+    if (Array.isArray(list)) {
+      const cleansed = list.filter(e =>
+        e.id !== 'em-seed-1' &&
+        e.id !== 'em-seed-2' &&
+        e.id !== 'em-seed-3' &&
+        !e.id?.startsWith('em-seed') &&
+        !e.sender?.includes('Marcella') &&
+        !e.sender?.includes('Beat') &&
+        !e.sender?.includes('Elena') &&
+        !e.senderName?.includes('Marcella') &&
+        !e.senderName?.includes('Beat') &&
+        !e.senderName?.includes('Elena')
+      );
+      if (cleansed.length !== list.length) {
+        localStorage.setItem(EMAILS_KEY, JSON.stringify(cleansed));
+        list = cleansed;
+      }
+    } else {
+      list = [];
+      localStorage.setItem(EMAILS_KEY, JSON.stringify([]));
     }
 
     if (filter.direction && filter.direction !== 'all') {
@@ -407,7 +431,20 @@ export function getStudioEmails(filter = {}) {
     return list;
   } catch (e) {
     console.error('Failed to load studio emails:', e);
-    return getInitialEmails();
+    return [];
+  }
+}
+
+export function deleteStudioEmail(id) {
+  if (typeof window === 'undefined') return;
+  try {
+    const emails = getStudioEmails();
+    const filtered = emails.filter(e => e.id !== id && String(e.id) !== String(id));
+    localStorage.setItem(EMAILS_KEY, JSON.stringify(filtered));
+    window.dispatchEvent(new CustomEvent('shalona_emails_updated', { detail: filtered }));
+    return filtered;
+  } catch (e) {
+    console.error('Failed to delete email from store:', e);
   }
 }
 
