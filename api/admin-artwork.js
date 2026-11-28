@@ -197,6 +197,49 @@ export default async function handler(req, res) {
       });
     }
 
+    // 5. UPLOAD ARTWORK IMAGE (Bypasses RLS via Service Role Key)
+    if (action === 'upload') {
+      const { fileBase64, filename, contentType } = req.body || {};
+      if (!fileBase64) {
+        return res.status(400).json({ error: 'fileBase64 is required.' });
+      }
+
+      const cleanSlug = (slug || title || filename || 'artwork')
+        .toString()
+        .toLowerCase()
+        .trim()
+        .replace(/\s+/g, '-')
+        .replace(/[^\w-]+/g, '') || 'artwork';
+
+      const ext = (filename && filename.includes('.')) ? filename.split('.').pop() : 'jpg';
+      const storagePath = `images/${cleanSlug}-${Date.now()}.${ext}`;
+
+      const base64Data = fileBase64.replace(/^data:image\/\w+;base64,/, '');
+      const fileBuffer = Buffer.from(base64Data, 'base64');
+
+      const { data: uploadData, error: uploadErr } = await supabase.storage
+        .from('artworks')
+        .upload(storagePath, fileBuffer, {
+          contentType: contentType || 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadErr) {
+        return res.status(500).json({ error: uploadErr.message });
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('artworks')
+        .getPublicUrl(storagePath);
+
+      return res.status(200).json({
+        success: true,
+        action: 'upload',
+        path: storagePath,
+        url: publicUrlData.publicUrl,
+      });
+    }
+
     return res.status(400).json({ error: `Unknown action: "${action}"` });
   } catch (error) {
     console.error('Server error in /api/admin-artwork:', error);

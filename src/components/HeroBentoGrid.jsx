@@ -62,7 +62,7 @@ export default function HeroBentoGrid({ artworks, onSelectArtwork, onOpenRoom, o
         >
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[4px] bg-[#ECE6DC]">
             <img
-              src={piece1.localImage || piece1.image}
+              src={piece1.image || piece1.localImage}
               alt={piece1.title}
               className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
               loading="eager"
@@ -167,7 +167,7 @@ export default function HeroBentoGrid({ artworks, onSelectArtwork, onOpenRoom, o
         >
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[4px] bg-[#ECE6DC]">
             <img
-              src={piece2.localImage || piece2.image}
+              src={piece2.image || piece2.localImage}
               alt={piece2.title}
               className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
               loading="lazy"
@@ -216,7 +216,7 @@ export default function HeroBentoGrid({ artworks, onSelectArtwork, onOpenRoom, o
         >
           <div className="relative aspect-[3/4] w-full overflow-hidden rounded-[4px] bg-[#ECE6DC]">
             <img
-              src={piece3.localImage || piece3.image}
+              src={piece3.image || piece3.localImage}
               alt={piece3.title}
               className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-700 ease-out"
               loading="lazy"

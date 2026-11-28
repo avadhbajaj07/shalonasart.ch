@@ -104,7 +104,11 @@ export async function loadArtworksFromSupabase() {
     if (Array.isArray(data) && data.length > 0) {
       const mapped = data.map(mapSupabaseToArtwork);
       if (typeof window !== 'undefined') {
-        localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(mapped));
+        try {
+          localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(mapped));
+        } catch (storageErr) {
+          console.warn('localStorage quota warning on cache sync:', storageErr);
+        }
         window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: mapped }));
       }
       return mapped;
@@ -244,32 +248,80 @@ export function getLiveArtworks() {
 
 /**
  * Upload an artwork image directly to Supabase Storage bucket 'artworks'
+ * Supports File, Blob, or { blob, dataUrl } meta objects.
+ * Uses direct storage upload with fallback to serverless Service Role upload.
  */
-export async function uploadArtworkImageToSupabase(file, slug) {
+export async function uploadArtworkImageToSupabase(fileOrMeta, slug) {
   try {
-    const ext = file.name.split('.').pop() || 'jpg';
+    const isMeta = fileOrMeta && typeof fileOrMeta === 'object' && fileOrMeta.blob;
+    const blob = isMeta ? fileOrMeta.blob : fileOrMeta;
+    const dataUrl = isMeta ? fileOrMeta.dataUrl : null;
+    const filename = fileOrMeta?.name || `${slug || 'artwork'}.jpg`;
+    const ext = filename.includes('.') ? filename.split('.').pop().toLowerCase() : 'jpg';
     const cleanSlug = generateSlug(slug || 'artwork');
     const storagePath = `images/${cleanSlug}-${Date.now()}.${ext}`;
 
-    const { data, error } = await supabase.storage
-      .from('artworks')
-      .upload(storagePath, file, {
-        contentType: file.type || 'image/jpeg',
-        upsert: true,
-      });
+    // 1. Direct Supabase Storage client upload
+    if (blob) {
+      try {
+        const { data, error } = await supabase.storage
+          .from('artworks')
+          .upload(storagePath, blob, {
+            contentType: blob.type || 'image/jpeg',
+            upsert: true,
+          });
 
-    if (error) {
-      throw error;
+        if (!error && data) {
+          const { data: publicData } = supabase.storage
+            .from('artworks')
+            .getPublicUrl(storagePath);
+
+          return {
+            path: storagePath,
+            url: publicData.publicUrl,
+          };
+        }
+      } catch (clientErr) {
+        console.warn('Direct client storage upload attempt failed:', clientErr.message);
+      }
     }
 
-    const { data: publicData } = supabase.storage
-      .from('artworks')
-      .getPublicUrl(storagePath);
+    // 2. Serverless fallback backed by Service Role Key
+    let base64String = dataUrl;
+    if (!base64String && blob) {
+      base64String = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(blob);
+      });
+    }
 
-    return {
-      path: storagePath,
-      url: publicData.publicUrl,
-    };
+    if (base64String) {
+      const res = await fetch('/api/admin-artwork', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'upload',
+          fileBase64: base64String,
+          filename,
+          slug: cleanSlug,
+          contentType: blob ? blob.type : 'image/jpeg',
+        }),
+      });
+
+      if (res.ok) {
+        const json = await res.json();
+        if (json.url) {
+          return {
+            path: json.path,
+            url: json.url,
+          };
+        }
+      }
+    }
+
+    throw new Error('Could not upload image to storage via client or serverless API.');
   } catch (err) {
     console.error('Failed to upload image to Supabase Storage:', err);
     throw err;
@@ -368,7 +420,11 @@ export async function saveArtwork(artworkData) {
 
     const updated = [createdArtwork, ...list];
     if (typeof window !== 'undefined') {
-      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(updated));
+      try {
+        localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(updated));
+      } catch (storageErr) {
+        console.warn('localStorage quota warning on save:', storageErr);
+      }
       window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: updated }));
     }
     return createdArtwork;
@@ -469,13 +525,18 @@ export async function updateArtwork(id, updatedFields) {
       isSold,
       image: updatedFields.image || current.image,
       thumbnail: updatedFields.thumbnail || updatedFields.image || current.thumbnail,
+      localImage: updatedFields.image || current.image,
       updatedAt: new Date().toISOString()
     };
 
     const nextList = [...list];
     nextList[index] = updated;
     if (typeof window !== 'undefined') {
-      localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(nextList));
+      try {
+        localStorage.setItem(MASTER_ARTWORKS_KEY, JSON.stringify(nextList));
+      } catch (storageErr) {
+        console.warn('localStorage quota warning on update:', storageErr);
+      }
       window.dispatchEvent(new CustomEvent('shalona_artworks_updated', { detail: nextList }));
     }
     return updated;

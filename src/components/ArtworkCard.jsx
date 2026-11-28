@@ -20,7 +20,7 @@ export default function ArtworkCard({ artwork, onSelect, onOpenRoom }) {
       >
         {/* Artwork Image with Exact Proportions & Rich Alt SEO */}
         <img
-          src={artwork.localImage || artwork.thumbnail || artwork.image}
+          src={artwork.image || artwork.localImage || artwork.thumbnail}
           alt={`${artwork.title} – Original ${artwork.category} painting by Shalona`}
           width={artwork.width}
           height={artwork.height}

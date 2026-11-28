@@ -397,13 +397,16 @@ export default function AdminPage() {
       let uploadedUrl = artImage;
       let storagePath = null;
 
-      if (artImageMeta?.blob) {
+      if (artImageMeta) {
         try {
-          const uploadRes = await uploadArtworkImageToSupabase(artImageMeta.blob, title);
+          const uploadRes = await uploadArtworkImageToSupabase(artImageMeta, title);
           uploadedUrl = uploadRes.url;
           storagePath = uploadRes.path;
         } catch (uploadErr) {
-          console.warn('Storage upload fallback:', uploadErr);
+          console.error('Storage upload error:', uploadErr);
+          alert('Failed to upload artwork image: ' + (uploadErr.message || 'Storage error'));
+          setIsSubmittingArt(false);
+          return;
         }
       }
 
@@ -476,13 +479,16 @@ export default function AdminPage() {
       let uploadedUrl = editArtImage;
       let storagePath = editingArtwork.imagePath;
 
-      if (editArtImageMeta?.blob) {
+      if (editArtImageMeta) {
         try {
-          const uploadRes = await uploadArtworkImageToSupabase(editArtImageMeta.blob, editArtTitle);
+          const uploadRes = await uploadArtworkImageToSupabase(editArtImageMeta, editArtTitle);
           uploadedUrl = uploadRes.url;
           storagePath = uploadRes.path;
         } catch (uploadErr) {
-          console.warn('Storage upload fallback:', uploadErr);
+          console.error('Storage upload error:', uploadErr);
+          alert('Failed to upload replacement image: ' + (uploadErr.message || 'Storage error'));
+          setIsSubmittingEditArt(false);
+          return;
         }
       }
 

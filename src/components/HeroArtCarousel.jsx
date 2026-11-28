@@ -146,7 +146,7 @@ export default function HeroArtCarousel({
         {/* Colorful high-res artwork background scaled to fill entire hero */}
         {bgArtwork && (
           <img
-            src={bgArtwork.localImage || bgArtwork.image}
+            src={bgArtwork.image || bgArtwork.localImage}
             alt=""
             aria-hidden="true"
             className="w-full h-full object-cover scale-110 filter blur-[55px] opacity-75 transition-opacity duration-1000"
@@ -183,7 +183,7 @@ export default function HeroArtCarousel({
           Experience a world
           <span className="inline-block w-12 h-7 sm:w-16 sm:h-9 md:w-20 md:h-11 rounded-full overflow-hidden align-middle mx-2 sm:mx-3 shadow-[0_2px_10px_rgba(42,42,42,0.14)] bg-[#EAE6DE]">
             <img
-              src={pillArt1.localImage || pillArt1.thumbnail || pillArt1.image}
+              src={pillArt1.image || pillArt1.thumbnail || pillArt1.localImage}
               alt=""
               className="w-full h-full object-cover scale-110"
             />
@@ -195,7 +195,7 @@ export default function HeroArtCarousel({
           </span>
           <span className="inline-block w-16 h-7 sm:w-22 sm:h-9 md:w-28 md:h-11 rounded-full overflow-hidden align-middle mx-2 sm:mx-3 shadow-[0_2px_10px_rgba(42,42,42,0.14)] bg-[#EAE6DE]">
             <img
-              src={pillArt2.localImage || pillArt2.thumbnail || pillArt2.image}
+              src={pillArt2.image || pillArt2.thumbnail || pillArt2.localImage}
               alt=""
               className="w-full h-full object-cover scale-110"
             />
@@ -242,7 +242,7 @@ export default function HeroArtCarousel({
             >
               {/* Sharp, vibrant, completely unblurred artwork image */}
               <img
-                src={artwork.localImage || artwork.thumbnail || artwork.image}
+                src={artwork.image || artwork.thumbnail || artwork.localImage}
                 alt={artwork.title}
                 className="w-full h-full object-cover object-center pointer-events-none select-none transition-transform duration-700 ease-out group-hover:scale-[1.03]"
                 loading={index < 8 ? 'eager' : 'lazy'}

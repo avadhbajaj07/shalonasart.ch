@@ -142,7 +142,7 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
                 }}
               >
                 <img
-                  src={artwork.localImage || artwork.image}
+                  src={artwork.image || artwork.localImage}
                   alt={`${artwork.title} – Original ${artwork.category} artwork by Shalona, Richterswil, Switzerland`}
                   width={artwork.width}
                   height={artwork.height}
