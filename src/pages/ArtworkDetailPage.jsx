@@ -57,7 +57,7 @@ export default function ArtworkDetailPage({ artworks, onOpenRoom, onOpenInquire 
     "@type": "VisualArtwork",
     "name": artwork.title,
     "alternateName": `${artwork.title} by Shalona`,
-    "image": `https://shalonasart.ch${artwork.image}`,
+    "image": artwork.image?.startsWith('http') ? artwork.image : `https://shalonasart.ch${artwork.image}`,
     "description": artwork.caption || artwork.philosophy || `Original ${artwork.category} artwork by Shalona.`,
     "artform": artwork.category,
     "artMedium": artwork.medium,
